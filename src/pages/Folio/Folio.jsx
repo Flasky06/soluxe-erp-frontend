@@ -196,7 +196,7 @@ const Folio = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-md">
+                    <div className="modal-content premium-card modal-md">
                         <div className="modal-header">
                             <h2>Post Charge to #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -239,7 +239,7 @@ const Folio = () => {
 
             {showPaymentModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-md">
+                    <div className="modal-content premium-card modal-md">
                         <div className="modal-header">
                             <h2>Record Payment for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowPaymentModal(false)}>&times;</button>
@@ -275,28 +275,28 @@ const Folio = () => {
 
             {showMethodModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-md">
+                    <div className="modal-content premium-card modal-md">
                         <div className="modal-header">
                             <h2>Manage Payment Methods</h2>
                             <button className="close-modal-btn" onClick={() => setShowMethodModal(false)}>&times;</button>
                         </div>
                         
-                        <div className="payment-methods-list" style={{marginBottom: '24px', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-color)', padding: '16px', borderRadius: '8px', background: '#f8fafc'}}>
-                            <h4 style={{marginBottom: '12px', color: 'var(--text-main)'}}>Existing Methods:</h4>
+                        <div className="payment-methods-list">
+                            <h4>Existing Methods:</h4>
                             {paymentMethods.length > 0 ? (
                                 paymentMethods.map(m => (
-                                    <div key={m.id} style={{padding: '8px 0', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', display: 'flex', justifyContent: 'space-between'}}>
+                                    <div key={m.id} className="method-item">
                                         <span><strong>{m.name}</strong></span>
-                                        <span style={{color: 'var(--text-muted)'}}>{m.description}</span>
+                                        <span className="sub-text">{m.description}</span>
                                     </div>
                                 ))
                             ) : (
-                                <p style={{fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', padding: '10px'}}>No payment methods defined yet.</p>
+                                <p className="empty-sub-state">No payment methods defined yet.</p>
                             )}
                         </div>
 
-                        <form onSubmit={handleCreatePaymentMethod} style={{borderTop: '1px solid var(--border-color)', paddingTop: '24px'}}>
-                            <h4 style={{marginBottom: '16px', color: 'var(--text-main)'}}>Add New Method:</h4>
+                        <form onSubmit={handleCreatePaymentMethod} className="add-method-form">
+                            <h4>Add New Method:</h4>
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Method Name</label>
@@ -318,49 +318,49 @@ const Folio = () => {
 
             {showReceiptModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-lg">
+                    <div className="modal-content premium-card modal-lg">
                         <div className="modal-header">
                             <h2>Receipts for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowReceiptModal(false)}>&times;</button>
                         </div>
 
-                        <div className="receipts-container" style={{display: 'flex', flexDirection: 'column', gap: '32px'}}>
+                        <div className="receipts-container">
                             {receipts.length > 0 ? (
                                 receipts.map(receipt => (
-                                    <div key={receipt.id} className="receipt-card premium-card" style={{padding: '32px', maxWidth: '600px', margin: '0 auto', width: '100%'}}>
-                                        <div className="receipt-header" style={{textAlign: 'center', display: 'block', borderBottom: '2px solid var(--border-color)', paddingBottom: '20px', marginBottom: '24px'}}>
-                                            <h2 style={{fontSize: '1.8rem', letterSpacing: '2px', color: 'var(--bg-sidebar)'}}>SOLUXE HOTEL</h2>
-                                            <p style={{textTransform: 'uppercase', fontSize: '0.85rem', color: 'var(--text-muted)'}}>Official Payment Receipt</p>
+                                    <div key={receipt.id} className="receipt-card premium-card">
+                                        <div className="receipt-header">
+                                            <h2 className="hotel-name">SOLUXE HOTEL</h2>
+                                            <p className="receipt-type">Official Payment Receipt</p>
                                         </div>
-                                        <div className="receipt-details" style={{display: 'flex', flexDirection: 'column', gap: '12px'}}>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                        <div className="receipt-details">
+                                            <div className="detail-row">
                                                 <span>Receipt No:</span>
                                                 <span className="bold">#{receipt.receiptNumber}</span>
                                             </div>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                            <div className="detail-row">
                                                 <span>Date:</span>
                                                 <span>{new Date(receipt.issuedAt).toLocaleString()}</span>
                                             </div>
-                                            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                                            <div className="detail-row">
                                                 <span>Folio ID:</span>
                                                 <span>#{receipt.folioId.toString().padStart(5, '0')}</span>
                                             </div>
-                                            <div style={{display: 'flex', justifyContent: 'space-between', padding: '16px 0', borderTop: '1px dashed var(--border-color)', borderBottom: '1px dashed var(--border-color)', margin: '8px 0', fontSize: '1.2rem'}}>
+                                            <div className="receipt-total detail-row">
                                                 <span className="bold">Amount Paid:</span>
-                                                <span className="bold" style={{color: '#10b981'}}>KES {receipt.amount.toLocaleString()}</span>
+                                                <span className="bold total-amount">KES {receipt.amount.toLocaleString()}</span>
                                             </div>
                                         </div>
-                                        <div className="receipt-footer" style={{textAlign: 'center', marginTop: '24px', color: 'var(--text-muted)', fontSize: '0.9rem'}}>
+                                        <div className="receipt-footer">
                                             <p>Thank you for choosing Soluxe Hotel!</p>
-                                            <p style={{fontSize: '0.7rem', marginTop: '12px', opacity: 0.7}}>Auth Code: {receipt.paymentId} | Issued by: {receipt.issuedBy}</p>
+                                            <p className="auth-info">Auth Code: {receipt.paymentId} | Issued by: {receipt.issuedBy}</p>
                                         </div>
-                                        <div className="receipt-actions" style={{marginTop: '32px'}}>
-                                            <button className="btn-primary" onClick={handlePrintReceipt} style={{width: '100%'}}>Print Official Receipt</button>
+                                        <div className="receipt-actions">
+                                            <button className="btn-primary print-btn" onClick={handlePrintReceipt}>Print Official Receipt</button>
                                         </div>
                                     </div>
                                 ))
                             ) : (
-                                <div style={{textAlign: 'center', padding: '40px', color: 'var(--text-muted)'}}>
+                                <div className="empty-sub-state">
                                     <p>No receipts found for this folio.</p>
                                 </div>
                             )}

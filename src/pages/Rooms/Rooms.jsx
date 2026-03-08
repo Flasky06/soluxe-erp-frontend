@@ -4,6 +4,7 @@ import './Rooms.css';
 
 const Rooms = () => {
     const [rooms, setRooms] = useState([]);
+    const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [newRoom, setNewRoom] = useState({
@@ -12,6 +13,26 @@ const Rooms = () => {
         roomTypeId: '',
         status: 'AVAILABLE'
     });
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const [roomsRes, typesRes] = await Promise.all([
+                api.get('/rooms'),
+                api.get('/room-types')
+            ]);
+            setRooms(roomsRes.data);
+            setRoomTypes(typesRes.data);
+        } catch (err) {
+            console.error('Failed to fetch data:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const handleCreateRoom = async (e) => {
         e.preventDefault();
@@ -23,28 +44,13 @@ const Rooms = () => {
                 status: newRoom.status
             });
             setShowModal(false);
-            const response = await api.get('/rooms');
-            setRooms(response.data);
+            fetchData();
             setNewRoom({ roomNumber: '', floor: '', roomTypeId: '', status: 'AVAILABLE' });
         } catch (err) {
             console.error('Failed to create room:', err);
             alert('Failed to create room.');
         }
     };
-
-    useEffect(() => {
-        const fetchRooms = async () => {
-            try {
-                const response = await api.get('/rooms');
-                setRooms(response.data);
-            } catch (err) {
-                console.error('Failed to fetch rooms:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchRooms();
-    }, []);
 
     const getStatusClass = (status) => {
         if (!status) return 'unknown';
@@ -62,7 +68,7 @@ const Rooms = () => {
             </div>
 
             <div className="premium-card table-container">
-                {loading ? (
+                {loading && rooms.length === 0 ? (
                     <div className="loading">Loading rooms...</div>
                 ) : (
                     <table className="management-table">
@@ -113,7 +119,7 @@ const Rooms = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-md">
+                    <div className="modal-content premium-card modal-md">
                         <div className="modal-header">
                             <h2>Add New Room</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -129,11 +135,20 @@ const Rooms = () => {
                                     <input type="text" required value={newRoom.floor} onChange={(e) => setNewRoom({...newRoom, floor: e.target.value})} placeholder="e.g. 1" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Room Type ID</label>
-                                    <input type="number" required value={newRoom.roomTypeId} onChange={(e) => setNewRoom({...newRoom, roomTypeId: e.target.value})} />
+                                    <label>Room Category</label>
+                                    <select 
+                                        required 
+                                        value={newRoom.roomTypeId} 
+                                        onChange={(e) => setNewRoom({...newRoom, roomTypeId: e.target.value})}
+                                    >
+                                        <option value="">-- Select Type --</option>
+                                        {roomTypes.map(type => (
+                                            <option key={type.id} value={type.id}>{type.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Status</label>
+                                    <label>Initial Status</label>
                                     <select value={newRoom.status} onChange={(e) => setNewRoom({...newRoom, status: e.target.value})}>
                                         <option value="AVAILABLE">AVAILABLE</option>
                                         <option value="OCCUPIED">OCCUPIED</option>

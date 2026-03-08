@@ -106,30 +106,35 @@ const Departments = () => {
             </div>
 
             {isModalOpen && (
-                <div className="modal-backdrop">
-                    <div className="modal-content premium-card">
-                        <h2>{isEditing ? 'Edit Department' : 'Add New Department'}</h2>
+                <div className="modal-overlay">
+                    <div className="modal-content premium-card modal-md department-modal">
+                        <div className="modal-header">
+                            <h2>{isEditing ? 'Edit Department' : 'Add New Department'}</h2>
+                            <button className="close-modal-btn" onClick={handleCloseModal}>&times;</button>
+                        </div>
                         <form onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label>Department Name</label>
-                                <input 
-                                    type="text" 
-                                    value={currentDepartment.name}
-                                    onChange={(e) => setCurrentDepartment({...currentDepartment, name: e.target.value})}
-                                    placeholder="e.g. Front Office"
-                                    required 
-                                />
+                            <div className="form-grid">
+                                <div className="form-group full-width">
+                                    <label>Department Name</label>
+                                    <input 
+                                        type="text" 
+                                        value={currentDepartment.name}
+                                        onChange={(e) => setCurrentDepartment({...currentDepartment, name: e.target.value})}
+                                        placeholder="e.g. Front Office"
+                                        required 
+                                    />
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Description</label>
+                                    <textarea 
+                                        value={currentDepartment.description}
+                                        onChange={(e) => setCurrentDepartment({...currentDepartment, description: e.target.value})}
+                                        placeholder="Briefly describe the department's responsibilities"
+                                        rows="3"
+                                    />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>Description</label>
-                                <textarea 
-                                    value={currentDepartment.description}
-                                    onChange={(e) => setCurrentDepartment({...currentDepartment, description: e.target.value})}
-                                    placeholder="Briefly describe the department's responsibilities"
-                                    rows="3"
-                                />
-                            </div>
-                            <div className="modal-actions">
+                            <div className="modal-footer">
                                 <button type="button" className="btn-secondary" onClick={handleCloseModal}>Cancel</button>
                                 <button type="submit" className="btn-primary">
                                     {isEditing ? 'Update Department' : 'Create Department'}

@@ -163,7 +163,7 @@ const Employees = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-lg employee-modal">
+                    <div className="modal-content premium-card modal-lg employee-modal">
                         <div className="modal-header">
                             <h2>{editingEmployee ? 'Edit Employee Details' : 'Register New Staff Member'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -204,10 +204,6 @@ const Employees = () => {
                                     <input type="date" required value={formData.dateOfJoining} onChange={(e) => setFormData({...formData, dateOfJoining: e.target.value})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Languages Spoken (comma separated)</label>
-                                    <input type="text" value={formData.languagesSpoken} onChange={(e) => setFormData({...formData, languagesSpoken: e.target.value})} placeholder="English, French, Mandarin" />
-                                </div>
-                                <div className="form-group">
                                     <label>Nationality</label>
                                     <input type="text" required value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} placeholder="e.g. Kenyan" />
                                 </div>
@@ -222,6 +218,10 @@ const Employees = () => {
                                 <div className="form-group">
                                     <label>Passport / ID Number</label>
                                     <input type="text" required value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="A12345678" />
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Languages Spoken (comma separated)</label>
+                                    <input type="text" value={formData.languagesSpoken} onChange={(e) => setFormData({...formData, languagesSpoken: e.target.value})} placeholder="English, French, Mandarin" />
                                 </div>
                             </div>
                             <div className="modal-footer">

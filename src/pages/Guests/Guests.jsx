@@ -163,7 +163,7 @@ const Guests = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-lg guest-modal">
+                    <div className="modal-content premium-card modal-lg guest-modal">
                         <div className="modal-header">
                             <h2>{editingGuest ? 'Edit Guest Profile' : 'Register New Guest'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -206,37 +206,32 @@ const Guests = () => {
                                         <option value="DRIVING_LICENSE">Driving License</option>
                                     </select>
                                 </div>
-                                <div style={{display: 'flex', gap: '12px'}}>
-                                <div style={{flex: 1}}>
-                                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600'}}>Passport/ID No</label>
-                                    <input type="text" value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} style={{width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '8px'}} placeholder="ID Number" />
+                                <div className="form-group">
+                                    <label>Passport/ID No</label>
+                                    <input type="text" value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="ID Number" />
                                 </div>
-                                <div style={{flex: 1}}>
-                                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600'}}>Vehicle Registration</label>
-                                    <input type="text" value={formData.vehicleRegistration} onChange={(e) => setFormData({...formData, vehicleRegistration: e.target.value})} style={{width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '8px'}} placeholder="e.g. ABC-1234" />
+                                <div className="form-group">
+                                    <label>Vehicle Registration</label>
+                                    <input type="text" value={formData.vehicleRegistration} onChange={(e) => setFormData({...formData, vehicleRegistration: e.target.value})} placeholder="e.g. ABC-1234" />
                                 </div>
-                            </div>
+                                <div className="form-group">
+                                    <label>Emergency Contact Name</label>
+                                    <input type="text" value={formData.emergencyContactName} onChange={(e) => setFormData({...formData, emergencyContactName: e.target.value})} placeholder="Full Name" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Emergency Contact Phone</label>
+                                    <input type="text" value={formData.emergencyContactPhone} onChange={(e) => setFormData({...formData, emergencyContactPhone: e.target.value})} placeholder="+254..." />
+                                </div>
 
-                            <div style={{display: 'flex', gap: '12px'}}>
-                                <div style={{flex: 1}}>
-                                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600'}}>Emergency Contact Name</label>
-                                    <input type="text" value={formData.emergencyContactName} onChange={(e) => setFormData({...formData, emergencyContactName: e.target.value})} style={{width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '8px'}} placeholder="Full Name" />
+                                <div className="form-group full-width">
+                                    <label>Special Requirements / Preferences</label>
+                                    <textarea 
+                                        value={formData.preferences} 
+                                        onChange={(e) => setFormData({...formData, preferences: e.target.value})} 
+                                        placeholder="Allergies, room preferences, dietary restrictions..."
+                                        style={{minHeight: '80px'}}
+                                    />
                                 </div>
-                                <div style={{flex: 1}}>
-                                    <label style={{display: 'block', marginBottom: '6px', fontWeight: '600'}}>Emergency Contact Phone</label>
-                                    <input type="text" value={formData.emergencyContactPhone} onChange={(e) => setFormData({...formData, emergencyContactPhone: e.target.value})} style={{width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '8px'}} placeholder="+254..." />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label style={{display: 'block', marginBottom: '6px', fontWeight: '600'}}>Special Requirements / Preferences</label>
-                                <textarea 
-                                    value={formData.preferences} 
-                                    onChange={(e) => setFormData({...formData, preferences: e.target.value})} 
-                                    style={{width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '8px', minHeight: '80px'}} 
-                                    placeholder="Allergies, room preferences, dietary restrictions..."
-                                />
-                            </div>
                                 <div className="form-group full-width">
                                     <label>Address</label>
                                     <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Full physical address..." rows="2" />

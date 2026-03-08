@@ -167,7 +167,7 @@ const Inventory = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-lg inventory-modal">
+                    <div className="modal-content premium-card modal-lg inventory-modal">
                         <div className="modal-header">
                             <h2>{editingItem ? 'Edit Inventory Item' : 'Add New Inventory Item'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>

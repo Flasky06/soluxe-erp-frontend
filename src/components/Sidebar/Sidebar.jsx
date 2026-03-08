@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import './Sidebar.css';
