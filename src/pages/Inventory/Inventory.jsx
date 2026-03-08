@@ -76,10 +76,18 @@ const Inventory = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const payload = {
+                ...formData,
+                categoryId: parseInt(formData.categoryId),
+                defaultSupplierId: formData.defaultSupplierId ? parseInt(formData.defaultSupplierId) : null,
+                unitCost: parseFloat(formData.unitCost),
+                currentStock: parseFloat(formData.currentStock),
+                minimumStock: parseFloat(formData.minimumStock)
+            };
             if (editingItem) {
-                await api.put(`/inventory-items/${editingItem.id}`, formData);
+                await api.put(`/inventory-items/${editingItem.id}`, payload);
             } else {
-                await api.post('/inventory-items', formData);
+                await api.post('/inventory-items', payload);
             }
             setShowModal(false);
             fetchData();

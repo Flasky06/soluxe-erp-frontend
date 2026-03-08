@@ -79,10 +79,15 @@ const Employees = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const payload = {
+                ...formData,
+                departmentId: parseInt(formData.departmentId),
+                basicSalary: parseFloat(formData.basicSalary)
+            };
             if (editingEmployee) {
-                await api.put(`/employees/${editingEmployee.id}`, formData);
+                await api.put(`/employees/${editingEmployee.id}`, payload);
             } else {
-                await api.post('/employees', formData);
+                await api.post('/employees', payload);
             }
             setShowModal(false);
             fetchData();

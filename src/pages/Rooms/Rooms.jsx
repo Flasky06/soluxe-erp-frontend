@@ -40,7 +40,7 @@ const Rooms = () => {
             await api.post('/rooms', {
                 roomNumber: newRoom.roomNumber,
                 floor: newRoom.floor,
-                roomType: { id: parseInt(newRoom.roomTypeId) },
+                roomTypeId: parseInt(newRoom.roomTypeId),
                 status: newRoom.status
             });
             setShowModal(false);
