@@ -53,8 +53,14 @@ const menuGroups = [
 ];
 
 const Sidebar = () => {
-    const { user } = useAuthStore();
+    const { user, logout } = useAuthStore();
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     // Helper to check if item is allowed for current user
     const isItemAllowed = useCallback((item) => {
@@ -147,6 +153,9 @@ const Sidebar = () => {
                         </span>
                     </div>
                 </div>
+                <button className="logout-btn" onClick={handleLogout} title="Sign Out">
+                    <span className="logout-icon">Logout 🚪</span>
+                </button>
             </div>
         </aside>
     );
