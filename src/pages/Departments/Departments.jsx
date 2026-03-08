@@ -86,23 +86,32 @@ const Departments = () => {
 
             {error && <div className="error-banner">{error}</div>}
 
-            <div className="departments-grid">
-                {departments.map((dept) => (
-                    <div key={dept.id} className="department-card premium-card">
-                        <div className="dept-info">
-                            <h3>{dept.name}</h3>
-                            <p>{dept.description}</p>
-                        </div>
-                        <div className="dept-actions">
-                            <button className="btn-icon" onClick={() => handleOpenModal(dept)} title="Edit">
-                                ✏️
-                            </button>
-                            <button className="btn-icon delete" onClick={() => handleDelete(dept.id)} title="Delete">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                ))}
+            <div className="premium-card table-container">
+                <table className="management-table">
+                    <thead>
+                        <tr>
+                            <th>Department Name</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {departments.map((dept) => (
+                            <tr key={dept.id}>
+                                <td>
+                                    <span className="bold">{dept.name}</span>
+                                </td>
+                                <td>{dept.description}</td>
+                                <td>
+                                    <div className="table-actions">
+                                        <button className="view-btn" onClick={() => handleOpenModal(dept)}>Edit</button>
+                                        <button className="delete-btn-text" onClick={() => handleDelete(dept.id)}>Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
 
             {isModalOpen && (
