@@ -117,12 +117,12 @@ body {
 }
 
 .modal-md {
-    width: 600px;
+    width: 800px;
     max-width: 95%;
 }
 
 .modal-lg {
-    width: 900px;
+    width: 1100px;
     max-width: 95%;
 }
 
