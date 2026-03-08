@@ -1,0 +1,114 @@
+.guests-page {
+    padding: 24px;
+}
+
+.guests-page .loading {
+    padding: 48px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.guests-page .management-table th {
+    text-align: left;
+    padding: 14px 18px;
+    background: #f8fafc;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 2px solid #edf2f7;
+}
+
+.guests-page .management-table td {
+    padding: 16px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+}
+
+.guest-main-info, .contact-info, .id-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.guests-page .bold {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+.sub-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.badge-outline {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.id-num {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.guest-modal {
+    width: 650px !important;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full-width {
+    grid-column: span 2;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(123, 17, 19, 0.1);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #edf2f7;
+}

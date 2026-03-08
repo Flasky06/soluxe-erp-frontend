@@ -1,0 +1,70 @@
+
+> hotel-frontend@0.0.0 lint
+> eslint .
+
+
+/home/bony/Projects/hotel-crm/hotel-frontend/src/components/Sidebar/Sidebar.jsx
+  79:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  77 |         );
+  78 |         if (activeGroup) {
+> 79 |             setOpenGroup(activeGroup.title);
+     |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  80 |         }
+  81 |     }, [location.pathname]);
+  82 |  react-hooks/set-state-in-effect
+  81:8   warning  React Hook useEffect has a missing dependency: 'filteredGroups'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+
+/home/bony/Projects/hotel-crm/hotel-frontend/src/pages/Guests/Guests.jsx
+   10:12   error  'newGuest' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+   54:11   error  'handleEdit' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  113:61   error  'formData' is not defined                                                                   no-undef
+  115:43   error  'formData' is not defined                                                                   no-undef
+  191:72   error  'formData' is not defined                                                                   no-undef
+  191:108  error  'setFormData' is not defined                                                                no-undef
+  191:124  error  'formData' is not defined                                                                   no-undef
+  195:73   error  'formData' is not defined                                                                   no-undef
+  195:106  error  'setFormData' is not defined                                                                no-undef
+  195:122  error  'formData' is not defined                                                                   no-undef
+  199:72   error  'formData' is not defined                                                                   no-undef
+  199:105  error  'setFormData' is not defined                                                                no-undef
+  199:121  error  'formData' is not defined                                                                   no-undef
+  203:63   error  'formData' is not defined                                                                   no-undef
+  203:102  error  'setFormData' is not defined                                                                no-undef
+  203:118  error  'formData' is not defined                                                                   no-undef
+  207:63   error  'formData' is not defined                                                                   no-undef
+  207:102  error  'setFormData' is not defined                                                                no-undef
+  207:118  error  'formData' is not defined                                                                   no-undef
+  211:52   error  'formData' is not defined                                                                   no-undef
+  211:86   error  'setFormData' is not defined                                                                no-undef
+  211:102  error  'formData' is not defined                                                                   no-undef
+  219:52   error  'formData' is not defined                                                                   no-undef
+  219:86   error  'setFormData' is not defined                                                                no-undef
+  219:102  error  'formData' is not defined                                                                   no-undef
+  228:63   error  'formData' is not defined                                                                   no-undef
+  228:99   error  'setFormData' is not defined                                                                no-undef
+  228:115  error  'formData' is not defined                                                                   no-undef
+  232:63   error  'formData' is not defined                                                                   no-undef
+  232:110  error  'setFormData' is not defined                                                                no-undef
+  232:126  error  'formData' is not defined                                                                   no-undef
+  239:63   error  'formData' is not defined                                                                   no-undef
+  239:111  error  'setFormData' is not defined                                                                no-undef
+  239:127  error  'formData' is not defined                                                                   no-undef
+  243:63   error  'formData' is not defined                                                                   no-undef
+  243:112  error  'setFormData' is not defined                                                                no-undef
+  243:128  error  'formData' is not defined                                                                   no-undef
+  250:44   error  'formData' is not defined                                                                   no-undef
+  251:54   error  'setFormData' is not defined                                                                no-undef
+  251:70   error  'formData' is not defined                                                                   no-undef
+  258:54   error  'formData' is not defined                                                                   no-undef
+  258:89   error  'setFormData' is not defined                                                                no-undef
+  258:105  error  'formData' is not defined                                                                   no-undef
+
+✖ 45 problems (44 errors, 1 warning)
+

@@ -1,0 +1,146 @@
+import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
+import './Departments.css';
+
+const Departments = () => {
+    const [departments, setDepartments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentDepartment, setCurrentDepartment] = useState({ name: '', description: '' });
+    const [isEditing, setIsEditing] = useState(false);
+
+    const fetchDepartments = async () => {
+        setLoading(true);
+        try {
+            const response = await api.get('/departments');
+            setDepartments(response.data);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching departments:', err);
+            setError('Failed to load departments. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDepartments();
+    }, []);
+
+    const handleOpenModal = (dept = { name: '', description: '' }) => {
+        setCurrentDepartment(dept);
+        setIsEditing(!!dept.id);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setCurrentDepartment({ name: '', description: '' });
+        setIsEditing(false);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (isEditing) {
+                await api.put(`/departments/${currentDepartment.id}`, currentDepartment);
+            } else {
+                await api.post('/departments', currentDepartment);
+            }
+            fetchDepartments();
+            handleCloseModal();
+        } catch (err) {
+            console.error('Error saving department:', err);
+            alert('Failed to save department.');
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this department?')) {
+            try {
+                await api.delete(`/departments/${id}`);
+                fetchDepartments();
+            } catch (err) {
+                console.error('Error deleting department:', err);
+                alert('Failed to delete department. It might be in use.');
+            }
+        }
+    };
+
+    if (loading && departments.length === 0) {
+        return <div className="loading-state">Loading departments...</div>;
+    }
+
+    return (
+        <div className="departments-page">
+            <header className="page-header">
+                <div>
+                    <h1>Department Management</h1>
+                    <p>Configure and manage hotel departments</p>
+                </div>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>
+                    <span className="icon">➕</span> Add Department
+                </button>
+            </header>
+
+            {error && <div className="error-banner">{error}</div>}
+
+            <div className="departments-grid">
+                {departments.map((dept) => (
+                    <div key={dept.id} className="department-card premium-card">
+                        <div className="dept-info">
+                            <h3>{dept.name}</h3>
+                            <p>{dept.description}</p>
+                        </div>
+                        <div className="dept-actions">
+                            <button className="btn-icon" onClick={() => handleOpenModal(dept)} title="Edit">
+                                ✏️
+                            </button>
+                            <button className="btn-icon delete" onClick={() => handleDelete(dept.id)} title="Delete">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {isModalOpen && (
+                <div className="modal-backdrop">
+                    <div className="modal-content premium-card">
+                        <h2>{isEditing ? 'Edit Department' : 'Add New Department'}</h2>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Department Name</label>
+                                <input 
+                                    type="text" 
+                                    value={currentDepartment.name}
+                                    onChange={(e) => setCurrentDepartment({...currentDepartment, name: e.target.value})}
+                                    placeholder="e.g. Front Office"
+                                    required 
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Description</label>
+                                <textarea 
+                                    value={currentDepartment.description}
+                                    onChange={(e) => setCurrentDepartment({...currentDepartment, description: e.target.value})}
+                                    placeholder="Briefly describe the department's responsibilities"
+                                    rows="3"
+                                />
+                            </div>
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={handleCloseModal}>Cancel</button>
+                                <button type="submit" className="btn-primary">
+                                    {isEditing ? 'Update Department' : 'Create Department'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default Departments;
