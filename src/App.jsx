@@ -13,6 +13,9 @@ import Guests from './pages/Guests/Guests';
 import Employees from './pages/Employees/Employees';
 import Inventory from './pages/Inventory/Inventory';
 import Maintenance from './pages/Maintenance/Maintenance';
+import Kitchen from './pages/Kitchen/Kitchen';
+import Restaurant from './pages/Restaurant/Restaurant';
+import Settings from './pages/Settings/Settings';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -50,13 +53,19 @@ function App() {
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST']} />}>
                     <Route path="/folio" element={<Folio />} />
                 </Route>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF']} />}>
+                    <Route path="/kitchen" element={<Kitchen />} />
+                </Route>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER']} />}>
+                    <Route path="/restaurant" element={<Restaurant />} />
+                </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
                     <Route path="/reports" element={<div>Reports Page (Coming Soon)</div>} />
                 </Route>
 
                 {/* System */}
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN']} />}>
-                    <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
+                    <Route path="/settings" element={<Settings />} />
                     <Route path="/departments" element={<Departments />} />
                     <Route path="/room-types" element={<RoomTypes />} /> {/* Added route */}
                     <Route path="/employees" element={<Employees />} />

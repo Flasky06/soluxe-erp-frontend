@@ -2,9 +2,7 @@
     /* Uses base classes from common styles in the future, for now local definitions are fine */
 }
 
-.reservations-modal {
-    width: 900px;
-}
+
 
 .guest-info {
     display: flex;

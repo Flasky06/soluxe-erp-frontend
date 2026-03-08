@@ -1,0 +1,10 @@
+.restaurant-page {
+    padding: 24px;
+}
+
+.restaurant-features {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: center;
+}

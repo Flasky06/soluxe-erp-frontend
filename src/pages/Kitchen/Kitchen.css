@@ -1,0 +1,10 @@
+.kitchen-page {
+    padding: 24px;
+}
+
+.kitchen-features {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: center;
+}
