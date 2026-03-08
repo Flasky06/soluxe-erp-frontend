@@ -42,8 +42,8 @@ const Login = () => {
         <div className="login-container">
             <div className="login-visual">
                 <div className="visual-content">
-                    <h1>Authentic Flavors.</h1>
-                    <p>Manage your restaurant and delight your guests.</p>
+                    <h1>Premium Service.</h1>
+                    <p>Elevate your hospitality and delight your guests.</p>
                 </div>
             </div>
             
@@ -51,7 +51,7 @@ const Login = () => {
                 <div className="login-card premium-card">
                     <div className="login-header">
                         <span className="logo-icon">🥡</span>
-                        <h2>Emperor's Wok POS</h2>
+                        <h2>Soluxe Hotel ERP</h2>
                         <p>Sign in to your staff account</p>
                     </div>
 

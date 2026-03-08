@@ -104,7 +104,7 @@ const Sidebar = () => {
         <aside className="sidebar">
             <div className="sidebar-logo">
                 <span className="logo-icon">🏨</span>
-                <span className="logo-text">Soluxe<span>Hotel</span></span>
+                <span className="logo-text">Soluxe <span>Hotel ERP</span></span>
             </div>
             
             <nav className="sidebar-nav">
