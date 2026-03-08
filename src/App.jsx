@@ -12,6 +12,7 @@ import RoomTypes from './pages/RoomTypes/RoomTypes';
 import Guests from './pages/Guests/Guests';
 import Employees from './pages/Employees/Employees';
 import Inventory from './pages/Inventory/Inventory';
+import Maintenance from './pages/Maintenance/Maintenance';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -40,6 +41,9 @@ function App() {
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING']} />}>
                     <Route path="/housekeeping" element={<Housekeeping />} />
+                </Route>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE']} />}>
+                    <Route path="/maintenance" element={<Maintenance />} />
                 </Route>
 
                 {/* Financials */}
