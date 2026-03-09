@@ -153,7 +153,7 @@ const Rooms = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-md">
+                    <div className="modal-content premium-card rooms-modal">
                         <div className="modal-header">
                             <h2>{editingRoom ? 'Edit Room' : 'Add New Room'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>

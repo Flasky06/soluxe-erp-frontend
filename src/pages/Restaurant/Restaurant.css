@@ -1,3 +1,7 @@
+.table-config-modal { width: 90%; }
+.order-modal { width: 95%; }
+.session-modal { width: 70%; }
+
 .restaurant-page {
     padding: 24px;
 }

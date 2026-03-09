@@ -326,7 +326,7 @@ const Restaurant = () => {
             {/* Table Config Modal */}
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-lg">
+                    <div className="modal-content premium-card modal-xl">
                         <div className="modal-header">
                             <div className="modal-title-area">
                                 <h2>{editingTable ? 'Edit Table Configuration' : 'Register New Table'}</h2>
@@ -413,7 +413,7 @@ const Restaurant = () => {
             {/* Open Table / Session Modal */}
             {showSessionModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-md">
+                    <div className="modal-content premium-card session-modal">
                         <div className="modal-header">
                             <div className="modal-title-area">
                                 <h2>Open Table: {selectedTable?.tableName}</h2>

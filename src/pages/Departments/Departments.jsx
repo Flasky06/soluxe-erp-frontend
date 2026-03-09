@@ -116,7 +116,7 @@ const Departments = () => {
 
             {isModalOpen && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-md department-modal">
+                    <div className="modal-content premium-card modal-lg department-modal">
                         <div className="modal-header">
                             <h2>{isEditing ? 'Edit Department' : 'Add New Department'}</h2>
                             <button className="close-modal-btn" onClick={handleCloseModal}>&times;</button>

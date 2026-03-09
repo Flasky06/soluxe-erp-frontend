@@ -198,7 +198,7 @@ const Folio = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-md">
+                    <div className="modal-content premium-card modal-lg">
                         <div className="modal-header">
                             <h2>Post Charge to #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -241,7 +241,7 @@ const Folio = () => {
 
             {showPaymentModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-md">
+                    <div className="modal-content premium-card modal-lg">
                         <div className="modal-header">
                             <h2>Record Payment for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowPaymentModal(false)}>&times;</button>
@@ -277,7 +277,7 @@ const Folio = () => {
 
             {showMethodModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-md">
+                    <div className="modal-content premium-card modal-lg">
                         <div className="modal-header">
                             <h2>Manage Payment Methods</h2>
                             <button className="close-modal-btn" onClick={() => setShowMethodModal(false)}>&times;</button>
@@ -320,7 +320,7 @@ const Folio = () => {
 
             {showReceiptModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-lg">
+                    <div className="modal-content premium-card folio-receipt-modal">
                         <div className="modal-header">
                             <h2>Receipts for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowReceiptModal(false)}>&times;</button>

@@ -168,7 +168,7 @@ const Employees = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-lg employee-modal">
+                    <div className="modal-content premium-card employee-modal">
                         <div className="modal-header">
                             <h2>{editingEmployee ? 'Edit Employee Details' : 'Register New Staff Member'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>

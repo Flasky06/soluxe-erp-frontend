@@ -112,18 +112,9 @@ body {
     position: relative;
     box-shadow: 0 30px 60px -12px rgba(123, 17, 19, 0.2);
     max-height: 95vh;
+    min-width: 500px; /* Base minimum width */
     overflow-y: auto;
     animation: modalSlideUp 0.3s ease-out;
-}
-
-.modal-md {
-    width: 80%;
-    max-width: 1400px;
-}
-
-.modal-lg {
-    width: 95%;
-    max-width: 1800px;
 }
 
 .modal-header {

@@ -489,7 +489,7 @@ const Reservations = () => {
             {/* Check-in Modal */}
             {showCheckInModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-md">
+                    <div className="modal-content premium-card">
                         <div className="modal-header">
                             <h2>Check-in: Select Room</h2>
                             <button className="close-modal-btn" onClick={() => setShowCheckInModal(false)}>&times;</button>

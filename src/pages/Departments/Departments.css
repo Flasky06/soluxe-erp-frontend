@@ -1,3 +1,5 @@
+.department-modal { width: 70%; }
+
 .departments-page {
     padding: 2rem;
     animation: fadeIn 0.5s ease-out;

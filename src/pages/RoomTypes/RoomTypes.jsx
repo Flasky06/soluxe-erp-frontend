@@ -115,7 +115,7 @@ const RoomTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-md">
+                    <div className="modal-content premium-card room-types-modal">
                         <div className="modal-header">
                             <h2>{editingType ? 'Edit Room Type' : 'Add Room Type'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>

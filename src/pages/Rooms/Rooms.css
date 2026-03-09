@@ -51,6 +51,8 @@
     color: var(--text-main);
 }
 
+.rooms-modal { width: 70%; }
+
 .status-badge {
     padding: 4px 12px;
     border-radius: 20px;

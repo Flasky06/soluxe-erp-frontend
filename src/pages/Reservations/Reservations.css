@@ -1,5 +1,7 @@
-
-
+.reservations-modal {
+    width: 90%;
+    position: relative;
+}
 
 .guest-info {
     display: flex;

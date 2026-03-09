@@ -1,3 +1,7 @@
+.guest-modal {
+    width: 80%; /* Slightly above 80% as requested "80% width min" */
+}
+
 .guests-page {
     padding: 24px;
 }

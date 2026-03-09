@@ -163,7 +163,7 @@ const Guests = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-lg guest-modal">
+                    <div className="modal-content premium-card guest-modal">
                         <div className="modal-header">
                             <h2>{editingGuest ? 'Edit Guest Profile' : 'Register New Guest'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>

@@ -139,7 +139,7 @@ const Venues = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-lg">
+                    <div className="modal-content premium-card venues-modal">
                         <div className="modal-header">
                             <h2>{editingVenue ? 'Edit Venue' : 'Add New Venue'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
