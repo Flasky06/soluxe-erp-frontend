@@ -12,10 +12,11 @@ import RoomTypes from './pages/RoomTypes/RoomTypes';
 import Guests from './pages/Guests/Guests';
 import Employees from './pages/Employees/Employees';
 import Inventory from './pages/Inventory/Inventory';
-import Maintenance from './pages/Maintenance/Maintenance';
+import Venues from './pages/Venues/Venues';
 import Kitchen from './pages/Kitchen/Kitchen';
 import Restaurant from './pages/Restaurant/Restaurant';
 import Settings from './pages/Settings/Settings';
+import Reports from './pages/Reports/Reports';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -41,12 +42,10 @@ function App() {
                     <Route path="/reservations" element={<Reservations />} />
                     <Route path="/rooms" element={<Rooms />} />
                     <Route path="/guests" element={<Guests />} />
+                    <Route path="/venues" element={<Venues />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING']} />}>
                     <Route path="/housekeeping" element={<Housekeeping />} />
-                </Route>
-                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE']} />}>
-                    <Route path="/maintenance" element={<Maintenance />} />
                 </Route>
 
                 {/* Financials */}
@@ -60,7 +59,7 @@ function App() {
                     <Route path="/restaurant" element={<Restaurant />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
-                    <Route path="/reports" element={<div>Reports Page (Coming Soon)</div>} />
+                    <Route path="/reports" element={<Reports />} />
                 </Route>
 
                 {/* System */}

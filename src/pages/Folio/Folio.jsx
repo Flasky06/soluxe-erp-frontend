@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import useAuthStore from '../../store/authStore';
 import './Folio.css';
 
 const Folio = () => {
+    const { user } = useAuthStore();
     const [folios, setFolios] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -35,7 +37,7 @@ const Folio = () => {
     const handlePostCharge = async (e) => {
         e.preventDefault();
         try {
-            await api.post(`/folios/${selectedFolioId}/charges?userId=1`, newCharge);
+            await api.post(`/folios/${selectedFolioId}/charges?userId=${user?.id || 1}`, newCharge);
             setShowModal(false);
             const response = await api.get('/folios');
             setFolios(response.data);
@@ -55,7 +57,7 @@ const Folio = () => {
     const handleRecordPayment = async (e) => {
         e.preventDefault();
         try {
-            await api.post(`/folios/${selectedFolioId}/payments?userId=1`, newPayment);
+            await api.post(`/folios/${selectedFolioId}/payments?userId=${user?.id || 1}`, newPayment);
             setShowPaymentModal(false);
             
             // Fetch receipts for this folio to show the new one
@@ -91,7 +93,7 @@ const Folio = () => {
     const handleCloseFolio = async (id) => {
         if (!window.confirm('Are you sure you want to close this folio? It cannot be reopened.')) return;
         try {
-            await api.post(`/folios/${id}/close?userId=1`);
+            await api.post(`/folios/${id}/close?userId=${user?.id || 1}`);
             const response = await api.get('/folios');
             setFolios(response.data);
         } catch (err) {

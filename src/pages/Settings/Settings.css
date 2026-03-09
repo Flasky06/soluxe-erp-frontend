@@ -1,10 +1,127 @@
-.settings-page {
+.settings-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 12px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: var(--bg-sidebar);
+    color: white;
+}
+
+.section-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.profile-section {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hotel-form {
     padding: 24px;
 }
 
-.settings-features {
+.branding-group {
     display: flex;
-    gap: 12px;
-    margin-top: 24px;
+    align-items: center;
+    gap: 24px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.logo-preview {
+    font-size: 3rem;
+    width: 80px;
+    height: 80px;
+    background: white;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.form-footer {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.user-avatar-mini {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-sidebar);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.user-details, .contact-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.role-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Role Colors */
+.role-badge.hotel-admin { background: #fee2e2; color: #dc2626; }
+.role-badge.manager { background: #fef3c7; color: #d97706; }
+.role-badge.receptionist { background: #dcfce7; color: #16a34a; }
+.role-badge.accountant { background: #e0f2fe; color: #0284c7; }
+.role-badge.housekeeping { background: #f1f5f9; color: #64748b; }
+
+.status-pill {
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status-pill.active { background: #dcfce7; color: #16a34a; }
+.status-pill.inactive { background: #f1f5f9; color: #64748b; }
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.checkbox-group input {
+    width: 18px;
+    height: 18px;
 }

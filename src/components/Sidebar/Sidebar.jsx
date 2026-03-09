@@ -16,8 +16,8 @@ const menuGroups = [
             { label: 'Reservations', path: '/reservations', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Rooms', path: '/rooms', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Guests', path: '/guests', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Venues', path: '/venues', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Housekeeping', path: '/housekeeping', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING'] },
-            { label: 'Maintenance', path: '/maintenance', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE'] },
         ]
     },
     {

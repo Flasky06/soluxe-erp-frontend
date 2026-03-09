@@ -7,7 +7,8 @@ const Rooms = () => {
     const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
-    const [newRoom, setNewRoom] = useState({
+    const [editingRoom, setEditingRoom] = useState(null);
+    const [formData, setFormData] = useState({
         roomNumber: '',
         floor: '',
         roomTypeId: '',
@@ -34,21 +35,54 @@ const Rooms = () => {
         fetchData();
     }, []);
 
-    const handleCreateRoom = async (e) => {
+    const handleOpenModal = (room = null) => {
+        if (room) {
+            setEditingRoom(room);
+            setFormData({
+                roomNumber: room.roomNumber,
+                floor: room.floor,
+                roomTypeId: room.roomType?.id || '',
+                status: room.status
+            });
+        } else {
+            setEditingRoom(null);
+            setFormData({ roomNumber: '', floor: '', roomTypeId: '', status: 'AVAILABLE' });
+        }
+        setShowModal(true);
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/rooms', {
-                roomNumber: newRoom.roomNumber,
-                floor: newRoom.floor,
-                roomTypeId: parseInt(newRoom.roomTypeId),
-                status: newRoom.status
-            });
+            const payload = {
+                roomNumber: formData.roomNumber,
+                floor: formData.floor,
+                roomTypeId: parseInt(formData.roomTypeId),
+                status: formData.status
+            };
+
+            if (editingRoom) {
+                await api.put(`/rooms/${editingRoom.id}`, payload);
+            } else {
+                await api.post('/rooms', payload);
+            }
             setShowModal(false);
             fetchData();
-            setNewRoom({ roomNumber: '', floor: '', roomTypeId: '', status: 'AVAILABLE' });
         } catch (err) {
-            console.error('Failed to create room:', err);
-            alert('Failed to create room.');
+            console.error('Failed to save room:', err);
+            alert('Failed to save room.');
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this room?')) {
+            try {
+                await api.delete(`/rooms/${id}`);
+                fetchData();
+            } catch (err) {
+                console.error('Failed to delete room:', err);
+                alert('Failed to delete room.');
+            }
         }
     };
 
@@ -64,7 +98,7 @@ const Rooms = () => {
                     <h1>Room Management</h1>
                     <p>Manage your hotel inventory and housekeeping status.</p>
                 </div>
-                <button className="btn-primary" onClick={() => setShowModal(true)}>+ Add New Room</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add New Room</button>
             </div>
 
             <div className="premium-card table-container">
@@ -101,8 +135,8 @@ const Rooms = () => {
                                         </td>
                                         <td>
                                             <div className="table-actions">
-                                                <button className="edit-btn">Edit</button>
-                                                <button className="view-btn">View</button>
+                                                <button className="view-btn" onClick={() => handleOpenModal(room)}>Edit</button>
+                                                <button className="edit-btn" style={{backgroundColor: '#fee2e2', color: '#dc2626'}} onClick={() => handleDelete(room.id)}>Delete</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -121,25 +155,25 @@ const Rooms = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card modal-md">
                         <div className="modal-header">
-                            <h2>Add New Room</h2>
+                            <h2>{editingRoom ? 'Edit Room' : 'Add New Room'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
-                        <form onSubmit={handleCreateRoom}>
+                        <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Room Number</label>
-                                    <input type="text" required value={newRoom.roomNumber} onChange={(e) => setNewRoom({...newRoom, roomNumber: e.target.value})} placeholder="e.g. 101" />
+                                    <input type="text" required value={formData.roomNumber} onChange={(e) => setFormData({...formData, roomNumber: e.target.value})} placeholder="e.g. 101" />
                                 </div>
                                 <div className="form-group">
                                     <label>Floor</label>
-                                    <input type="text" required value={newRoom.floor} onChange={(e) => setNewRoom({...newRoom, floor: e.target.value})} placeholder="e.g. 1" />
+                                    <input type="text" required value={formData.floor} onChange={(e) => setFormData({...formData, floor: e.target.value})} placeholder="e.g. 1" />
                                 </div>
                                 <div className="form-group">
                                     <label>Room Category</label>
                                     <select 
                                         required 
-                                        value={newRoom.roomTypeId} 
-                                        onChange={(e) => setNewRoom({...newRoom, roomTypeId: e.target.value})}
+                                        value={formData.roomTypeId} 
+                                        onChange={(e) => setFormData({...formData, roomTypeId: e.target.value})}
                                     >
                                         <option value="">-- Select Type --</option>
                                         {roomTypes.map(type => (
@@ -148,8 +182,8 @@ const Rooms = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Initial Status</label>
-                                    <select value={newRoom.status} onChange={(e) => setNewRoom({...newRoom, status: e.target.value})}>
+                                    <label>Status</label>
+                                    <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
                                         <option value="AVAILABLE">AVAILABLE</option>
                                         <option value="OCCUPIED">OCCUPIED</option>
                                         <option value="MAINTENANCE">MAINTENANCE</option>
@@ -159,7 +193,7 @@ const Rooms = () => {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Save Room</button>
+                                <button type="submit" className="btn-primary">{editingRoom ? 'Save Changes' : 'Save Room'}</button>
                             </div>
                         </form>
                     </div>
