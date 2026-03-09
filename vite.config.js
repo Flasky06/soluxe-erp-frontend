@@ -11,7 +11,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://soluxe-erp-backend-production.up.railway.app',
         changeOrigin: true,
       },
     },
