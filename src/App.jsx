@@ -41,7 +41,7 @@ function App() {
             <MainLayout>
               <Routes>
                 {/* Main */}
-                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST']} />}>
+                <Route element={<ProtectedRoute />}>
                     <Route path="/" element={<Dashboard />} />
                 </Route>
 
@@ -59,7 +59,7 @@ function App() {
                 </Route>
 
                 {/* Financials */}
-                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST']} />}>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT']} />}>
                     <Route path="/folio" element={<Folio />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF']} />}>
@@ -68,8 +68,10 @@ function App() {
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER']} />}>
                     <Route path="/restaurant" element={<Restaurant />} />
                 </Route>
-                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT']} />}>
                     <Route path="/reports" element={<Reports />} />
+                </Route>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
                     <Route path="/menu-items" element={<MenuItems />} />
                 </Route>
 

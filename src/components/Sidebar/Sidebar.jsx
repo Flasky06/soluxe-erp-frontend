@@ -6,7 +6,7 @@ const menuGroups = [
     {
         title: 'Overview',
         items: [
-            { label: 'Dashboard', path: '/', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Dashboard', path: '/' },
         ]
     },
     {

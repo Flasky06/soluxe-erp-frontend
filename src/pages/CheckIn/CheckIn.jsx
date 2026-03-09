@@ -67,7 +67,7 @@ const CheckIn = () => {
     const handleOpenResModal = async (res) => {
         setSelectedReservation(res);
         setResCheckInRoomId('');
-        const filtered = allRooms.filter(r => r.status === 'AVAILABLE' && r.roomType?.id === res.roomTypeId);
+        const filtered = allRooms.filter(r => r.status === 'AVAILABLE' && (r.roomType?.id === res.roomTypeId || r.roomTypeId === res.roomTypeId));
         setAvailableRooms(filtered);
         setShowReservationModal(true);
     };
