@@ -130,9 +130,9 @@ const Rooms = () => {
                                         <td>
                                             <div className="flex items-center gap-2 text-xs font-medium">
                                                 {room.status === 'DIRTY' ? (
-                                                    <span className="flex items-center gap-1.5 text-amber-600">🧹 Needs Cleaning</span>
+                                                    <span className="text-amber-600">Needs Cleaning</span>
                                                 ) : (
-                                                    <span className="flex items-center gap-1.5 text-green-600">✨ Clean</span>
+                                                    <span className="text-green-600">Clean</span>
                                                 )}
                                             </div>
                                         </td>
