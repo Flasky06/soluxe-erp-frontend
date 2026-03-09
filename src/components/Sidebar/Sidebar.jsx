@@ -45,6 +45,7 @@ const menuGroups = [
             { label: 'Settings', path: '/settings', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Departments', path: '/departments', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Room Types', path: '/room-types', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Tables', path: '/tables', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
             { label: 'Employees', path: '/employees', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
         ]
     }

@@ -17,6 +17,7 @@ import Kitchen from './pages/Kitchen/Kitchen';
 import Restaurant from './pages/Restaurant/Restaurant';
 import Settings from './pages/Settings/Settings';
 import Reports from './pages/Reports/Reports';
+import Tables from './pages/Tables/Tables';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -69,6 +70,7 @@ function App() {
                     <Route path="/room-types" element={<RoomTypes />} /> {/* Added route */}
                     <Route path="/employees" element={<Employees />} />
                     <Route path="/inventory" element={<Inventory />} />
+                    <Route path="/tables" element={<Tables />} />
                 </Route>
 
               </Routes>

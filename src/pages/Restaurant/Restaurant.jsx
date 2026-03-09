@@ -202,9 +202,8 @@ const Restaurant = () => {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-[28px] font-bold text-text-dark">Restaurant Table Management</h1>
-                    <p className="text-text-slate text-base">Monitor real-time table occupancy and manage configurations.</p>
+                    <p className="text-text-slate text-base">Monitor real-time table occupancy and manage sessions.</p>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add Table</button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -327,94 +326,6 @@ const Restaurant = () => {
                 ))}
             </div>
 
-            {/* Table Config Modal */}
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[800px]">
-                        <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">{editingTable ? 'Edit Table Configuration' : 'Register New Table'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Configure table properties and service details.</p>
-                            </div>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-grid">
-                                <div className="form-group full-width">
-                                    <label>Table Name / Number</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.tableName}
-                                        onChange={(e) => setFormData({...formData, tableName: e.target.value})}
-                                        placeholder="e.g. Table 12 or Window Corner"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Capacity (Pax)</label>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        required
-                                        value={formData.capacity}
-                                        onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value)})}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Location</label>
-                                    <select
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                    >
-                                        <option value="MAIN_HALL">Main Hall</option>
-                                        <option value="PRIVATE_ROOM">Private Room</option>
-                                        <option value="GARDEN">Garden</option>
-                                        <option value="BAR">Bar</option>
-                                        <option value="TAKEAWAY">Takeaway</option>
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Current Status</label>
-                                    <select
-                                        value={formData.status}
-                                        onChange={(e) => setFormData({...formData, status: e.target.value})}
-                                    >
-                                        <option value="AVAILABLE">Available</option>
-                                        <option value="OCCUPIED">Occupied</option>
-                                        <option value="RESERVED">Reserved</option>
-                                    </select>
-                                </div>
-                                <div className="flex items-center gap-2.5 mt-6">
-                                    <input
-                                        type="checkbox"
-                                        id="isVip"
-                                        checked={formData.isVip}
-                                        onChange={(e) => setFormData({...formData, isVip: e.target.checked})}
-                                        className="w-4 h-4"
-                                    />
-                                    <label htmlFor="isVip" className="mb-0">VIP Table</label>
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Internal Service Notes</label>
-                                    <textarea
-                                        value={formData.notes}
-                                        onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                                        placeholder="Special setup requirements, preferred server, or location-specific notes..."
-                                        rows="3"
-                                        className="min-h-[100px]"
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Dismiss</button>
-                                <button type="submit" className="btn-primary !px-10">
-                                    {editingTable ? 'Update Configuration' : 'Create Table'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
 
             {/* Open Table / Session Modal */}
             {showSessionModal && (
