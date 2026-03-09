@@ -5,15 +5,16 @@ const Reports = () => {
     const [revenue, setRevenue] = useState(null);
     const [revenueByType, setRevenueByType] = useState({});
     const [loading, setLoading] = useState(true);
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [reservationStats, setReservationStats] = useState({ total: 0, booked: 0, checkedIn: 0, cancelled: 0, checkedOut: 0 });
     const [folioStats, setFolioStats] = useState({ open: 0, closed: 0, totalRevenue: 0 });
 
-    const fetchReports = async (date) => {
+    const fetchReports = async (start, end) => {
         setLoading(true);
         try {
             const [revenueRes, reservationsRes, foliosRes] = await Promise.all([
-                api.get(`/reports/daily-revenue?date=${date}`),
+                api.get(`/reports/revenue-report?startDate=${start}&endDate=${end}`),
                 api.get('/reservations'),
                 api.get('/folios')
             ]);
@@ -46,8 +47,8 @@ const Reports = () => {
     };
 
     useEffect(() => {
-        fetchReports(selectedDate);
-    }, [selectedDate]);
+        fetchReports(startDate, endDate);
+    }, [startDate, endDate]);
 
     const maxBarValue = Object.values(revenueByType).reduce((a, b) => Math.max(a, parseFloat(b) || 0), 1);
 
@@ -58,13 +59,25 @@ const Reports = () => {
                     <h1 className="text-[28px] font-bold text-text-dark">Reports & Analytics</h1>
                     <p className="text-text-slate text-base">Live operational and financial performance data.</p>
                 </div>
-                <div className="flex items-center">
-                    <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm"
-                    />
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">From:</span>
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm"
+                        />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">To:</span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -79,7 +92,9 @@ const Reports = () => {
                             <div className="text-3xl font-extrabold text-primary">
                                 KSh {parseFloat(revenue?.totalRevenue || 0).toLocaleString()}
                             </div>
-                            <div className="text-[12px] text-slate-400 font-medium">For {selectedDate}</div>
+                            <div className="text-[12px] text-slate-400 font-medium">
+                                {startDate === endDate ? `For ${startDate}` : `${startDate} to ${endDate}`}
+                            </div>
                         </div>
                         <div className="premium-card p-6 flex flex-col gap-2">
                             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">All-Time Folio Revenue</div>
@@ -103,7 +118,9 @@ const Reports = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Revenue by Charge Type Bar Chart */}
                         <div className="premium-card p-8 flex flex-col min-h-[400px]">
-                            <h3 className="text-lg font-bold text-slate-700 mb-8 border-b border-slate-100 pb-4">Revenue by Charge Type ({selectedDate})</h3>
+                            <h3 className="text-lg font-bold text-slate-700 mb-8 border-b border-slate-100 pb-4">
+                                Revenue by Charge Type ({startDate === endDate ? startDate : `${startDate} to ${endDate}`})
+                            </h3>
                             {Object.keys(revenueByType).length === 0 ? (
                                 <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-4">
                                     <span className="text-5xl opacity-20 italic">No Data</span>
