@@ -40,8 +40,7 @@ const Inventory = () => {
             setFormData({
                 name: item.name || '',
                 categoryId: item.categoryId || '',
-                currentStock: item.currentStock || 0,
-                minimumStock: item.minimumStock || 0
+                currentStock: item.currentStock || 0
             });
         } else {
             setEditingItem(null);
@@ -95,10 +94,6 @@ const Inventory = () => {
                         <span className="text-[11px] font-bold text-text-slate uppercase tracking-wider">Total Items</span>
                         <span className="text-3xl font-bold text-text-dark">{items.length}</span>
                     </div>
-                    <div className="flex flex-col gap-2 border-l border-slate-100 pl-12">
-                        <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Low Stock Alerts</span>
-                        <span className="text-3xl font-bold text-amber-600">{items.filter(i => i.currentStock <= i.minimumStock).length}</span>
-                    </div>
                 </div>
 
                 <div className="premium-card overflow-x-auto">
@@ -116,16 +111,15 @@ const Inventory = () => {
                             </thead>
                             <tbody>
                                 {items.map((item) => (
-                                    <tr key={item.id} className={item.currentStock <= item.minimumStock ? 'bg-amber-50/30' : ''}>
+                                    <tr key={item.id}>
                                         <td>
                                             <span className="font-bold text-text-dark">{item.name}</span>
                                         </td>
                                         <td>
                                             <div className="flex flex-col gap-0.5">
-                                                <span className={`text-base font-bold ${item.currentStock <= item.minimumStock ? 'text-red-500' : 'text-green-600'}`}>
+                                                <span className="text-base font-bold text-text-dark">
                                                     {item.currentStock}
                                                 </span>
-                                                <span className="text-[12px] text-text-slate">Min: {item.minimumStock}</span>
                                             </div>
                                         </td>
                                         <td>

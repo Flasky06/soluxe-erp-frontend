@@ -24,6 +24,7 @@ import InventoryCategories from './pages/InventoryCategories/InventoryCategories
 import Users from './pages/Users/Users';
 import MenuCategories from './pages/MenuCategories/MenuCategories';
 import CheckOut from './pages/CheckOut/CheckOut';
+import CheckIn from './pages/CheckIn/CheckIn';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -47,6 +48,7 @@ function App() {
                 {/* Operations */}
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST']} />}>
                     <Route path="/reservations" element={<Reservations />} />
+                    <Route path="/check-in" element={<CheckIn />} />
                     <Route path="/rooms" element={<Rooms />} />
                     <Route path="/guests" element={<Guests />} />
                     <Route path="/check-out" element={<CheckOut />} />

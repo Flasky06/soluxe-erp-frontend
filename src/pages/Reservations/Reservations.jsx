@@ -1,35 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import useAuthStore from '../../store/authStore';
 
 const Reservations = () => {
-    const { user } = useAuthStore();
     const [reservations, setReservations] = useState([]);
     const [guests, setGuests] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
     const [tables, setTables] = useState([]);
-    const [availableRooms, setAvailableRooms] = useState([]);
     const [loading, setLoading] = useState(true);
-    
+
     const [showBookingModal, setShowBookingModal] = useState(false);
-    const [showCheckInModal, setShowCheckInModal] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
-    
+
     const [formData, setFormData] = useState({
         guestId: '',
-        bookingType: 'ROOM', // 'ROOM', 'TABLE', 'BOTH'
+        bookingType: 'ROOM',
         roomTypeId: '',
         dateIn: '',
         dateOut: '',
         adults: 1,
         children: 0,
-        
-        // Table specific
         tableId: '',
         tableReservationTime: '',
         tablePax: 1,
-
-        // Guest details sync
         nationality: '',
         idType: 'PASSPORT',
         idNumber: '',
@@ -40,10 +32,6 @@ const Reservations = () => {
         vehicleRegistration: '',
         emergencyContactName: '',
         emergencyContactPhone: ''
-    });
-
-    const [checkInData, setCheckInData] = useState({
-        roomId: ''
     });
 
     const fetchAllData = async () => {
@@ -66,9 +54,7 @@ const Reservations = () => {
         }
     };
 
-    useEffect(() => {
-        fetchAllData();
-    }, []);
+    useEffect(() => { fetchAllData(); }, []);
 
     const handleGuestChange = (guestId) => {
         const guest = guests.find(g => g.id === parseInt(guestId));
@@ -105,7 +91,6 @@ const Reservations = () => {
             let bType = 'ROOM';
             if (res.roomId || res.roomTypeId) bType = 'ROOM';
             if (res.tableId) bType = bType === 'ROOM' ? 'BOTH' : 'TABLE';
-
             setFormData({
                 guestId: res.guestId,
                 bookingType: bType,
@@ -159,7 +144,7 @@ const Reservations = () => {
     const handleSubmitBooking = async (e) => {
         e.preventDefault();
         try {
-            const payload = { 
+            const payload = {
                 ...formData,
                 guestId: parseInt(formData.guestId) || 0,
                 roomTypeId: formData.roomTypeId ? parseInt(formData.roomTypeId) : null,
@@ -168,7 +153,6 @@ const Reservations = () => {
                 children: parseInt(formData.children) || 0,
                 tablePax: parseInt(formData.tablePax) || 1
             };
-            
             if (formData.bookingType === 'ROOM') {
                 payload.tableId = null;
                 payload.tableReservationTime = null;
@@ -177,14 +161,10 @@ const Reservations = () => {
                 payload.dateIn = null;
                 payload.dateOut = null;
             }
-
             if (selectedReservation) {
                 await api.put(`/reservations/${selectedReservation.id}`, payload);
             } else {
-                await api.post('/reservations', {
-                    ...payload,
-                    status: 'BOOKED'
-                });
+                await api.post('/reservations', { ...payload, status: 'BOOKED' });
             }
             setShowBookingModal(false);
             fetchAllData();
@@ -203,49 +183,6 @@ const Reservations = () => {
                 console.error('Failed to cancel:', err);
                 alert('Failed to cancel booking.');
             }
-        }
-    };
-
-    const handleOpenCheckIn = async (res) => {
-        setSelectedReservation(res);
-        try {
-            const response = await api.get('/rooms');
-            const filtered = response.data.filter(r => 
-                r.status === 'AVAILABLE' && r.roomType?.id === res.roomTypeId
-            );
-            setAvailableRooms(filtered);
-            setCheckInData({ roomId: '' });
-            setShowCheckInModal(true);
-        } catch (err) {
-            console.error('Failed to fetch rooms:', err);
-            alert('Could not fetch available rooms.');
-        }
-    };
-
-    const handleSubmitCheckIn = async (e) => {
-        e.preventDefault();
-        try {
-            await api.post('/stays/check-in', { 
-                reservationId: selectedReservation.id, 
-                roomId: parseInt(checkInData.roomId),
-                userId: user?.id || 1
-            });
-            setShowCheckInModal(false);
-            fetchAllData();
-        } catch (err) {
-            console.error('Failed to check in:', err);
-            alert('Check-in failed.');
-        }
-    };
-
-    const handleCheckOut = async (id) => {
-        if (!window.confirm('Confirm check-out for this guest? Room will be set to DIRTY.')) return;
-        try {
-            await api.post(`/stays/checkout-by-reservation/${id}?userId=${user?.id || 1}`);
-            fetchAllData();
-        } catch (err) {
-            console.error('Failed to check out:', err);
-            alert(err.response?.data?.message || 'Check-out failed.');
         }
     };
 
@@ -273,7 +210,7 @@ const Reservations = () => {
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Reservations & Bookings</h1>
+                    <h1 className="text-[28px] font-bold text-text-dark">Reservations &amp; Bookings</h1>
                     <p className="text-text-slate text-base">Manage room stays and restaurant table reservations.</p>
                 </div>
                 <button className="btn-primary" onClick={() => handleOpenBookingModal()}>New Reservation</button>
@@ -298,9 +235,7 @@ const Reservations = () => {
                                 reservations.map((res) => (
                                     <tr key={res.id}>
                                         <td>
-                                            <div className="flex flex-col">
-                                                <span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span>
-                                            </div>
+                                            <span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span>
                                         </td>
                                         <td>
                                             <div className="flex flex-col gap-1">
@@ -334,15 +269,9 @@ const Reservations = () => {
                                             <div className="table-actions">
                                                 {res.status === 'BOOKED' && (
                                                     <>
-                                                        {res.roomTypeId && (
-                                                            <button className="view-btn" onClick={() => handleOpenCheckIn(res)}>Check In</button>
-                                                        )}
                                                         <button className="edit-btn" onClick={() => handleOpenBookingModal(res)}>Edit</button>
                                                         <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleCancelBooking(res.id)}>Cancel</button>
                                                     </>
-                                                )}
-                                                {res.status === 'CHECKED_IN' && (
-                                                    <button className="bg-amber-100 text-amber-700 hover:bg-amber-600 hover:text-white px-4 py-1.5 rounded-md text-[12px] font-bold transition-all duration-300 shadow-sm" onClick={() => handleCheckOut(res.id)}>Check Out</button>
                                                 )}
                                             </div>
                                         </td>
@@ -369,9 +298,9 @@ const Reservations = () => {
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Select Guest</label>
-                                    <select 
-                                        required 
-                                        value={formData.guestId} 
+                                    <select
+                                        required
+                                        value={formData.guestId}
                                         onChange={(e) => handleGuestChange(e.target.value)}
                                         disabled={!!selectedReservation}
                                     >
@@ -396,11 +325,7 @@ const Reservations = () => {
                                         <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-4 col-span-full text-base tracking-tight uppercase">Room Details</div>
                                         <div className="form-group">
                                             <label>Room Type</label>
-                                            <select 
-                                                required={formData.bookingType !== 'TABLE'}
-                                                value={formData.roomTypeId} 
-                                                onChange={(e) => setFormData({...formData, roomTypeId: parseInt(e.target.value)})}
-                                            >
+                                            <select required={formData.bookingType !== 'TABLE'} value={formData.roomTypeId} onChange={(e) => setFormData({...formData, roomTypeId: parseInt(e.target.value)})}>
                                                 <option value="">-- Choose Room Type --</option>
                                                 {roomTypes.map(type => (
                                                     <option key={type.id} value={type.id}>{type.name} - ${type.defaultRate}</option>
@@ -438,11 +363,7 @@ const Reservations = () => {
                                         <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-4 col-span-full text-base tracking-tight uppercase">Restaurant Details</div>
                                         <div className="form-group">
                                             <label>Select Table</label>
-                                            <select 
-                                                required={formData.bookingType !== 'ROOM'}
-                                                value={formData.tableId} 
-                                                onChange={(e) => setFormData({...formData, tableId: parseInt(e.target.value)})}
-                                            >
+                                            <select required={formData.bookingType !== 'ROOM'} value={formData.tableId} onChange={(e) => setFormData({...formData, tableId: parseInt(e.target.value)})}>
                                                 <option value="">-- Choose Table --</option>
                                                 {tables.map(table => (
                                                     <option key={table.id} value={table.id}>{table.tableName} ({table.location}) - Capacity {table.capacity}</option>
@@ -472,7 +393,7 @@ const Reservations = () => {
                                         <input type="text" value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="ID Number" className="flex-[1.5]" />
                                     </div>
                                 </div>
-                                
+
                                 <div className="form-group full-width">
                                     <label>Vehicle / Emergency Contact</label>
                                     <div className="flex flex-wrap md:flex-nowrap gap-3">
@@ -483,7 +404,7 @@ const Reservations = () => {
                                 </div>
 
                                 <div className="form-group full-width">
-                                    <label>Special Requests & Preferences</label>
+                                    <label>Special Requests &amp; Preferences</label>
                                     <textarea value={formData.specialRequests} onChange={(e) => setFormData({...formData, specialRequests: e.target.value})} className="min-h-[80px]" placeholder="Anything else we should know?" />
                                 </div>
                             </div>
@@ -491,41 +412,6 @@ const Reservations = () => {
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowBookingModal(false)} className="btn-secondary !px-10">Cancel</button>
                                 <button type="submit" className="btn-primary !px-10">{selectedReservation ? 'Save Changes' : 'Create Booking'}</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Check-in Modal */}
-            {showCheckInModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[80%] !max-w-[700px]">
-                        <div className="modal-header">
-                            <h2>Check-in: Select Room</h2>
-                            <button className="close-modal-btn" onClick={() => setShowCheckInModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmitCheckIn}>
-                            <div className="bg-slate-50 p-5 rounded-xl border border-border-gray mb-6 flex flex-col gap-2">
-                                <p className="text-text-dark"><strong>Guest:</strong> {getGuestName(selectedReservation?.guestId)}</p>
-                                <p className="text-text-dark"><strong>Category:</strong> {getRoomTypeName(selectedReservation?.roomTypeId)}</p>
-                            </div>
-                            <div className="form-group full-width">
-                                <label>Available Rooms</label>
-                                <select 
-                                    required 
-                                    value={checkInData.roomId} 
-                                    onChange={(e) => setCheckInData({ roomId: e.target.value })}
-                                >
-                                    <option value="">-- Select Room Number --</option>
-                                    {availableRooms.map(room => (
-                                        <option key={room.id} value={room.id}>Room {room.roomNumber} - Floor {room.floor}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowCheckInModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary" disabled={!checkInData.roomId}>Complete Check-in</button>
                             </div>
                         </form>
                     </div>
