@@ -59,10 +59,14 @@ const Tables = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const payload = {
+                ...formData,
+                capacity: parseInt(formData.capacity) || 1
+            };
             if (editingTable) {
-                await api.put(`/restaurant-tables/${editingTable.id}`, formData);
+                await api.put(`/restaurant-tables/${editingTable.id}`, payload);
             } else {
-                await api.post('/restaurant-tables', formData);
+                await api.post('/restaurant-tables', payload);
             }
             setShowModal(false);
             fetchTables();
@@ -178,7 +182,7 @@ const Tables = () => {
                                         min="1"
                                         required
                                         value={formData.capacity}
-                                        onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value)})}
+                                        onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value) || 1})}
                                     />
                                 </div>
                                 <div className="form-group">

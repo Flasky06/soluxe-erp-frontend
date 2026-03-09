@@ -163,11 +163,13 @@ const Suppliers = () => {
                                 <div className="form-group">
                                     <label>Supply Category</label>
                                     <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
-                                        <option value="FOOD">Food & Beverage</option>
+                                        <option value="FOOD">Food</option>
+                                        <option value="BEVERAGE">Beverage</option>
                                         <option value="HOUSEKEEPING">Housekeeping Supplies</option>
                                         <option value="MAINTENANCE">Maintenance & Tools</option>
                                         <option value="OFFICE">Office Stationery</option>
                                         <option value="GENERAL">General Vendor</option>
+                                        <option value="OTHER">Other</option>
                                     </select>
                                 </div>
                                 <div className="form-group full-width">

@@ -56,7 +56,7 @@ const Rooms = () => {
             const payload = {
                 roomNumber: formData.roomNumber,
                 floor: formData.floor,
-                roomTypeId: parseInt(formData.roomTypeId),
+                roomTypeId: parseInt(formData.roomTypeId) || 0,
                 status: formData.status
             };
 

@@ -58,10 +58,16 @@ const Venues = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const payload = {
+                ...formData,
+                capacity: parseInt(formData.capacity) || 0,
+                ratePerHour: parseFloat(formData.ratePerHour) || 0,
+                ratePerDay: parseFloat(formData.ratePerDay) || 0
+            };
             if (editingVenue) {
-                await api.put(`/venues/${editingVenue.id}`, formData);
+                await api.put(`/venues/${editingVenue.id}`, payload);
             } else {
-                await api.post('/venues', formData);
+                await api.post('/venues', payload);
             }
             setShowModal(false);
             fetchVenues();

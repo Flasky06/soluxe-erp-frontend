@@ -159,7 +159,16 @@ const Reservations = () => {
     const handleSubmitBooking = async (e) => {
         e.preventDefault();
         try {
-            const payload = { ...formData };
+            const payload = { 
+                ...formData,
+                guestId: parseInt(formData.guestId) || 0,
+                roomTypeId: formData.roomTypeId ? parseInt(formData.roomTypeId) : null,
+                tableId: formData.tableId ? parseInt(formData.tableId) : null,
+                adults: parseInt(formData.adults) || 1,
+                children: parseInt(formData.children) || 0,
+                tablePax: parseInt(formData.tablePax) || 1
+            };
+            
             if (formData.bookingType === 'ROOM') {
                 payload.tableId = null;
                 payload.tableReservationTime = null;
@@ -218,7 +227,7 @@ const Reservations = () => {
         try {
             await api.post('/stays/check-in', { 
                 reservationId: selectedReservation.id, 
-                roomId: checkInData.roomId,
+                roomId: parseInt(checkInData.roomId),
                 userId: user?.id || 1
             });
             setShowCheckInModal(false);

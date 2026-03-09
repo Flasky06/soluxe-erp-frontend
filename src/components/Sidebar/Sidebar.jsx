@@ -4,17 +4,17 @@ import useAuthStore from '../../store/authStore';
 
 const menuGroups = [
     {
-        title: 'Main',
+        title: 'Overview',
         items: [
             { label: 'Dashboard', path: '/', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
         ]
     },
     {
-        title: 'Operations',
+        title: 'Front Desk',
         items: [
             { label: 'Reservations', path: '/reservations', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Rooms', path: '/rooms', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Guests', path: '/guests', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Rooms', path: '/rooms', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Venues', path: '/venues', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Housekeeping', path: '/housekeeping', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING'] },
         ]
@@ -22,9 +22,11 @@ const menuGroups = [
     {
         title: 'Kitchen & Dining',
         items: [
-            { label: 'Kitchen Orders', path: '/kitchen', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF'] },
             { label: 'Restaurant POS', path: '/restaurant', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER'] },
+            { label: 'Kitchen Orders', path: '/kitchen', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF'] },
             { label: 'Menu Items', path: '/menu-items', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
+            { label: 'Menu Categories', path: '/menu-categories', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
+            { label: 'Tables', path: '/tables', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
         ]
     },
     {
@@ -43,13 +45,13 @@ const menuGroups = [
         ]
     },
     {
-        title: 'System',
+        title: 'System Admin',
         items: [
-            { label: 'Settings', path: '/settings', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'User Management', path: '/users', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Employees', path: '/employees', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Departments', path: '/departments', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Room Types', path: '/room-types', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Tables', path: '/tables', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
-            { label: 'Employees', path: '/employees', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Settings', path: '/settings', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
         ]
     }
 ];

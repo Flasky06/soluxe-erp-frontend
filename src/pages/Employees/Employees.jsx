@@ -80,8 +80,8 @@ const Employees = () => {
         try {
             const payload = {
                 ...formData,
-                departmentId: parseInt(formData.departmentId),
-                basicSalary: parseFloat(formData.basicSalary)
+                departmentId: parseInt(formData.departmentId) || 0,
+                basicSalary: parseFloat(formData.basicSalary) || 0
             };
             if (editingEmployee) {
                 await api.put(`/employees/${editingEmployee.id}`, payload);
@@ -142,7 +142,7 @@ const Employees = () => {
                                     </td>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="font-semibold text-slate-800">KSh {emp.basicSalary}</span>
+                                            <span className="font-semibold text-slate-800">KSh {parseFloat(emp.basicSalary || 0).toLocaleString()}</span>
                                             <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining}</span>
                                         </div>
                                     </td>

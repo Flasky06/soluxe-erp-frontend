@@ -45,10 +45,14 @@ const RoomTypes = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const payload = {
+                ...formData,
+                defaultRate: parseFloat(formData.defaultRate) || 0
+            };
             if (editingType) {
-                await api.put(`/room-types/${editingType.id}`, formData);
+                await api.put(`/room-types/${editingType.id}`, payload);
             } else {
-                await api.post('/room-types', formData);
+                await api.post('/room-types', payload);
             }
             setShowModal(false);
             fetchRoomTypes();
@@ -101,7 +105,7 @@ const RoomTypes = () => {
                                         <p className="line-clamp-2 text-text-slate italic text-sm">{type.description || 'No description'}</p>
                                     </td>
                                     <td>
-                                        <span className="font-semibold text-text-dark">KSh {type.defaultRate}</span>
+                                        <span className="font-semibold text-text-dark">KSh {parseFloat(type.defaultRate || 0).toLocaleString()}</span>
                                     </td>
                                     <td>
                                         <div className="table-actions">

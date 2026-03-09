@@ -21,6 +21,8 @@ import Tables from './pages/Tables/Tables';
 import MenuItems from './pages/MenuItems/MenuItems';
 import Suppliers from './pages/Suppliers/Suppliers';
 import InventoryCategories from './pages/InventoryCategories/InventoryCategories';
+import Users from './pages/Users/Users';
+import MenuCategories from './pages/MenuCategories/MenuCategories';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -75,8 +77,10 @@ function App() {
                     <Route path="/employees" element={<Employees />} />
                     <Route path="/inventory" element={<Inventory />} />
                     <Route path="/inventory-categories" element={<InventoryCategories />} />
+                    <Route path="/menu-categories" element={<MenuCategories />} />
                     <Route path="/suppliers" element={<Suppliers />} />
                     <Route path="/tables" element={<Tables />} />
+                    <Route path="/users" element={<Users />} />
                 </Route>
 
               </Routes>

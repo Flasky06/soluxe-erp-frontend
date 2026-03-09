@@ -4,32 +4,25 @@ import api from '../../services/api';
 const Inventory = () => {
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [suppliers, setSuppliers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        nameZh: '',
         categoryId: '',
-        defaultSupplierId: '',
-        unit: 'PIECE',
-        unitCost: '',
         currentStock: 0,
-        minimumStock: 0,
-        notes: ''
+        unit: 'PIECES',
+        unitCost: 0
     });
 
     const fetchData = async () => {
         try {
-            const [itemsRes, catsRes, suppsRes] = await Promise.all([
+            const [itemsRes, catsRes] = await Promise.all([
                 api.get('/inventory-items'),
-                api.get('/inventory-categories'),
-                api.get('/suppliers')
+                api.get('/inventory-categories')
             ]);
             setItems(itemsRes.data);
             setCategories(catsRes.data);
-            setSuppliers(suppsRes.data);
         } catch (err) {
             console.error('Failed to fetch inventory data:', err);
         } finally {
@@ -46,27 +39,18 @@ const Inventory = () => {
             setEditingItem(item);
             setFormData({
                 name: item.name || '',
-                nameZh: item.nameZh || '',
                 categoryId: item.categoryId || '',
-                defaultSupplierId: item.defaultSupplierId || '',
-                unit: item.unit || 'PIECE',
-                unitCost: item.unitCost || '',
                 currentStock: item.currentStock || 0,
-                minimumStock: item.minimumStock || 0,
-                notes: item.notes || ''
+                minimumStock: item.minimumStock || 0
             });
         } else {
             setEditingItem(null);
             setFormData({
                 name: '',
-                nameZh: '',
                 categoryId: categories.length > 0 ? categories[0].id : '',
-                defaultSupplierId: suppliers.length > 0 ? suppliers[0].id : '',
-                unit: 'PIECE',
-                unitCost: '',
                 currentStock: 0,
-                minimumStock: 5,
-                notes: ''
+                unit: 'PIECES',
+                unitCost: 0
             });
         }
         setShowModal(true);
@@ -77,11 +61,9 @@ const Inventory = () => {
         try {
             const payload = {
                 ...formData,
-                categoryId: parseInt(formData.categoryId),
-                defaultSupplierId: formData.defaultSupplierId ? parseInt(formData.defaultSupplierId) : null,
-                unitCost: parseFloat(formData.unitCost),
-                currentStock: parseFloat(formData.currentStock),
-                minimumStock: parseFloat(formData.minimumStock)
+                categoryId: parseInt(formData.categoryId) || categories[0]?.id || 0,
+                currentStock: parseFloat(formData.currentStock) || 0,
+                unitCost: parseFloat(formData.unitCost) || 0
             };
             if (editingItem) {
                 await api.put(`/inventory-items/${editingItem.id}`, payload);
@@ -95,9 +77,7 @@ const Inventory = () => {
             alert('Failed to save inventory item.');
         }
     };
-
     const getCategoryName = (id) => categories.find(c => c.id === id)?.name || 'Uncategorized';
-    const getSupplierName = (id) => suppliers.find(s => s.id === id)?.name || 'Direct Purchase';
 
     return (
         <div className="flex flex-col">
@@ -128,10 +108,9 @@ const Inventory = () => {
                         <table className="management-table">
                             <thead>
                                 <tr>
-                                    <th>Item Details</th>
+                                    <th>Item Name</th>
                                     <th>Stock Level</th>
-                                    <th>Category & Supplier</th>
-                                    <th>Cost</th>
+                                    <th>Category</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -139,27 +118,18 @@ const Inventory = () => {
                                 {items.map((item) => (
                                     <tr key={item.id} className={item.currentStock <= item.minimumStock ? 'bg-amber-50/30' : ''}>
                                         <td>
-                                            <div className="flex flex-col gap-0.5">
-                                                <span className="font-bold text-text-dark">{item.name}</span>
-                                                <span className="text-[12px] text-text-slate italic">{item.nameZh}</span>
-                                            </div>
+                                            <span className="font-bold text-text-dark">{item.name}</span>
                                         </td>
                                         <td>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className={`text-base font-bold ${item.currentStock <= item.minimumStock ? 'text-red-500' : 'text-green-600'}`}>
-                                                    {item.currentStock} {item.unit}s
+                                                    {item.currentStock}
                                                 </span>
                                                 <span className="text-[12px] text-text-slate">Min: {item.minimumStock}</span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="flex flex-col gap-1.5">
-                                                <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-bold uppercase w-fit leading-none">{getCategoryName(item.categoryId)}</span>
-                                                <span className="text-[12px] text-text-slate italic">{getSupplierName(item.defaultSupplierId)}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className="font-semibold text-text-dark">KSh {item.unitCost}</span>
+                                            <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-bold uppercase w-fit leading-none">{getCategoryName(item.categoryId)}</span>
                                         </td>
                                         <td>
                                             <div className="table-actions">
@@ -184,12 +154,8 @@ const Inventory = () => {
                         <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
-                                    <label>Item Name (English)</label>
+                                    <label>Item Name</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Toilet Paper" />
-                                </div>
-                                <div className="form-group">
-                                    <label>Item Name (Chinese)</label>
-                                    <input type="text" value={formData.nameZh} onChange={(e) => setFormData({...formData, nameZh: e.target.value})} placeholder="e.g. 卫生纸" />
                                 </div>
                                 <div className="form-group">
                                     <label>Category</label>
@@ -200,44 +166,23 @@ const Inventory = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Default Supplier</label>
-                                    <select value={formData.defaultSupplierId} onChange={(e) => setFormData({...formData, defaultSupplierId: e.target.value})}>
-                                        <option value="">No specific supplier</option>
-                                        {suppliers.map(supp => (
-                                            <option key={supp.id} value={supp.id}>{supp.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Unit of Measure</label>
-                                    <select value={formData.unit} onChange={(e) => setFormData({...formData, unit: e.target.value})}>
-                                        <option value="PIECE">Piece</option>
-                                        <option value="BOX">Box</option>
-                                        <option value="KG">Kilogram</option>
-                                        <option value="LITER">Liter</option>
-                                        <option value="PACK">Pack</option>
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Unit Cost (KSh)</label>
-                                    <input type="number" step="0.01" required value={formData.unitCost} onChange={(e) => setFormData({...formData, unitCost: e.target.value})} placeholder="0.00" />
-                                </div>
-                                <div className="form-group">
                                     <label>Initial Stock</label>
                                     <input type="number" required value={formData.currentStock} onChange={(e) => setFormData({...formData, currentStock: e.target.value})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Minimum Stock Level</label>
-                                    <input type="number" required value={formData.minimumStock} onChange={(e) => setFormData({...formData, minimumStock: e.target.value})} />
+                                    <label>Inventory Unit</label>
+                                    <select required value={formData.unit} onChange={(e) => setFormData({...formData, unit: e.target.value})}>
+                                        <option value="KG">Kilograms (kg)</option>
+                                        <option value="LITRES">Litres (L)</option>
+                                        <option value="PIECES">Pieces (pcs)</option>
+                                        <option value="BOXES">Boxes</option>
+                                        <option value="PACKETS">Packets</option>
+                                        <option value="OTHER">Other</option>
+                                    </select>
                                 </div>
-                                <div className="form-group full-width">
-                                    <label>Notes</label>
-                                    <textarea 
-                                        value={formData.notes} 
-                                        onChange={(e) => setFormData({...formData, notes: e.target.value})} 
-                                        placeholder="Specify storage conditions or quality requirements..." 
-                                        className="min-h-[80px]"
-                                    />
+                                <div className="form-group">
+                                    <label>Unit Cost (KSh)</label>
+                                    <input type="number" step="0.01" required value={formData.unitCost} onChange={(e) => setFormData({...formData, unitCost: e.target.value})} />
                                 </div>
                             </div>
                             <div className="modal-footer">

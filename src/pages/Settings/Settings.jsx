@@ -217,7 +217,7 @@ const Settings = () => {
                             </div>
                             <div className="form-group">
                                 <label>Default Tax Rate (%)</label>
-                                <input type="number" value={hotelInfo.taxRate} onChange={(e) => setHotelInfo({...hotelInfo, taxRate: e.target.value})} />
+                                <input type="number" step="0.1" value={hotelInfo.taxRate} onChange={(e) => setHotelInfo({...hotelInfo, taxRate: parseFloat(e.target.value) || 0})} />
                             </div>
                         </div>
                         <div className="flex justify-end pt-6 border-t border-slate-200">

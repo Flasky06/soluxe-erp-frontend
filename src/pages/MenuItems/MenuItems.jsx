@@ -3,6 +3,7 @@ import api from '../../services/api';
 
 const MenuItems = () => {
     const [items, setItems] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
@@ -10,24 +11,31 @@ const MenuItems = () => {
         name: '',
         description: '',
         price: '',
-        category: 'DRINK',
+        categoryId: '',
         available: true,
         prepTimeMins: 15
     });
 
-    const fetchItems = async () => {
+    const fetchData = async () => {
         try {
-            const res = await api.get('/menu-items');
-            setItems(res.data);
+            const [itemsRes, catsRes] = await Promise.all([
+                api.get('/menu-items'),
+                api.get('/menu-categories')
+            ]);
+            setItems(itemsRes.data);
+            setCategories(catsRes.data);
+            if (catsRes.data.length > 0 && !formData.categoryId) {
+                setFormData(prev => ({ ...prev, categoryId: catsRes.data[0].id }));
+            }
         } catch (err) {
-            console.error('Failed to fetch menu items:', err);
+            console.error('Failed to fetch menu data:', err);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchItems();
+        fetchData();
     }, []);
 
     const handleOpenModal = (item = null) => {
@@ -37,7 +45,7 @@ const MenuItems = () => {
                 name: item.name,
                 description: item.description || '',
                 price: item.price,
-                category: item.category,
+                categoryId: item.categoryId || (categories.length > 0 ? categories[0].id : ''),
                 available: item.available,
                 prepTimeMins: item.prepTimeMins || 15
             });
@@ -47,7 +55,7 @@ const MenuItems = () => {
                 name: '',
                 description: '',
                 price: '',
-                category: 'DRINK',
+                categoryId: categories.length > 0 ? categories[0].id : '',
                 available: true,
                 prepTimeMins: 15
             });
@@ -58,10 +66,16 @@ const MenuItems = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const payload = {
+                ...formData,
+                price: parseFloat(formData.price) || 0,
+                prepTimeMins: parseInt(formData.prepTimeMins) || 15,
+                categoryId: parseInt(formData.categoryId)
+            };
             if (editingItem) {
-                await api.put(`/menu-items/${editingItem.id}`, formData);
+                await api.put(`/menu-items/${editingItem.id}`, payload);
             } else {
-                await api.post('/menu-items', formData);
+                await api.post('/menu-items', payload);
             }
             setShowModal(false);
             fetchItems();
@@ -117,9 +131,9 @@ const MenuItems = () => {
                                             <span className="text-[12px] text-text-slate line-clamp-1">{item.description}</span>
                                         </div>
                                     </td>
-                                    <td><span className="status-badge info">{item.category}</span></td>
+                                    <td><span className="status-badge info">{categories.find(c => c.id === item.categoryId)?.name || 'Uncategorized'}</span></td>
                                     <td>{item.prepTimeMins} Min</td>
-                                    <td className="font-bold text-primary">KSh {parseFloat(item.price).toLocaleString()}</td>
+                                    <td className="font-bold text-primary">KSh {parseFloat(item.price || 0).toLocaleString()}</td>
                                     <td>
                                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight ${item.available ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
                                             {item.available ? 'Available' : 'Out of Stock'}
@@ -156,12 +170,11 @@ const MenuItems = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Category</label>
-                                    <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
-                                        <option value="DRINK">Drink</option>
-                                        <option value="FOOD">Food</option>
-                                        <option value="DESSERT">Dessert</option>
-                                        <option value="SNACK">Snack</option>
-                                        <option value="OTHER">Other</option>
+                                    <select required value={formData.categoryId} onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
+                                        <option value="">Select Category</option>
+                                        {categories.map(cat => (
+                                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="form-group">

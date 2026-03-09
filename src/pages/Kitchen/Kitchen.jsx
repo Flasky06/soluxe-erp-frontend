@@ -150,7 +150,7 @@ const Kitchen = () => {
                                         const isWarning = diff >= 8;
                                         
                                         return (
-                                            <div key={order.id} className={`premium-card p-6 flex flex-col gap-4 relative border-l-4 transition-all shadow-md ${isUrgent ? 'border-l-red-500 animate-pulse ring-2 ring-red-500/20' : isWarning ? 'border-l-amber-500' : 'border-l-blue-500'}`}>
+                                            <div key={order.id} className={`premium-card p-6 flex flex-col gap-4 relative border-l-4 transition-all shadow-sm ${isUrgent ? 'border-l-red-500 animate-pulse ring-2 ring-red-500/20' : isWarning ? 'border-l-amber-500' : 'border-l-blue-500'}`}>
                                                 <div className="flex justify-between items-center pb-3 border-b border-dashed border-slate-200">
                                                     <span className="text-[11px] font-bold text-text-slate uppercase tracking-wider">
                                                         Table — Session #{order.sessionInfo?.id}

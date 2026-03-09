@@ -73,12 +73,15 @@ const Restaurant = () => {
     const handleSessionSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/dining-sessions', {
+            const payload = {
                 ...sessionFormData,
+                paxCount: parseInt(sessionFormData.paxCount) || 1,
+                stayId: sessionFormData.stayId ? parseInt(sessionFormData.stayId) : null,
                 tableId: selectedTable.id,
                 status: 'OPEN',
                 openedAt: new Date().toISOString()
-            });
+            };
+            await api.post('/dining-sessions', payload);
             setShowSessionModal(false);
             fetchTables();
         } catch (err) {
@@ -298,7 +301,7 @@ const Restaurant = () => {
                                         min="1"
                                         required
                                         value={sessionFormData.paxCount}
-                                        onChange={(e) => setSessionFormData({...sessionFormData, paxCount: parseInt(e.target.value)})}
+                                        onChange={(e) => setSessionFormData({...sessionFormData, paxCount: parseInt(e.target.value) || 1})}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -386,7 +389,7 @@ const Restaurant = () => {
                                 </div>
 
                                 <button
-                                    className="w-full mt-3 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                    className="w-full mt-3 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                                     onClick={handleCloseSession}
                                     disabled={sessionOrders.length === 0}
                                 >
@@ -399,7 +402,7 @@ const Restaurant = () => {
                                 <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider mb-4">Select Items</h3>
                                 <div className="grid grid-cols-2 gap-3 overflow-y-auto flex-1 pr-1">
                                     {menuItems.map(item => (
-                                        <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-3 cursor-pointer transition-all hover:border-primary hover:shadow-md group" onClick={() => handleAddToOrder(item)}>
+                                        <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-3 cursor-pointer transition-all hover:border-primary group" onClick={() => handleAddToOrder(item)}>
                                             <div className="font-bold text-slate-800 text-sm mb-0.5">{item.name}</div>
                                             <div className="text-[10px] text-slate-400 uppercase font-bold">{item.category?.name || 'General'}</div>
                                             <div className="text-primary font-bold text-base mt-2">KSh {parseFloat(item.price || 0).toLocaleString()}</div>

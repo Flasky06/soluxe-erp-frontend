@@ -36,7 +36,14 @@ const Folio = () => {
     const handlePostCharge = async (e) => {
         e.preventDefault();
         try {
-            await api.post(`/folios/${selectedFolioId}/charges?userId=${user?.id || 1}`, newCharge);
+            const payload = {
+                ...newCharge,
+                quantity: parseFloat(newCharge.quantity) || 0,
+                unitPrice: parseFloat(newCharge.unitPrice) || 0,
+                taxPct: parseFloat(newCharge.taxPct) || 0,
+                discountPct: parseFloat(newCharge.discountPct) || 0
+            };
+            await api.post(`/folios/${selectedFolioId}/charges?userId=${user?.id || 1}`, payload);
             setShowModal(false);
             const response = await api.get('/folios');
             setFolios(response.data);
@@ -56,7 +63,12 @@ const Folio = () => {
     const handleRecordPayment = async (e) => {
         e.preventDefault();
         try {
-            await api.post(`/folios/${selectedFolioId}/payments?userId=${user?.id || 1}`, newPayment);
+            const payload = {
+                ...newPayment,
+                amount: parseFloat(newPayment.amount) || 0,
+                paymentMethodId: parseInt(newPayment.paymentMethodId)
+            };
+            await api.post(`/folios/${selectedFolioId}/payments?userId=${user?.id || 1}`, payload);
             setShowPaymentModal(false);
             
             // Fetch receipts for this folio to show the new one
@@ -229,11 +241,11 @@ const Folio = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Quantity</label>
-                                    <input type="number" step="0.01" required value={newCharge.quantity} onChange={(e) => setNewCharge({...newCharge, quantity: parseFloat(e.target.value)})} />
+                                    <input type="number" step="0.01" required value={newCharge.quantity} onChange={(e) => setNewCharge({...newCharge, quantity: parseFloat(e.target.value) || 0})} />
                                 </div>
                                 <div className="form-group">
                                     <label>Unit Price (KSh)</label>
-                                    <input type="number" step="0.01" required value={newCharge.unitPrice} onChange={(e) => setNewCharge({...newCharge, unitPrice: parseFloat(e.target.value)})} />
+                                    <input type="number" step="0.01" required value={newCharge.unitPrice} onChange={(e) => setNewCharge({...newCharge, unitPrice: parseFloat(e.target.value) || 0})} />
                                 </div>
                             </div>
                             <div className="modal-footer">
@@ -269,7 +281,7 @@ const Folio = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Amount (KSh)</label>
-                                    <input type="number" step="0.01" required value={newPayment.amount} onChange={(e) => setNewPayment({...newPayment, amount: parseFloat(e.target.value)})} />
+                                    <input type="number" step="0.01" required value={newPayment.amount} onChange={(e) => setNewPayment({...newPayment, amount: parseFloat(e.target.value) || 0})} />
                                 </div>
                                 <div className="form-group">
                                     <label>Reference / Receipt No.</label>
@@ -349,7 +361,7 @@ const Folio = () => {
                         <div className="flex flex-col gap-10 p-4 print:p-0">
                             {receipts.length > 0 ? (
                                 receipts.map(receipt => (
-                                    <div key={receipt.id} className="p-10 max-w-[600px] mx-auto w-full bg-white border border-dashed border-slate-300 relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[radial-gradient(circle,theme(colors.slate.300)_1px,transparent_1px)] before:bg-[length:8px_4px] before:bg-repeat-x after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-[radial-gradient(circle,theme(colors.slate.300)_1px,transparent_1px)] after:bg-[length:8px_4px] after:bg-repeat-x shadow-lg print:shadow-none print:border-none print:mx-0 print:max-w-none">
+                                    <div key={receipt.id} className="p-10 max-w-[600px] mx-auto w-full bg-white border border-dashed border-slate-300 relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[radial-gradient(circle,theme(colors.slate.300)_1px,transparent_1px)] before:bg-[length:8px_4px] before:bg-repeat-x after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-[radial-gradient(circle,theme(colors.slate.300)_1px,transparent_1px)] after:bg-[length:8px_4px] after:bg-repeat-x shadow-md print:shadow-none print:border-none print:mx-0 print:max-w-none">
                                         <div className="text-center border-b-2 border-slate-200 pb-6 mb-6">
                                             <h2 className="text-3xl font-extrabold tracking-[4px] text-primary m-0">SOLUXE HOTEL</h2>
                                             <p className="uppercase text-[10px] text-slate-400 mt-1 font-bold tracking-widest">Official Payment Receipt</p>
@@ -380,7 +392,7 @@ const Folio = () => {
                                             </div>
                                         </div>
                                         <div className="mt-10 print:hidden">
-                                            <button className="w-full btn-primary py-3 rounded-xl shadow-md font-bold text-base" onClick={handlePrintReceipt}>Print Official Receipt</button>
+                                            <button className="w-full btn-primary py-3 rounded-xl shadow-sm font-bold text-base" onClick={handlePrintReceipt}>Print Official Receipt</button>
                                         </div>
                                     </div>
                                 ))

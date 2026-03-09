@@ -87,31 +87,34 @@ const Reports = () => {
                 <>
                     {/* Revenue Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div className="premium-card p-6 flex flex-col gap-2">
-                            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Revenue</div>
+                        <div className="premium-card p-6 flex flex-col gap-2 bg-gradient-to-br from-white to-green-50/30">
+                            <div className="text-[11px] font-bold uppercase tracking-wider text-green-600">Net Revenue (Income)</div>
                             <div className="text-3xl font-extrabold text-primary">
-                                KSh {parseFloat(revenue?.totalRevenue || 0).toLocaleString()}
+                                KSh {parseFloat(revenue?.netRevenue || 0).toLocaleString()}
                             </div>
                             <div className="text-[12px] text-slate-400 font-medium">
-                                {startDate === endDate ? `For ${startDate}` : `${startDate} to ${endDate}`}
+                                Collected: KSh {parseFloat(revenue?.totalRevenue || 0).toLocaleString()} (Gross)
                             </div>
                         </div>
-                        <div className="premium-card p-6 flex flex-col gap-2">
-                            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">All-Time Folio Revenue</div>
+                        <div className="premium-card p-6 flex flex-col gap-2 bg-gradient-to-br from-white to-orange-50/30">
+                            <div className="text-[11px] font-bold uppercase tracking-wider text-orange-500">Tax Collected</div>
                             <div className="text-3xl font-extrabold text-primary">
-                                KSh {folioStats.totalRevenue.toLocaleString()}
+                                KSh {parseFloat(revenue?.taxCollected || 0).toLocaleString()}
                             </div>
-                            <div className="text-[12px] text-slate-400 font-medium">{folioStats.open} open · {folioStats.closed} closed folios</div>
+                            <div className="text-[12px] text-slate-400 font-medium italic">Calculated and excluded from net</div>
                         </div>
                         <div className="premium-card p-6 flex flex-col gap-2">
                             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Reservations</div>
                             <div className="text-3xl font-extrabold text-primary">{reservationStats.total}</div>
                             <div className="text-[12px] text-slate-400 font-medium">{reservationStats.checkedIn} in-house · {reservationStats.booked} upcoming</div>
                         </div>
-                        <div className="premium-card p-6 flex flex-col gap-2">
-                            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Cancellations</div>
-                            <div className="text-3xl font-extrabold text-red-600">{reservationStats.cancelled}</div>
-                            <div className="text-[12px] text-slate-400 font-medium">of {reservationStats.total} total bookings</div>
+                        <div className="premium-card p-6 flex flex-col gap-2 border-b-4 border-b-primary shadow-md ring-1 ring-primary/10">
+                            <div className="text-[11px] font-bold uppercase tracking-wider text-primary italic font-serif">Quick Summary</div>
+                            <div className="text-[13px] font-medium text-slate-700 leading-relaxed">
+                                Period: <span className="font-bold">{startDate === endDate ? startDate : `${startDate} to ${endDate}`}</span>
+                                <br />
+                                Folios: <span className="font-bold text-primary">{folioStats.open}</span> open · <span className="font-bold text-slate-500">{folioStats.closed}</span> closed
+                            </div>
                         </div>
                     </div>
 
@@ -137,7 +140,7 @@ const Reports = () => {
                                                 </div>
                                                 <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
                                                     <div 
-                                                        className="h-full bg-gradient-to-r from-primary to-blue-400 rounded-full shadow-sm transition-all duration-1000" 
+                                                        className="h-full bg-gradient-to-r from-primary to-blue-400 rounded-full transition-all duration-1000" 
                                                         style={{width: `${pct}%`}} 
                                                     />
                                                 </div>
