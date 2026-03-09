@@ -36,6 +36,7 @@ const MenuItems = () => {
 
     useEffect(() => {
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleOpenModal = (item = null) => {
@@ -78,7 +79,7 @@ const MenuItems = () => {
                 await api.post('/menu-items', payload);
             }
             setShowModal(false);
-            fetchItems();
+            fetchData();
         } catch (err) {
             console.error('Failed to save menu item:', err);
             alert('Failed to save menu item.');
@@ -89,7 +90,7 @@ const MenuItems = () => {
         if (window.confirm('Are you sure you want to delete this menu item?')) {
             try {
                 await api.delete(`/menu-items/${id}`);
-                fetchItems();
+                fetchData();
             } catch (err) {
                 console.error('Failed to delete menu item:', err);
                 alert('Failed to delete menu item.');
