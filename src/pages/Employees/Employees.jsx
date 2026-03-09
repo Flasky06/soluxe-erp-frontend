@@ -142,7 +142,7 @@ const Employees = () => {
                                     </td>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="font-semibold text-slate-800">${emp.basicSalary}</span>
+                                            <span className="font-semibold text-slate-800">KSh {emp.basicSalary}</span>
                                             <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining}</span>
                                         </div>
                                     </td>
@@ -200,7 +200,7 @@ const Employees = () => {
                                     <input type="text" required value={formData.designation} onChange={(e) => setFormData({...formData, designation: e.target.value})} placeholder="e.g. Senior Receptionist" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Basic Salary ($)</label>
+                                    <label>Basic Salary (KSh)</label>
                                     <input type="number" required value={formData.basicSalary} onChange={(e) => setFormData({...formData, basicSalary: e.target.value})} placeholder="3500" />
                                 </div>
                                 <div className="form-group">

@@ -74,13 +74,6 @@ const Kitchen = () => {
         return `${diff}m ago`;
     };
 
-    const getAgeClass = (orderedAt) => {
-        if (!orderedAt) return '';
-        const diff = Math.floor((Date.now() - new Date(orderedAt)) / 60000);
-        if (diff >= 15) return 'order-urgent';
-        if (diff >= 8) return 'order-warning';
-        return '';
-    };
 
     return (
         <div className="flex flex-col">
@@ -126,7 +119,7 @@ const Kitchen = () => {
                                         <span className="text-[10px] font-bold text-text-slate uppercase tracking-wider">{item.category?.name || 'General'}</span>
                                         <div className="text-base font-bold text-slate-700 mt-2">KSh {item.price}</div>
                                         {item.prepTimeMins && (
-                                            <div className="text-[12px] text-text-slate mt-2 italic">⏱ {item.prepTimeMins} min prep</div>
+                                            <div className="text-[12px] text-text-slate mt-2 italic">{item.prepTimeMins} min prep</div>
                                         )}
                                     </div>
                                     <div className="flex flex-col items-end gap-2">

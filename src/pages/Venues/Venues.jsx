@@ -59,7 +59,7 @@ const Venues = () => {
         e.preventDefault();
         try {
             if (editingVenue) {
-                await api.post(`/venues`, { ...formData, id: editingVenue.id }); // Using POST for create/update pattern if backend supports it or change to PUT
+                await api.put(`/venues/${editingVenue.id}`, formData);
             } else {
                 await api.post('/venues', formData);
             }
@@ -117,10 +117,10 @@ const Venues = () => {
                                         </td>
                                         <td className="text-text-slate font-medium">{venue.capacity} pax</td>
                                         <td>
-                                            <span className="font-semibold text-slate-700">KES {parseFloat(venue.ratePerHour).toLocaleString()}</span>
+                                            <span className="font-semibold text-slate-700">KSh {parseFloat(venue.ratePerHour).toLocaleString()}</span>
                                         </td>
                                         <td>
-                                            <span className="font-semibold text-slate-700">KES {parseFloat(venue.ratePerDay).toLocaleString()}</span>
+                                            <span className="font-semibold text-slate-700">KSh {parseFloat(venue.ratePerDay).toLocaleString()}</span>
                                         </td>
                                         <td>
                                             <div className="table-actions">
@@ -179,7 +179,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Hourly Rate (KES)</label>
+                                    <label>Hourly Rate (KSh)</label>
                                     <input 
                                         type="number" 
                                         required 
@@ -188,7 +188,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Daily Rate (KES)</label>
+                                    <label>Daily Rate (KSh)</label>
                                     <input 
                                         type="number" 
                                         required 

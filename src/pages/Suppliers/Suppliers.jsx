@@ -1,0 +1,190 @@
+import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
+
+const Suppliers = () => {
+    const [suppliers, setSuppliers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [editingSupplier, setEditingSupplier] = useState(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        contactPerson: '',
+        phone: '',
+        email: '',
+        address: '',
+        category: 'GENERAL'
+    });
+
+    const fetchSuppliers = async () => {
+        try {
+            const res = await api.get('/suppliers');
+            setSuppliers(res.data);
+        } catch (err) {
+            console.error('Failed to fetch suppliers:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchSuppliers();
+    }, []);
+
+    const handleOpenModal = (supplier = null) => {
+        if (supplier) {
+            setEditingSupplier(supplier);
+            setFormData({
+                name: supplier.name,
+                contactPerson: supplier.contactPerson || '',
+                phone: supplier.phone || '',
+                email: supplier.email || '',
+                address: supplier.address || '',
+                category: supplier.category || 'GENERAL'
+            });
+        } else {
+            setEditingSupplier(null);
+            setFormData({
+                name: '',
+                contactPerson: '',
+                phone: '',
+                email: '',
+                address: '',
+                category: 'GENERAL'
+            });
+        }
+        setShowModal(true);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (editingSupplier) {
+                await api.put(`/suppliers/${editingSupplier.id}`, formData);
+            } else {
+                await api.post('/suppliers', formData);
+            }
+            setShowModal(false);
+            fetchSuppliers();
+        } catch (err) {
+            console.error('Failed to save supplier:', err);
+            alert('Failed to save supplier.');
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this supplier?')) {
+            try {
+                await api.delete(`/suppliers/${id}`);
+                fetchSuppliers();
+            } catch (err) {
+                console.error('Failed to delete supplier:', err);
+                alert('Failed to delete supplier.');
+            }
+        }
+    };
+
+    return (
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <h1 className="text-[28px] font-bold text-text-dark">Supplier Directory</h1>
+                    <p className="text-text-slate text-base">Manage vendors and inventory supply partners.</p>
+                </div>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Supplier</button>
+            </div>
+
+            <div className="premium-card overflow-x-auto">
+                {loading ? (
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading suppliers...</div>
+                ) : (
+                    <table className="management-table">
+                        <thead>
+                            <tr>
+                                <th>Supplier Name</th>
+                                <th>Contact Person</th>
+                                <th>Phone & Email</th>
+                                <th>Category</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {suppliers.map((supplier) => (
+                                <tr key={supplier.id}>
+                                    <td className="font-bold text-text-dark">{supplier.name}</td>
+                                    <td>{supplier.contactPerson}</td>
+                                    <td>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm">{supplier.phone}</span>
+                                            <span className="text-[12px] text-text-slate">{supplier.email}</span>
+                                        </div>
+                                    </td>
+                                    <td><span className="status-badge info">{supplier.category}</span></td>
+                                    <td>
+                                        <div className="table-actions">
+                                            <button className="view-btn" onClick={() => handleOpenModal(supplier)}>Edit</button>
+                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300 ml-2" onClick={() => handleDelete(supplier.id)}>Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content premium-card !w-[80%] !max-w-[1000px]">
+                        <div className="modal-header">
+                            <div>
+                                <h2 className="text-xl font-bold text-primary">{editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}</h2>
+                                <p className="text-sm text-text-slate mt-0.5">Register administrative and contact details for the vendor.</p>
+                            </div>
+                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-grid">
+                                <div className="form-group full-width">
+                                    <label>Company Name</label>
+                                    <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Fresh Foods Ltd" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Contact Person</label>
+                                    <input type="text" required value={formData.contactPerson} onChange={(e) => setFormData({...formData, contactPerson: e.target.value})} placeholder="Full name" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="text" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="+254..." />
+                                </div>
+                                <div className="form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="orders@vendor.com" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Supply Category</label>
+                                    <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                                        <option value="FOOD">Food & Beverage</option>
+                                        <option value="HOUSEKEEPING">Housekeeping Supplies</option>
+                                        <option value="MAINTENANCE">Maintenance & Tools</option>
+                                        <option value="OFFICE">Office Stationery</option>
+                                        <option value="GENERAL">General Vendor</option>
+                                    </select>
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Office Address</label>
+                                    <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Physical location or mailing address..." rows="2" className="min-h-[80px]" />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">{editingSupplier ? 'Save Updates' : 'Add Supplier'}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default Suppliers;

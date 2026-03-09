@@ -18,6 +18,9 @@ import Restaurant from './pages/Restaurant/Restaurant';
 import Settings from './pages/Settings/Settings';
 import Reports from './pages/Reports/Reports';
 import Tables from './pages/Tables/Tables';
+import MenuItems from './pages/MenuItems/MenuItems';
+import Suppliers from './pages/Suppliers/Suppliers';
+import InventoryCategories from './pages/InventoryCategories/InventoryCategories';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -61,6 +64,7 @@ function App() {
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
                     <Route path="/reports" element={<Reports />} />
+                    <Route path="/menu-items" element={<MenuItems />} />
                 </Route>
 
                 {/* System */}
@@ -70,6 +74,8 @@ function App() {
                     <Route path="/room-types" element={<RoomTypes />} /> {/* Added route */}
                     <Route path="/employees" element={<Employees />} />
                     <Route path="/inventory" element={<Inventory />} />
+                    <Route path="/inventory-categories" element={<InventoryCategories />} />
+                    <Route path="/suppliers" element={<Suppliers />} />
                     <Route path="/tables" element={<Tables />} />
                 </Route>
 

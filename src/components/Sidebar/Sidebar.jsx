@@ -24,6 +24,7 @@ const menuGroups = [
         items: [
             { label: 'Kitchen Orders', path: '/kitchen', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF'] },
             { label: 'Restaurant POS', path: '/restaurant', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER'] },
+            { label: 'Menu Items', path: '/menu-items', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
         ]
     },
     {
@@ -37,6 +38,8 @@ const menuGroups = [
         title: 'Inventory',
         items: [
             { label: 'Stock Management', path: '/inventory', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Inventory Categories', path: '/inventory-categories', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Suppliers', path: '/suppliers', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
         ]
     },
     {
@@ -102,8 +105,7 @@ const Sidebar = () => {
     return (
         <aside className="w-[var(--sidebar-width)] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100]">
             <div className="px-6 mb-10 flex items-center gap-3">
-                <span className="text-2xl">🏨</span>
-                <span className="text-xl font-extrabold -tracking-tight text-white">Soluxe <span className="text-yellow">Hotel ERP</span></span>
+                <span className="text-xl font-extrabold -tracking-tight text-white">Soluxe <span className="text-yellow">Hotel</span></span>
             </div>
             
             <nav className="flex-1 flex flex-col overflow-y-auto">

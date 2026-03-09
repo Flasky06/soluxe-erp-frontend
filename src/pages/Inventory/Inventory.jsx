@@ -159,7 +159,7 @@ const Inventory = () => {
                                             </div>
                                         </td>
                                         <td>
-                                            <span className="font-semibold text-text-dark">${item.unitCost}</span>
+                                            <span className="font-semibold text-text-dark">KSh {item.unitCost}</span>
                                         </td>
                                         <td>
                                             <div className="table-actions">
@@ -219,7 +219,7 @@ const Inventory = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Unit Cost ($)</label>
+                                    <label>Unit Cost (KSh)</label>
                                     <input type="number" step="0.01" required value={formData.unitCost} onChange={(e) => setFormData({...formData, unitCost: e.target.value})} placeholder="0.00" />
                                 </div>
                                 <div className="form-group">

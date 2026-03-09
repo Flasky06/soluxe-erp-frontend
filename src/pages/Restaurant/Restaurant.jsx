@@ -6,16 +6,6 @@ const Restaurant = () => {
     const [sessions, setSessions] = useState([]);
     const [stays, setStays] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showModal, setShowModal] = useState(false);
-    const [editingTable, setEditingTable] = useState(null);
-    const [formData, setFormData] = useState({
-        tableName: '',
-        capacity: 2,
-        location: 'MAIN_HALL',
-        isVip: false,
-        notes: '',
-        status: 'AVAILABLE'
-    });
     const [showSessionModal, setShowSessionModal] = useState(false);
     const [sessionFormData, setSessionFormData] = useState({
         guestName: '',
@@ -68,46 +58,6 @@ const Restaurant = () => {
         }
     };
 
-    const handleOpenModal = (table = null) => {
-        if (table) {
-            setEditingTable(table);
-            setFormData({
-                tableName: table.tableName,
-                capacity: table.capacity,
-                location: table.location,
-                isVip: table.isVip,
-                notes: table.notes || '',
-                status: table.status
-            });
-        } else {
-            setEditingTable(null);
-            setFormData({
-                tableName: '',
-                capacity: 2,
-                location: 'MAIN_HALL',
-                isVip: false,
-                notes: '',
-                status: 'AVAILABLE'
-            });
-        }
-        setShowModal(true);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            if (editingTable) {
-                await api.put(`/restaurant-tables/${editingTable.id}`, formData);
-            } else {
-                await api.post('/restaurant-tables', formData);
-            }
-            setShowModal(false);
-            fetchTables();
-        } catch (err) {
-            console.error('Failed to save table:', err);
-            alert('Failed to save table.');
-        }
-    };
 
     const handleOpenTable = (table) => {
         setSelectedTable(table);
@@ -188,14 +138,6 @@ const Restaurant = () => {
 
     const orderTotal = sessionOrders.reduce((sum, o) => sum + (parseFloat(o.totalAmount) || 0), 0);
 
-    const getStatusBadgeClass = (status) => {
-        switch (status) {
-            case 'AVAILABLE': return 'status-available';
-            case 'OCCUPIED': return 'status-occupied';
-            case 'RESERVED': return 'status-reserved';
-            default: return '';
-        }
-    };
 
     return (
         <div className="flex flex-col">
@@ -286,7 +228,7 @@ const Restaurant = () => {
                                     ) : (
                                         <button className="flex-1 btn-primary py-2 text-[12px]" onClick={() => handleOpenTable(table)}>Open Table</button>
                                     )}
-                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-2 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleOpenModal(table)}>Edit</button>
+                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-2 rounded-md text-[12px] font-semibold transition-all" onClick={() => {/* handleOpenModal(table) */}}>Edit</button>
                                 </div>
                             </div>
                         );
