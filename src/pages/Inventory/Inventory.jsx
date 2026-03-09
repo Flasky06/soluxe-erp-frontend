@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Inventory.css';
 
 const Inventory = () => {
     const [items, setItems] = useState([]);
@@ -101,30 +100,30 @@ const Inventory = () => {
     const getSupplierName = (id) => suppliers.find(s => s.id === id)?.name || 'Direct Purchase';
 
     return (
-        <div className="inventory-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Inventory Management</h1>
-                    <p>Track stock levels, unit costs, and supply chain records.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Inventory Management</h1>
+                    <p className="text-text-slate text-base">Track stock levels, unit costs, and supply chain records.</p>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add Item</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Item</button>
             </div>
 
-            <div className="inventory-grid">
-                <div className="premium-card stats-summary">
-                    <div className="stat-item">
-                        <span className="stat-label">Total Items</span>
-                        <span className="stat-value">{items.length}</span>
+            <div className="flex flex-col gap-6">
+                <div className="premium-card flex gap-12 p-6">
+                    <div className="flex flex-col gap-2">
+                        <span className="text-[11px] font-bold text-text-slate uppercase tracking-wider">Total Items</span>
+                        <span className="text-3xl font-bold text-text-dark">{items.length}</span>
                     </div>
-                    <div className="stat-item warning">
-                        <span className="stat-label">Low Stock Alerts</span>
-                        <span className="stat-value">{items.filter(i => i.currentStock <= i.minimumStock).length}</span>
+                    <div className="flex flex-col gap-2 border-l border-slate-100 pl-12">
+                        <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Low Stock Alerts</span>
+                        <span className="text-3xl font-bold text-amber-600">{items.filter(i => i.currentStock <= i.minimumStock).length}</span>
                     </div>
                 </div>
 
-                <div className="premium-card table-container">
+                <div className="premium-card overflow-x-auto">
                     {loading ? (
-                        <div className="loading">Loading inventory...</div>
+                        <div className="text-center py-20 text-text-slate animate-pulse">Loading inventory...</div>
                     ) : (
                         <table className="management-table">
                             <thead>
@@ -138,28 +137,30 @@ const Inventory = () => {
                             </thead>
                             <tbody>
                                 {items.map((item) => (
-                                    <tr key={item.id} className={item.currentStock <= item.minimumStock ? 'row-warning' : ''}>
+                                    <tr key={item.id} className={item.currentStock <= item.minimumStock ? 'bg-amber-50/30' : ''}>
                                         <td>
-                                            <div className="item-info">
-                                                <span className="bold">{item.name}</span>
-                                                <span className="sub-text">{item.nameZh}</span>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="font-bold text-text-dark">{item.name}</span>
+                                                <span className="text-[12px] text-text-slate italic">{item.nameZh}</span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="stock-info">
-                                                <span className={`stock-count ${item.currentStock <= item.minimumStock ? 'text-danger' : 'text-success'}`}>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className={`text-base font-bold ${item.currentStock <= item.minimumStock ? 'text-red-500' : 'text-green-600'}`}>
                                                     {item.currentStock} {item.unit}s
                                                 </span>
-                                                <span className="sub-text">Min: {item.minimumStock}</span>
+                                                <span className="text-[12px] text-text-slate">Min: {item.minimumStock}</span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="cat-supp">
-                                                <span className="badge-secondary">{getCategoryName(item.categoryId)}</span>
-                                                <span className="sub-text">{getSupplierName(item.defaultSupplierId)}</span>
+                                            <div className="flex flex-col gap-1.5">
+                                                <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-bold uppercase w-fit leading-none">{getCategoryName(item.categoryId)}</span>
+                                                <span className="text-[12px] text-text-slate italic">{getSupplierName(item.defaultSupplierId)}</span>
                                             </div>
                                         </td>
-                                        <td>${item.unitCost}</td>
+                                        <td>
+                                            <span className="font-semibold text-text-dark">${item.unitCost}</span>
+                                        </td>
                                         <td>
                                             <div className="table-actions">
                                                 <button className="view-btn" onClick={() => handleOpenModal(item)}>Edit</button>
@@ -175,7 +176,7 @@ const Inventory = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card inventory-modal">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[1000px]">
                         <div className="modal-header">
                             <h2>{editingItem ? 'Edit Inventory Item' : 'Add New Inventory Item'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -231,12 +232,17 @@ const Inventory = () => {
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Notes</label>
-                                    <textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} placeholder="Specify storage conditions or quality requirements..." />
+                                    <textarea 
+                                        value={formData.notes} 
+                                        onChange={(e) => setFormData({...formData, notes: e.target.value})} 
+                                        placeholder="Specify storage conditions or quality requirements..." 
+                                        className="min-h-[80px]"
+                                    />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Update Inventory</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">Update Inventory</button>
                             </div>
                         </form>
                     </div>

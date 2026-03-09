@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Employees.css';
 
 const Employees = () => {
     const [employees, setEmployees] = useState([]);
@@ -103,18 +102,18 @@ const Employees = () => {
     };
 
     return (
-        <div className="employees-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Employee Directory</h1>
-                    <p>Manage hotel staff, assignments, and professional records.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Employee Directory</h1>
+                    <p className="text-text-slate text-base">Manage hotel staff, assignments, and professional records.</p>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add Employee</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Employee</button>
             </div>
 
-            <div className="premium-card table-container">
+            <div className="premium-card overflow-x-auto">
                 {loading ? (
-                    <div className="loading">Loading staff directory...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading staff directory...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
@@ -130,27 +129,27 @@ const Employees = () => {
                             {employees.map((emp) => (
                                 <tr key={emp.id}>
                                     <td>
-                                        <div className="employee-main-info">
-                                            <span className="bold">{emp.fullName}</span>
-                                            <span className="sub-text">{emp.email} • {emp.phone}</span>
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="font-bold text-text-dark">{emp.fullName}</span>
+                                            <span className="text-[12px] text-text-slate">{emp.email} • {emp.phone}</span>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="dept-role">
-                                            <span className="badge-primary">{getDepartmentName(emp.departmentId)}</span>
-                                            <span className="designation">{emp.designation}</span>
+                                        <div className="flex flex-col gap-1.5">
+                                            <span className="inline-block px-2.5 py-0.5 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase w-fit leading-none">{getDepartmentName(emp.departmentId)}</span>
+                                            <span className="text-sm font-medium text-slate-600">{emp.designation}</span>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="salary-info">
-                                            <span className="salary">${emp.basicSalary}</span>
-                                            <span className="sub-text">Joined: {emp.dateOfJoining}</span>
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="font-semibold text-slate-800">${emp.basicSalary}</span>
+                                            <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining}</span>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="tags">
+                                        <div className="flex flex-wrap gap-1.5">
                                             {emp.languagesSpoken?.split(',').map(lang => (
-                                                <span key={lang} className="tag">{lang.trim()}</span>
+                                                <span key={lang} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-medium">{lang.trim()}</span>
                                             ))}
                                         </div>
                                     </td>
@@ -168,7 +167,7 @@ const Employees = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card employee-modal">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[1200px]">
                         <div className="modal-header">
                             <h2>{editingEmployee ? 'Edit Employee Details' : 'Register New Staff Member'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -230,8 +229,8 @@ const Employees = () => {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Save Personnel Record</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">Save Personnel Record</button>
                             </div>
                         </form>
                     </div>

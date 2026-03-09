@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
-import './Reservations.css';
 
 const Reservations = () => {
     const { user } = useAuthStore();
@@ -262,18 +261,18 @@ const Reservations = () => {
     };
 
     return (
-        <div className="reservations-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Reservations & Bookings</h1>
-                    <p>Manage room stays and restaurant table reservations.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Reservations & Bookings</h1>
+                    <p className="text-text-slate text-base">Manage room stays and restaurant table reservations.</p>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenBookingModal()}>+ New Reservation</button>
+                <button className="btn-primary" onClick={() => handleOpenBookingModal()}>New Reservation</button>
             </div>
 
-            <div className="premium-card table-container">
+            <div className="premium-card overflow-x-auto">
                 {loading && reservations.length === 0 ? (
-                    <div className="loading">Loading reservations...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading reservations...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
@@ -290,27 +289,29 @@ const Reservations = () => {
                                 reservations.map((res) => (
                                     <tr key={res.id}>
                                         <td>
-                                            <div className="guest-info">
-                                                <span className="bold">{getGuestName(res.guestId)}</span>
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="booking-details">
+                                            <div className="flex flex-col gap-1">
                                                 {res.roomTypeId && (
-                                                    <div className="detail-item">🛏️ {getRoomTypeName(res.roomTypeId)}</div>
+                                                    <div className="text-xs text-text-slate flex items-center gap-1.5">🛏️ {getRoomTypeName(res.roomTypeId)}</div>
                                                 )}
                                                 {res.tableId && (
-                                                    <div className="detail-item">🍽️ {getTableName(res.tableId)}</div>
+                                                    <div className="text-xs text-text-slate flex items-center gap-1.5">🍽️ {getTableName(res.tableId)}</div>
                                                 )}
                                             </div>
                                         </td>
                                         <td>
                                             {res.dateIn ? (
-                                                <div className="stay-dates">
-                                                    {new Date(res.dateIn).toLocaleDateString()} - {new Date(res.dateOut).toLocaleDateString()}
+                                                <div className="text-sm text-text-dark font-medium leading-tight">
+                                                    <div>{new Date(res.dateIn).toLocaleDateString()}</div>
+                                                    <div className="text-[10px] text-text-slate font-normal uppercase">to</div>
+                                                    <div>{new Date(res.dateOut).toLocaleDateString()}</div>
                                                 </div>
                                             ) : (
-                                                <div className="table-time">
+                                                <div className="text-sm text-text-dark font-medium">
                                                     {res.tableReservationTime ? new Date(res.tableReservationTime).toLocaleString() : 'N/A'}
                                                 </div>
                                             )}
@@ -328,11 +329,11 @@ const Reservations = () => {
                                                             <button className="view-btn" onClick={() => handleOpenCheckIn(res)}>Check In</button>
                                                         )}
                                                         <button className="edit-btn" onClick={() => handleOpenBookingModal(res)}>Edit</button>
-                                                        <button className="edit-btn" style={{backgroundColor: '#fee2e2', color: '#dc2626'}} onClick={() => handleCancelBooking(res.id)}>Cancel</button>
+                                                        <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleCancelBooking(res.id)}>Cancel</button>
                                                     </>
                                                 )}
                                                 {res.status === 'CHECKED_IN' && (
-                                                    <button className="view-btn" onClick={() => handleCheckOut(res.id)} style={{backgroundColor: '#f59e0b', color: 'white', border: 'none'}}>Check Out</button>
+                                                    <button className="bg-amber-100 text-amber-700 hover:bg-amber-600 hover:text-white px-4 py-1.5 rounded-md text-[12px] font-bold transition-all duration-300 shadow-sm" onClick={() => handleCheckOut(res.id)}>Check Out</button>
                                                 )}
                                             </div>
                                         </td>
@@ -340,7 +341,7 @@ const Reservations = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="5" className="empty-state">No reservations found.</td>
+                                    <td colSpan="5" className="text-center py-20 text-text-slate italic">No reservations found.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -350,7 +351,7 @@ const Reservations = () => {
 
             {showBookingModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card reservations-modal">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[1200px]">
                         <div className="modal-header">
                             <h2>{selectedReservation ? 'Edit Reservation' : 'New Reservation'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowBookingModal(false)}>&times;</button>
@@ -374,16 +375,16 @@ const Reservations = () => {
 
                                 <div className="form-group full-width">
                                     <label>Booking Type</label>
-                                    <div className="radio-group" style={{display: 'flex', gap: '20px', marginTop: '8px'}}>
-                                        <label><input type="radio" value="ROOM" checked={formData.bookingType === 'ROOM'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Room Only</label>
-                                        <label><input type="radio" value="TABLE" checked={formData.bookingType === 'TABLE'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Table Only</label>
-                                        <label><input type="radio" value="BOTH" checked={formData.bookingType === 'BOTH'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Room + Table</label>
+                                    <div className="flex gap-8 mt-2">
+                                        <label className="flex items-center gap-2 cursor-pointer text-text-dark font-medium"><input type="radio" className="accent-maroon" value="ROOM" checked={formData.bookingType === 'ROOM'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Room Only</label>
+                                        <label className="flex items-center gap-2 cursor-pointer text-text-dark font-medium"><input type="radio" className="accent-maroon" value="TABLE" checked={formData.bookingType === 'TABLE'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Table Only</label>
+                                        <label className="flex items-center gap-2 cursor-pointer text-text-dark font-medium"><input type="radio" className="accent-maroon" value="BOTH" checked={formData.bookingType === 'BOTH'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Room + Table</label>
                                     </div>
                                 </div>
 
                                 {(formData.bookingType === 'ROOM' || formData.bookingType === 'BOTH') && (
                                     <>
-                                        <div className="form-section-title full-width" style={{marginTop: '10px', fontWeight: 'bold', color: '#1e40af', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px'}}>Room Details</div>
+                                        <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-4 col-span-full text-base tracking-tight uppercase">Room Details</div>
                                         <div className="form-group">
                                             <label>Room Type</label>
                                             <select 
@@ -399,9 +400,9 @@ const Reservations = () => {
                                         </div>
                                         <div className="form-group">
                                             <label>Adults / Children</label>
-                                            <div style={{display: 'flex', gap: '8px'}}>
-                                                <input type="number" min="1" required value={formData.adults} onChange={(e) => setFormData({...formData, adults: e.target.value})} />
-                                                <input type="number" min="0" value={formData.children} onChange={(e) => setFormData({...formData, children: e.target.value})} />
+                                            <div className="flex gap-2">
+                                                <input type="number" min="1" required className="flex-1" value={formData.adults} onChange={(e) => setFormData({...formData, adults: e.target.value})} />
+                                                <input type="number" min="0" className="flex-1" value={formData.children} onChange={(e) => setFormData({...formData, children: e.target.value})} />
                                             </div>
                                         </div>
                                         <div className="form-group">
@@ -425,7 +426,7 @@ const Reservations = () => {
 
                                 {(formData.bookingType === 'TABLE' || formData.bookingType === 'BOTH') && (
                                     <>
-                                        <div className="form-section-title full-width" style={{marginTop: '10px', fontWeight: 'bold', color: '#1e40af', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px'}}>Restaurant Details</div>
+                                        <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-4 col-span-full text-base tracking-tight uppercase">Restaurant Details</div>
                                         <div className="form-group">
                                             <label>Select Table</label>
                                             <select 
@@ -450,36 +451,37 @@ const Reservations = () => {
                                     </>
                                 )}
 
-                                <div className="form-section-title full-width" style={{marginTop: '10px', fontWeight: 'bold', color: '#1e40af', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px'}}>Additional Information</div>
-                                <div className="form-group">
+                                <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-4 col-span-full text-base tracking-tight uppercase">Additional Information</div>
+                                <div className="form-group full-width">
                                     <label>Nationality / ID Info</label>
-                                    <div style={{display: 'flex', gap: '8px'}}>
-                                        <input type="text" value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} placeholder="Nationality" style={{flex: 1}} />
-                                        <select value={formData.idType} onChange={(e) => setFormData({...formData, idType: e.target.value})} style={{flex: 1}}>
+                                    <div className="flex flex-wrap md:flex-nowrap gap-3">
+                                        <input type="text" value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} placeholder="Nationality" className="flex-1" />
+                                        <select value={formData.idType} onChange={(e) => setFormData({...formData, idType: e.target.value})} className="flex-1">
                                             <option value="PASSPORT">Passport</option>
                                             <option value="NATIONAL_ID">National ID</option>
                                         </select>
-                                        <input type="text" value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="ID Number" style={{flex: 1.5}} />
+                                        <input type="text" value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="ID Number" className="flex-[1.5]" />
                                     </div>
                                 </div>
                                 
-                                <div className="form-group">
+                                <div className="form-group full-width">
                                     <label>Vehicle / Emergency Contact</label>
-                                    <div style={{display: 'flex', gap: '8px'}}>
-                                        <input type="text" value={formData.vehicleRegistration} onChange={(e) => setFormData({...formData, vehicleRegistration: e.target.value})} placeholder="Vehicle Reg" style={{flex: 1}} />
-                                        <input type="text" value={formData.emergencyContactName} onChange={(e) => setFormData({...formData, emergencyContactName: e.target.value})} placeholder="Contact Name" style={{flex: 1}} />
+                                    <div className="flex flex-wrap md:flex-nowrap gap-3">
+                                        <input type="text" value={formData.vehicleRegistration} onChange={(e) => setFormData({...formData, vehicleRegistration: e.target.value})} placeholder="Vehicle Reg" className="flex-1" />
+                                        <input type="text" value={formData.emergencyContactName} onChange={(e) => setFormData({...formData, emergencyContactName: e.target.value})} placeholder="Contact Name" className="flex-1" />
+                                        <input type="text" value={formData.emergencyContactPhone} onChange={(e) => setFormData({...formData, emergencyContactPhone: e.target.value})} placeholder="Contact Phone" className="flex-1" />
                                     </div>
                                 </div>
 
                                 <div className="form-group full-width">
                                     <label>Special Requests & Preferences</label>
-                                    <textarea value={formData.specialRequests} onChange={(e) => setFormData({...formData, specialRequests: e.target.value})} style={{minHeight: '60px'}} placeholder="Requests..." />
+                                    <textarea value={formData.specialRequests} onChange={(e) => setFormData({...formData, specialRequests: e.target.value})} className="min-h-[80px]" placeholder="Anything else we should know?" />
                                 </div>
                             </div>
 
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowBookingModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">{selectedReservation ? 'Save Changes' : 'Create Booking'}</button>
+                                <button type="button" onClick={() => setShowBookingModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">{selectedReservation ? 'Save Changes' : 'Create Booking'}</button>
                             </div>
                         </form>
                     </div>
@@ -489,15 +491,15 @@ const Reservations = () => {
             {/* Check-in Modal */}
             {showCheckInModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card">
+                    <div className="modal-content premium-card !w-[80%] !max-w-[700px]">
                         <div className="modal-header">
                             <h2>Check-in: Select Room</h2>
                             <button className="close-modal-btn" onClick={() => setShowCheckInModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmitCheckIn}>
-                            <div className="check-in-info">
-                                <p><strong>Guest:</strong> {getGuestName(selectedReservation.guestId)}</p>
-                                <p><strong>Category:</strong> {getRoomTypeName(selectedReservation.roomTypeId)}</p>
+                            <div className="bg-slate-50 p-5 rounded-xl border border-border-gray mb-6 flex flex-col gap-2">
+                                <p className="text-text-dark"><strong>Guest:</strong> {getGuestName(selectedReservation?.guestId)}</p>
+                                <p className="text-text-dark"><strong>Category:</strong> {getRoomTypeName(selectedReservation?.roomTypeId)}</p>
                             </div>
                             <div className="form-group full-width">
                                 <label>Available Rooms</label>

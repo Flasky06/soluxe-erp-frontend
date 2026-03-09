@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Rooms.css';
 
 const Rooms = () => {
     const [rooms, setRooms] = useState([]);
@@ -92,18 +91,18 @@ const Rooms = () => {
     };
 
     return (
-        <div className="rooms-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Room Management</h1>
-                    <p>Manage your hotel inventory and housekeeping status.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Room Management</h1>
+                    <p className="text-text-slate text-base">Manage your hotel inventory and housekeeping status.</p>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add New Room</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Room</button>
             </div>
 
-            <div className="premium-card table-container">
+            <div className="premium-card overflow-x-auto">
                 {loading && rooms.length === 0 ? (
-                    <div className="loading">Loading rooms...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading rooms...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
@@ -120,7 +119,7 @@ const Rooms = () => {
                             {rooms.length > 0 ? (
                                 rooms.map((room) => (
                                     <tr key={room.id}>
-                                        <td className="bold">Room {room.roomNumber}</td>
+                                        <td className="font-bold text-text-dark">Room {room.roomNumber}</td>
                                         <td>{room.roomType?.name || 'N/A'}</td>
                                         <td>Floor {room.floor}</td>
                                         <td>
@@ -129,21 +128,25 @@ const Rooms = () => {
                                             </span>
                                         </td>
                                         <td>
-                                            <span className="housekeeping-info">
-                                                {room.status === 'DIRTY' ? '🧹 Needs Cleaning' : '✨ Clean'}
-                                            </span>
+                                            <div className="flex items-center gap-2 text-xs font-medium">
+                                                {room.status === 'DIRTY' ? (
+                                                    <span className="flex items-center gap-1.5 text-amber-600">🧹 Needs Cleaning</span>
+                                                ) : (
+                                                    <span className="flex items-center gap-1.5 text-green-600">✨ Clean</span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td>
                                             <div className="table-actions">
                                                 <button className="view-btn" onClick={() => handleOpenModal(room)}>Edit</button>
-                                                <button className="edit-btn" style={{backgroundColor: '#fee2e2', color: '#dc2626'}} onClick={() => handleDelete(room.id)}>Delete</button>
+                                                <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleDelete(room.id)}>Delete</button>
                                             </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="empty-state">No rooms found. Add your first room to get started.</td>
+                                    <td colSpan="6" className="text-center py-20 text-text-slate italic">No rooms found. Add your first room to get started.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -153,7 +156,7 @@ const Rooms = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card rooms-modal">
+                    <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
                         <div className="modal-header">
                             <h2>{editingRoom ? 'Edit Room' : 'Add New Room'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -192,8 +195,8 @@ const Rooms = () => {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">{editingRoom ? 'Save Changes' : 'Save Room'}</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">{editingRoom ? 'Save Changes' : 'Save Room'}</button>
                             </div>
                         </form>
                     </div>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Departments.css';
 
 const Departments = () => {
     const [departments, setDepartments] = useState([]);
@@ -73,20 +72,24 @@ const Departments = () => {
     }
 
     return (
-        <div className="departments-page">
-            <header className="page-header">
+        <div className="flex flex-col">
+            <header className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Department Management</h1>
-                    <p>Configure and manage hotel departments</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Department Management</h1>
+                    <p className="text-text-slate text-base">Configure and manage hotel departments</p>
                 </div>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>
-                    <span className="icon">➕</span> Add Department
+                    Add Department
                 </button>
             </header>
 
-            {error && <div className="error-banner">{error}</div>}
+            {error && (
+                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-8">
+                    {error}
+                </div>
+            )}
 
-            <div className="premium-card table-container">
+            <div className="premium-card overflow-x-auto">
                 <table className="management-table">
                     <thead>
                         <tr>
@@ -99,13 +102,15 @@ const Departments = () => {
                         {departments.map((dept) => (
                             <tr key={dept.id}>
                                 <td>
-                                    <span className="bold">{dept.name}</span>
+                                    <span className="font-bold text-text-dark">{dept.name}</span>
                                 </td>
-                                <td>{dept.description}</td>
+                                <td>
+                                    <p className="text-text-slate line-clamp-2 max-w-xl">{dept.description}</p>
+                                </td>
                                 <td>
                                     <div className="table-actions">
                                         <button className="view-btn" onClick={() => handleOpenModal(dept)}>Edit</button>
-                                        <button className="delete-btn-text" onClick={() => handleDelete(dept.id)}>Delete</button>
+                                        <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300 ml-2" onClick={() => handleDelete(dept.id)}>Delete</button>
                                     </div>
                                 </td>
                             </tr>
@@ -116,7 +121,7 @@ const Departments = () => {
 
             {isModalOpen && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-lg department-modal">
+                    <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
                         <div className="modal-header">
                             <h2>{isEditing ? 'Edit Department' : 'Add New Department'}</h2>
                             <button className="close-modal-btn" onClick={handleCloseModal}>&times;</button>
@@ -139,13 +144,14 @@ const Departments = () => {
                                         value={currentDepartment.description}
                                         onChange={(e) => setCurrentDepartment({...currentDepartment, description: e.target.value})}
                                         placeholder="Briefly describe the department's responsibilities"
+                                        className="min-h-[100px]"
                                         rows="3"
                                     />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn-secondary" onClick={handleCloseModal}>Cancel</button>
-                                <button type="submit" className="btn-primary">
+                                <button type="button" className="btn-secondary !px-10" onClick={handleCloseModal}>Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">
                                     {isEditing ? 'Update Department' : 'Create Department'}
                                 </button>
                             </div>

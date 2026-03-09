@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Dashboard.css';
 
 const Dashboard = () => {
     const [stats, setStats] = useState([
@@ -49,67 +48,69 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <div className="dashboard">
-            <div className="dashboard-header">
-                <h1>Dashboard Overview</h1>
-                <p>Monitor your hotel's performance in real-time.</p>
+        <div className="flex flex-col">
+            <div className="mb-8">
+                <h1 className="text-[28px] font-bold text-text-dark">Dashboard Overview</h1>
+                <p className="text-text-slate text-base">Monitor your hotel's performance in real-time.</p>
             </div>
 
-            <div className="stats-grid">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="stat-card premium-card">
-                        <div className="stat-icon">{stat.icon}</div>
-                        <div className="stat-info">
-                            <span className="stat-label">{stat.label}</span>
-                            <div className="stat-row">
-                                <span className="stat-value">{stat.value}</span>
-                                <span className={`stat-trend ${stat.trend.startsWith('+') ? 'up' : 'down'}`}>
-                                    {stat.trend}
-                                </span>
+                    <div key={stat.label} className="premium-card flex items-center gap-5">
+                        <div className="text-[28px] w-14 h-14 bg-slate-800/10 rounded-2xl flex items-center justify-center">{stat.icon}</div>
+                        <div className="flex-1">
+                            <span className="text-[13px] font-semibold text-text-slate uppercase tracking-wider">{stat.label}</span>
+                            <div className="flex items-baseline justify-between mt-1">
+                                <span className="text-2xl font-bold text-text-dark">{stat.value}</span>
+                                {stat.trend && (
+                                    <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-full ${stat.trend.startsWith('+') ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}>
+                                        {stat.trend}
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="dashboard-sections">
-                <div className="section premium-card">
-                    <h3>Recent Arrivals</h3>
-                    <div className="recent-arrivals-list">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div className="xl:col-span-2 premium-card">
+                    <h3 className="mb-5 text-lg font-bold text-maroon">Recent Arrivals</h3>
+                    <div className="flex flex-col">
                         {recentArrivals.length > 0 ? (
-                            <ul className="arrival-list">
+                            <ul className="list-none p-0 m-0">
                                 {recentArrivals.map(arr => (
-                                    <li key={arr.id} className="arrival-item" style={{display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #eee'}}>
-                                        <span className="guest-name bold">{arr.guestName || 'Walk-in Guest'}</span>
-                                        <span className="room-assigned status-badge info">Room {arr.roomNumber || 'Unassigned'}</span>
+                                    <li key={arr.id} className="flex justify-between py-3 border-b border-gray-100 last:border-b-0">
+                                        <span className="font-semibold text-text-dark">{arr.guestName || 'Walk-in Guest'}</span>
+                                        <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-wide">Room {arr.roomNumber || 'Unassigned'}</span>
                                     </li>
                                 ))}
                             </ul>
                         ) : (
-                            <p className="empty-state">No arrivals scheduled for today.</p>
+                            <p className="text-text-slate italic text-center py-8">No arrivals scheduled for today.</p>
                         )}
                     </div>
                 </div>
-                <div className="section premium-card">
-                    <h3>Revenue Insights</h3>
-                    <div className="revenue-summary" style={{display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px'}}>
+                <div className="premium-card">
+                    <h3 className="mb-5 text-lg font-bold text-maroon">Revenue Insights</h3>
+                    <div className="flex flex-col gap-4 mt-2">
                         {revenue ? (
                             <>
-                                <div className="revenue-item" style={{display: 'flex', justifyContent: 'space-between'}}>
-                                    <span>Room Revenue</span>
-                                    <strong className="amount">KES {(revenue.roomRevenue || 0).toLocaleString()}</strong>
+                                <div className="flex justify-between items-center text-text-dark">
+                                    <span className="text-text-slate">Room Revenue</span>
+                                    <strong className="text-lg font-bold text-maroon">KES {(revenue.roomRevenue || 0).toLocaleString()}</strong>
                                 </div>
-                                <div className="revenue-item" style={{display: 'flex', justifyContent: 'space-between'}}>
-                                    <span>F&B Revenue</span>
-                                    <strong className="amount">KES {(revenue.foodAndBeverageRevenue || 0).toLocaleString()}</strong>
+                                <div className="flex justify-between items-center text-text-dark">
+                                    <span className="text-text-slate">F&B Revenue</span>
+                                    <strong className="text-lg font-bold text-maroon">KES {(revenue.foodAndBeverageRevenue || 0).toLocaleString()}</strong>
                                 </div>
-                                <div className="revenue-item total" style={{display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', marginTop: '10px', paddingTop: '10px', borderTop: '2px solid #eee'}}>
-                                    <span>Total Expected</span>
-                                    <strong className="amount">KES {(revenue.totalRevenue || 0).toLocaleString()}</strong>
+                                <div className="flex justify-between items-center text-xl mt-4 pt-4 border-t-2 border-slate-100">
+                                    <span className="font-bold text-text-dark">Total Expected</span>
+                                    <strong className="text-2xl font-extrabold text-green-600 font-mono">KES {(revenue.totalRevenue || 0).toLocaleString()}</strong>
                                 </div>
                             </>
                         ) : (
-                            <p className="empty-state">No revenue data for today.</p>
+                            <p className="text-text-slate italic text-center py-8">No revenue data for today.</p>
                         )}
                     </div>
                 </div>

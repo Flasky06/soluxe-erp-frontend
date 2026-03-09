@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Restaurant.css';
 
 const Restaurant = () => {
     const [tables, setTables] = useState([]);
@@ -199,91 +198,96 @@ const Restaurant = () => {
     };
 
     return (
-        <div className="restaurant-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Restaurant Table Management</h1>
-                    <p>Monitor real-time table occupancy and manage configurations.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Restaurant Table Management</h1>
+                    <p className="text-text-slate text-base">Monitor real-time table occupancy and manage configurations.</p>
                 </div>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add Table</button>
             </div>
 
-            <div className="restaurant-stats-grid">
-                <div className="premium-card stat-card">
-                    <h3>Total Tables</h3>
-                    <div className="stat-value">{tables.length}</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="premium-card p-6 text-center">
+                    <h3 className="text-[11px] font-bold text-text-slate uppercase tracking-wider mb-2">Total Tables</h3>
+                    <div className="text-4xl font-bold text-primary">{tables.length}</div>
                 </div>
-                <div className="premium-card stat-card">
-                    <h3>Available</h3>
-                    <div className="stat-value" style={{color: '#10b981'}}>
+                <div className="premium-card p-6 text-center">
+                    <h3 className="text-[11px] font-bold text-text-slate uppercase tracking-wider mb-2">Available</h3>
+                    <div className="text-4xl font-bold text-green-600">
                         {tables.filter(t => t.status === 'AVAILABLE').length}
                     </div>
                 </div>
-                <div className="premium-card stat-card">
-                    <h3>Occupied</h3>
-                    <div className="stat-value" style={{color: '#ef4444'}}>
+                <div className="premium-card p-6 text-center">
+                    <h3 className="text-[11px] font-bold text-text-slate uppercase tracking-wider mb-2">Occupied</h3>
+                    <div className="text-4xl font-bold text-red-600">
                         {tables.filter(t => t.status === 'OCCUPIED').length}
                     </div>
                 </div>
-                <div className="premium-card stat-card">
-                    <h3>Active Sessions</h3>
-                    <div className="stat-value" style={{color: '#f59e0b'}}>
+                <div className="premium-card p-6 text-center">
+                    <h3 className="text-[11px] font-bold text-text-slate uppercase tracking-wider mb-2">Active Sessions</h3>
+                    <div className="text-4xl font-bold text-amber-500">
                         {sessions.length}
                     </div>
                 </div>
             </div>
 
-            <div className="tables-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {loading ? (
-                    <div className="loading">Loading tables...</div>
+                    <div className="col-span-full text-center py-20 text-text-slate animate-pulse">Loading tables...</div>
                 ) : (
                     tables.map(table => {
                         const activeSessionForTable = sessions.find(s => s.tableId === table.id);
                         return (
-                            <div key={table.id} className={`premium-card table-card ${table.isVip ? 'vip-table' : ''} ${activeSessionForTable ? 'session-active' : ''}`}>
-                                <div className="table-card-header">
-                                    <span className={`status-pill ${activeSessionForTable ? 'status-occupied' : getStatusBadgeClass(table.status)}`}>
+                            <div key={table.id} className={`premium-card p-6 flex flex-col gap-5 transition-transform hover:-translate-y-1 relative ${table.isVip ? 'border-2 border-amber-400 bg-amber-50/10' : ''} ${activeSessionForTable ? 'border-l-4 border-l-amber-500' : ''}`}>
+                                <div className="flex justify-between items-center">
+                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-tight uppercase ${activeSessionForTable ? 'bg-red-50 text-red-600' : 
+                                        table.status === 'AVAILABLE' ? 'bg-green-50 text-green-600' : 
+                                        table.status === 'RESERVED' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-600'}`}>
                                         {activeSessionForTable ? 'IN SESSION' : table.status}
                                     </span>
-                                    {table.isVip && <span className="vip-badge">⭐ VIP</span>}
+                                    {table.isVip && <span className="text-[11px] font-bold text-amber-600">⭐ VIP</span>}
                                 </div>
-                                <div className="table-visual">
-                                    <div className="table-shape">
-                                        <span className="table-name">{table.tableName}</span>
+                                
+                                <div className="h-28 flex flex-col items-center justify-center relative">
+                                    <div className="w-24 h-20 bg-slate-50 border-3 border-slate-200 rounded-xl flex items-center justify-center z-10 shadow-sm">
+                                        <span className="font-bold text-slate-700">{table.tableName}</span>
                                     </div>
                                     {activeSessionForTable && (
-                                        <div className="session-indicator">
-                                            <span className="guest-count">{activeSessionForTable.paxCount} pax</span>
+                                        <div className="mt-2 text-[11px] font-bold text-amber-600 z-20">
+                                            {activeSessionForTable.paxCount} pax
                                         </div>
                                     )}
-                                    <div className="chairs-visual">
+                                    <div className="absolute inset-0 flex flex-wrap content-between justify-between w-32 h-26 mx-auto pointer-events-none">
                                         {[...Array(Math.min(table.capacity, 8))].map((_, i) => (
-                                            <div key={i} className="chair"></div>
+                                            <div key={i} className="w-6 h-3 bg-slate-300 rounded-sm"></div>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="table-details">
+
+                                <div className="flex flex-col gap-1 text-[13px]">
                                     {activeSessionForTable ? (
                                         <>
-                                            <p className="active-guest"><strong>Guest:</strong> {activeSessionForTable.guestName || 'Walk-in'}</p>
-                                            <p className="session-time"><strong>Time:</strong> {new Date(activeSessionForTable.openedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                                            <p className="bill-preview"><strong>Bill:</strong> KES {parseFloat(activeSessionForTable.totalAmount || 0).toLocaleString()}</p>
+                                            <p className="text-text-dark font-medium"><strong>Guest:</strong> {activeSessionForTable.guestName || 'Walk-in'}</p>
+                                            <p className="text-text-slate"><strong>Time:</strong> {new Date(activeSessionForTable.openedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                                            <p className="text-primary font-bold"><strong>Bill:</strong> KES {parseFloat(activeSessionForTable.totalAmount || 0).toLocaleString()}</p>
                                         </>
                                     ) : (
                                         <>
-                                            <p><strong>Location:</strong> {table.location.replace('_', ' ')}</p>
-                                            <p><strong>Capacity:</strong> {table.capacity} Pax</p>
-                                            {table.notes && <p className="table-notes">"{table.notes}"</p>}
+                                            <p className="text-text-dark"><strong>Location:</strong> {table.location.replace('_', ' ')}</p>
+                                            <p className="text-text-slate"><strong>Capacity:</strong> {table.capacity} Pax</p>
+                                            {table.notes && <p className="text-[12px] text-text-slate italic mt-1 line-clamp-1">"{table.notes}"</p>}
                                         </>
                                     )}
                                 </div>
-                                <div className="table-card-actions">
+
+                                <div className="flex gap-2 mt-auto">
                                     {activeSessionForTable ? (
-                                        <button className="btn-primary" onClick={() => handleManageSession(activeSessionForTable, table)}>🧾 Orders</button>
+                                        <button className="flex-1 btn-primary py-2 text-[12px]" onClick={() => handleManageSession(activeSessionForTable, table)}>Orders</button>
                                     ) : (
-                                        <button className="btn-primary" onClick={() => handleOpenTable(table)}>Open Table</button>
+                                        <button className="flex-1 btn-primary py-2 text-[12px]" onClick={() => handleOpenTable(table)}>Open Table</button>
                                     )}
-                                    <button className="edit-btn" onClick={() => handleOpenModal(table)}>Config</button>
+                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-2 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleOpenModal(table)}>Edit</button>
                                 </div>
                             </div>
                         );
@@ -291,20 +295,20 @@ const Restaurant = () => {
                 )}
             </div>
 
-            <div className="section-divider">
-                <h2>Menu & Ordering</h2>
+            <div className="mt-12 mb-6 border-b border-slate-200 pb-2">
+                <h2 className="text-xl font-bold text-text-dark uppercase tracking-tight">Menu & Ordering</h2>
             </div>
 
-            <div className="menu-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-10">
                 {menuItems.map(item => (
-                    <div key={item.id} className="premium-card menu-item-card">
-                        <div className="menu-item-info">
-                            <h3>{item.name}</h3>
-                            <span className="category-tag">{item.category?.name || 'General'}</span>
-                            <div className="price-tag">KES {item.price}</div>
+                    <div key={item.id} className="premium-card p-4 flex justify-between items-center transition-all hover:border-primary/30">
+                        <div className="flex flex-col gap-1">
+                            <h3 className="font-bold text-text-dark m-0 leading-tight">{item.name}</h3>
+                            <span className="text-[10px] font-bold text-primary uppercase tracking-wider">{item.category?.name || 'General'}</span>
+                            <div className="text-sm font-bold text-slate-700 mt-1">KES {item.price}</div>
                         </div>
                         <button
-                            className="btn-primary btn-sm"
+                            className="btn-primary-outline px-3 py-1.5 text-[11px] font-bold"
                             onClick={() => {
                                 if (sessions.length === 0) {
                                     alert('No active sessions. Please open a table first.');
@@ -317,7 +321,7 @@ const Restaurant = () => {
                                 }
                             }}
                         >
-                            Add to Order
+                            Add Order
                         </button>
                     </div>
                 ))}
@@ -326,11 +330,11 @@ const Restaurant = () => {
             {/* Table Config Modal */}
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-xl">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[800px]">
                         <div className="modal-header">
-                            <div className="modal-title-area">
-                                <h2>{editingTable ? 'Edit Table Configuration' : 'Register New Table'}</h2>
-                                <p className="modal-subtitle">Configure table properties and service details.</p>
+                            <div>
+                                <h2 className="text-xl font-bold text-primary">{editingTable ? 'Edit Table Configuration' : 'Register New Table'}</h2>
+                                <p className="text-sm text-text-slate mt-0.5">Configure table properties and service details.</p>
                             </div>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
@@ -380,14 +384,15 @@ const Restaurant = () => {
                                         <option value="RESERVED">Reserved</option>
                                     </select>
                                 </div>
-                                <div className="form-group" style={{display: 'flex', alignItems: 'center', gap: '10px', marginTop: '25px'}}>
+                                <div className="flex items-center gap-2.5 mt-6">
                                     <input
                                         type="checkbox"
                                         id="isVip"
                                         checked={formData.isVip}
                                         onChange={(e) => setFormData({...formData, isVip: e.target.checked})}
+                                        className="w-4 h-4"
                                     />
-                                    <label htmlFor="isVip" style={{marginBottom: 0}}>VIP Table</label>
+                                    <label htmlFor="isVip" className="mb-0">VIP Table</label>
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Internal Service Notes</label>
@@ -396,12 +401,13 @@ const Restaurant = () => {
                                         onChange={(e) => setFormData({...formData, notes: e.target.value})}
                                         placeholder="Special setup requirements, preferred server, or location-specific notes..."
                                         rows="3"
+                                        className="min-h-[100px]"
                                     />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Dismiss</button>
-                                <button type="submit" className="btn-primary">
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Dismiss</button>
+                                <button type="submit" className="btn-primary !px-10">
                                     {editingTable ? 'Update Configuration' : 'Create Table'}
                                 </button>
                             </div>
@@ -413,11 +419,11 @@ const Restaurant = () => {
             {/* Open Table / Session Modal */}
             {showSessionModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card session-modal">
+                    <div className="modal-content premium-card !w-[70%] !max-w-[600px]">
                         <div className="modal-header">
-                            <div className="modal-title-area">
-                                <h2>Open Table: {selectedTable?.tableName}</h2>
-                                <p className="modal-subtitle">Start a new dining session for this table.</p>
+                            <div>
+                                <h2 className="text-xl font-bold text-primary">Open Table: {selectedTable?.tableName}</h2>
+                                <p className="text-sm text-text-slate mt-0.5">Start a new dining session for this table.</p>
                             </div>
                             <button className="close-modal-btn" onClick={() => setShowSessionModal(false)}>&times;</button>
                         </div>
@@ -471,8 +477,8 @@ const Restaurant = () => {
                                 )}
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowSessionModal(false)} className="btn-secondary">Dismiss</button>
-                                <button type="submit" className="btn-primary">Start Session</button>
+                                <button type="button" onClick={() => setShowSessionModal(false)} className="btn-secondary !px-10">Dismiss</button>
+                                <button type="submit" className="btn-primary !px-10">Start Session</button>
                             </div>
                         </form>
                     </div>
@@ -482,52 +488,52 @@ const Restaurant = () => {
             {/* Order Management Modal */}
             {showOrderModal && activeSession && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-xl">
+                    <div className="modal-content premium-card !w-[95%] !max-w-[1400px]">
                         <div className="modal-header">
-                            <div className="modal-title-area">
-                                <h2>🧾 {selectedTable?.tableName} — {activeSession.guestName || 'Walk-in'}</h2>
-                                <p className="modal-subtitle">
+                            <div>
+                                <h2 className="text-xl font-bold text-primary">🧾 {selectedTable?.tableName} — {activeSession.guestName || 'Walk-in'}</h2>
+                                <p className="text-sm text-text-slate mt-0.5">
                                     Session opened at {new Date(activeSession.openedAt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} · {activeSession.paxCount} pax
                                 </p>
                             </div>
                             <button className="close-modal-btn" onClick={() => setShowOrderModal(false)}>&times;</button>
                         </div>
 
-                        <div className="order-modal-body">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-7 overflow-hidden">
                             {/* Left: Current Orders */}
-                            <div className="order-list-panel">
-                                <h3 className="panel-title">Current Order</h3>
+                            <div className="flex flex-col overflow-hidden bg-slate-50 rounded-xl p-5 border border-slate-200">
+                                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider mb-4">Current Order</h3>
                                 {orderLoading ? (
-                                    <div className="loading">Loading orders...</div>
+                                    <div className="text-center py-10 text-text-slate animate-pulse">Loading orders...</div>
                                 ) : sessionOrders.length === 0 ? (
-                                    <div className="order-empty-state">
-                                        <p>No items yet.</p>
-                                        <p className="sub-text">Add items from the menu →</p>
+                                    <div className="flex-1 flex flex-col items-center justify-center text-slate-400 py-10">
+                                        <p className="m-0">No items yet.</p>
+                                        <p className="text-[12px] mt-1">Add items from the menu →</p>
                                     </div>
                                 ) : (
-                                    <div className="order-items-list">
+                                    <div className="flex-1 overflow-y-auto flex flex-col gap-2 mb-4 pr-1">
                                         {sessionOrders.map(order => (
-                                            <div key={order.id} className="order-item-row">
-                                                <div className="order-item-info">
-                                                    <span className="order-item-name">{order.menuItem?.name || `Item #${order.menuItemId}`}</span>
-                                                    <span className="order-item-meta">x{order.quantity} @ KES {parseFloat(order.unitPrice || 0).toLocaleString()}</span>
+                                            <div key={order.id} className="flex justify-between items-center bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <span className="font-bold text-slate-800 text-sm">{order.menuItem?.name || `Item #${order.menuItemId}`}</span>
+                                                    <span className="text-[11px] text-slate-500">x{order.quantity} @ KES {parseFloat(order.unitPrice || 0).toLocaleString()}</span>
                                                 </div>
-                                                <div className="order-item-right">
-                                                    <span className="order-item-total">KES {parseFloat(order.totalAmount || 0).toLocaleString()}</span>
-                                                    <button className="remove-order-btn" onClick={() => handleRemoveOrder(order.id)}>×</button>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="font-bold text-primary text-sm">KES {parseFloat(order.totalAmount || 0).toLocaleString()}</span>
+                                                    <button className="bg-red-50 text-red-600 hover:bg-red-200 w-8 h-8 rounded-full flex items-center justify-center text-lg leading-none pb-0.5 transition-all" onClick={() => handleRemoveOrder(order.id)}>×</button>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 )}
 
-                                <div className="bill-total-bar">
-                                    <span className="bill-label">Total</span>
-                                    <span className="bill-amount">KES {orderTotal.toLocaleString()}</span>
+                                <div className="flex justify-between items-center py-4 border-t-2 border-slate-200 mt-auto">
+                                    <span className="text-base font-bold text-slate-700">Total</span>
+                                    <span className="text-2xl font-extrabold text-primary">KES {orderTotal.toLocaleString()}</span>
                                 </div>
 
                                 <button
-                                    className="btn-danger close-session-btn"
+                                    className="w-full mt-3 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                                     onClick={handleCloseSession}
                                     disabled={sessionOrders.length === 0}
                                 >
@@ -536,15 +542,15 @@ const Restaurant = () => {
                             </div>
 
                             {/* Right: Menu Picker */}
-                            <div className="menu-picker-panel">
-                                <h3 className="panel-title">Menu</h3>
-                                <div className="menu-picker-grid">
+                            <div className="flex flex-col overflow-hidden bg-slate-50 rounded-xl p-5 border border-slate-200">
+                                <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider mb-4">Select Items</h3>
+                                <div className="grid grid-cols-2 gap-3 overflow-y-auto flex-1 pr-1">
                                     {menuItems.map(item => (
-                                        <div key={item.id} className="menu-picker-card" onClick={() => handleAddToOrder(item)}>
-                                            <div className="picker-item-name">{item.name}</div>
-                                            <div className="picker-item-category">{item.category?.name || 'General'}</div>
-                                            <div className="picker-item-price">KES {parseFloat(item.price || 0).toLocaleString()}</div>
-                                            <div className="picker-add-btn">+ Add</div>
+                                        <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-3 cursor-pointer transition-all hover:border-primary hover:shadow-md group" onClick={() => handleAddToOrder(item)}>
+                                            <div className="font-bold text-slate-800 text-sm mb-0.5">{item.name}</div>
+                                            <div className="text-[10px] text-slate-400 uppercase font-bold">{item.category?.name || 'General'}</div>
+                                            <div className="text-primary font-bold text-base mt-2">KES {parseFloat(item.price || 0).toLocaleString()}</div>
+                                            <div className="mt-2 text-[11px] text-green-600 font-bold group-hover:translate-x-1 transition-transform">+ Add</div>
                                         </div>
                                     ))}
                                 </div>

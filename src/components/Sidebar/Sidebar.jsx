@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useLocation, NavLink, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
-import './Sidebar.css';
 
 const menuGroups = [
     {
@@ -47,7 +46,6 @@ const menuGroups = [
             { label: 'Departments', path: '/departments', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Room Types', path: '/room-types', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Employees', path: '/employees', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Inventory', path: '/inventory', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
         ]
     }
 ];
@@ -101,30 +99,32 @@ const Sidebar = () => {
     };
 
     return (
-        <aside className="sidebar">
-            <div className="sidebar-logo">
-                <span className="logo-icon">🏨</span>
-                <span className="logo-text">Soluxe <span>Hotel ERP</span></span>
+        <aside className="w-[var(--sidebar-width)] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100]">
+            <div className="px-6 mb-10 flex items-center gap-3">
+                <span className="text-2xl">🏨</span>
+                <span className="text-xl font-extrabold -tracking-tight text-white">Soluxe <span className="text-yellow">Hotel ERP</span></span>
             </div>
             
-            <nav className="sidebar-nav">
+            <nav className="flex-1 flex flex-col overflow-y-auto">
                 {filteredGroups.map((group) => (
-                    <div key={group.title} className={`nav-group ${openGroup === group.title ? 'is-open' : ''}`}>
+                    <div key={group.title} className="flex flex-col mb-2">
                         <div 
-                            className="nav-group-header" 
+                            className="flex justify-between items-center px-6 py-3 cursor-pointer text-white/40 text-[11px] uppercase tracking-wider font-bold transition-all duration-300 hover:text-white/80" 
                             onClick={() => toggleGroup(group.title)}
                         >
-                            <span className="nav-group-title">{group.title}</span>
-                            <span className="chevron">{openGroup === group.title ? '▼' : '▶'}</span>
+                            <span>{group.title}</span>
+                            <span className={`text-[10px] transition-transform duration-300 ${openGroup === group.title ? 'rotate-0' : '-rotate-90'}`}>▼</span>
                         </div>
-                        <div className="nav-group-items">
+                        <div className={`overflow-hidden transition-all duration-300 bg-black/10 ${openGroup === group.title ? 'max-h-[500px]' : 'max-h-0'}`}>
                             {group.items.map((item) => (
                                 <NavLink 
                                     key={item.label} 
                                     to={item.path} 
-                                    className={({ isActive }) => `nav-item submenu-item ${isActive ? 'active' : ''}`}
+                                    className={({ isActive }) => 
+                                        `flex items-center px-6 py-3 pl-8 no-underline text-white/70 font-medium text-sm transition-all duration-300 border-l-4 border-transparent hover:text-yellow hover:bg-yellow/5 ${isActive ? 'text-yellow bg-yellow/10 border-l-yellow font-bold' : ''}`
+                                    }
                                 >
-                                    <span className="nav-label">{item.label}</span>
+                                    <span>{item.label}</span>
                                 </NavLink>
                             ))}
                         </div>
@@ -132,14 +132,14 @@ const Sidebar = () => {
                 ))}
             </nav>
 
-            <div className="sidebar-footer">
-                <div className="user-profile">
-                    <div className="user-avatar">
+            <div className="p-6 border-t border-border-gray">
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-linear-to-br from-yellow to-yellow-dark rounded-[10px] flex items-center justify-center font-bold text-[13px] text-white">
                         {user ? user.username.substring(0, 2).toUpperCase() : 'U'}
                     </div>
-                    <div className="user-info">
-                        <span className="user-name">{user ? user.username : 'Guest User'}</span>
-                        <span className="user-role">
+                    <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-white">{user ? user.username : 'Guest User'}</span>
+                        <span className="text-[12px] text-white/70">
                             {user?.roles?.includes('ROLE_HOTEL_ADMIN') ? 'Hotel Admin' : 
                              user?.roles?.includes('ROLE_MANAGER') ? 'Manager' : 
                              user?.roles?.includes('ROLE_RECEPTIONIST') ? 'Receptionist' : 
@@ -153,8 +153,12 @@ const Sidebar = () => {
                         </span>
                     </div>
                 </div>
-                <button className="logout-btn" onClick={handleLogout} title="Sign Out">
-                    <span className="logout-icon">Logout 🚪</span>
+                <button 
+                    className="mt-5 w-full p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-[13px] font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all duration-300 hover:bg-red-500 hover:text-white hover:border-red-500" 
+                    onClick={handleLogout} 
+                    title="Sign Out"
+                >
+                    <span>Logout 🚪</span>
                 </button>
             </div>
         </aside>

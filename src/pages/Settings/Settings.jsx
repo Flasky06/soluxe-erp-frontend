@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Settings.css';
-
 const Settings = () => {
     const [activeTab, setActiveTab] = useState('users');
     const [users, setUsers] = useState([]);
@@ -94,28 +92,25 @@ const Settings = () => {
         // In a real app, this would call an API
     };
 
-    const getRoleBadgeClass = (role) => {
-        return role ? role.toLowerCase().replace('_', '-') : 'staff';
-    };
 
     return (
-        <div className="settings-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>System Settings</h1>
-                    <p>Configure property identity, users, and global policies.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">System Settings</h1>
+                    <p className="text-text-slate text-base">Configure property identity, users, and global policies.</p>
                 </div>
             </div>
 
-            <div className="settings-tabs">
+            <div className="flex gap-2 mb-8 border-b border-slate-200">
                 <button 
-                    className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`} 
+                    className={`px-6 py-3 font-bold text-sm transition-all border-b-2 ${activeTab === 'users' ? 'text-primary border-primary bg-primary/5' : 'text-text-slate border-transparent hover:text-primary'}`} 
                     onClick={() => setActiveTab('users')}
                 >
                     User Management
                 </button>
                 <button 
-                    className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`} 
+                    className={`px-6 py-3 font-bold text-sm transition-all border-b-2 ${activeTab === 'profile' ? 'text-primary border-primary bg-primary/5' : 'text-text-slate border-transparent hover:text-primary'}`} 
                     onClick={() => setActiveTab('profile')}
                 >
                     Hotel Profile
@@ -124,12 +119,12 @@ const Settings = () => {
 
             {activeTab === 'users' ? (
                 <>
-                    <div className="section-actions">
+                    <div className="flex justify-end mb-6">
                         <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add New User</button>
                     </div>
-                    <div className="premium-card table-container">
+                    <div className="premium-card overflow-hidden">
                         {loading ? (
-                            <div className="loading">Loading user accounts...</div>
+                            <div className="text-center py-20 text-text-slate animate-pulse text-lg">Loading user accounts...</div>
                         ) : (
                             <table className="management-table">
                                 <thead>
@@ -138,42 +133,47 @@ const Settings = () => {
                                         <th>Contact Information</th>
                                         <th>Role</th>
                                         <th>Status</th>
-                                        <th>Actions</th>
+                                        <th className="text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {users.map((user) => (
-                                        <tr key={user.id}>
+                                        <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                                             <td>
-                                                <div className="user-cell">
-                                                    <div className="user-avatar-mini">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-9 h-9 bg-primary text-white rounded-lg flex items-center justify-center text-xs font-bold uppercase">
                                                         {user.username.substring(0, 2).toUpperCase()}
                                                     </div>
-                                                    <div className="user-details">
-                                                        <span className="bold">{user.username}</span>
-                                                        <span className="sub-text">{user.fullName}</span>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold text-slate-700">{user.username}</span>
+                                                        <span className="text-[12px] text-slate-500">{user.fullName}</span>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div className="contact-cell">
-                                                    <span>{user.email || 'No Email'}</span>
-                                                    <span className="sub-text">{user.phoneNumber || 'No Phone'}</span>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[13px] text-slate-700">{user.email || 'No Email'}</span>
+                                                    <span className="text-[11px] text-slate-400 font-medium">{user.phoneNumber || 'No Phone'}</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span className={`role-badge ${getRoleBadgeClass(user.role)}`}>
+                                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${
+                                                    user.role === 'HOTEL_ADMIN' ? 'bg-red-50 text-red-600' :
+                                                    user.role === 'MANAGER' ? 'bg-amber-50 text-amber-600' :
+                                                    user.role === 'RECEPTIONIST' ? 'bg-green-50 text-green-600' :
+                                                    user.role === 'ACCOUNTANT' ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-600'
+                                                }`}>
                                                     {user.role}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span className={`status-pill ${user.isActive ? 'active' : 'inactive'}`}>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight ${user.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
                                                     {user.isActive ? 'Active' : 'Disabled'}
                                                 </span>
                                             </td>
                                             <td>
-                                                <div className="table-actions">
-                                                    <button className="view-btn" onClick={() => handleOpenModal(user)}>Edit Profile</button>
+                                                <div className="flex justify-end">
+                                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleOpenModal(user)}>Edit Profile</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -184,13 +184,13 @@ const Settings = () => {
                     </div>
                 </>
             ) : (
-                <div className="premium-card profile-section">
-                    <form onSubmit={handleSaveHotelInfo} className="hotel-form">
-                        <div className="form-grid">
-                            <div className="form-group full-width branding-group">
-                                <div className="logo-preview">{hotelInfo.logo}</div>
-                                <button type="button" className="btn-secondary">Upload New Logo</button>
-                            </div>
+                <div className="premium-card p-8 !max-w-[800px] mx-auto">
+                    <form onSubmit={handleSaveHotelInfo} className="flex flex-col gap-8">
+                        <div className="flex items-center gap-6 p-5 bg-slate-50 rounded-xl border border-slate-200">
+                            <div className="text-4xl w-20 h-20 bg-white shadow-sm border border-slate-200 flex items-center justify-center rounded-xl">{hotelInfo.logo}</div>
+                            <button type="button" className="btn-secondary text-sm">Upload New Logo</button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="form-group">
                                 <label>Hotel Name</label>
                                 <input type="text" value={hotelInfo.name} onChange={(e) => setHotelInfo({...hotelInfo, name: e.target.value})} />
@@ -211,31 +211,35 @@ const Settings = () => {
                                     <option value="EUR">Euro (EUR)</option>
                                 </select>
                             </div>
-                            <div className="form-group full-width">
+                            <div className="form-group md:col-span-2">
                                 <label>Address</label>
-                                <textarea rows="3" value={hotelInfo.address} onChange={(e) => setHotelInfo({...hotelInfo, address: e.target.value})}></textarea>
+                                <textarea rows="3" value={hotelInfo.address} onChange={(e) => setHotelInfo({...hotelInfo, address: e.target.value})} className="min-h-[100px]"></textarea>
                             </div>
                             <div className="form-group">
                                 <label>Default Tax Rate (%)</label>
                                 <input type="number" value={hotelInfo.taxRate} onChange={(e) => setHotelInfo({...hotelInfo, taxRate: e.target.value})} />
                             </div>
                         </div>
-                        <div className="form-footer">
-                            <button type="submit" className="btn-primary">Update Property Profile</button>
+                        <div className="flex justify-end pt-6 border-t border-slate-200">
+                            <button type="submit" className="btn-primary !px-10">Update Property Profile</button>
                         </div>
                     </form>
                 </div>
             )}
 
+            {/* User Modal */}
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card modal-lg">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[800px]">
                         <div className="modal-header">
-                            <h2>{editingUser ? 'Edit User Profile' : 'Create New User Account'}</h2>
+                            <div>
+                                <h2 className="text-xl font-bold text-primary">{editingUser ? 'Edit User Profile' : 'Create New User Account'}</h2>
+                                <p className="text-sm text-text-slate mt-0.5">Define system access roles and credentials.</p>
+                            </div>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>
-                            <div className="form-grid">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-7">
                                 <div className="form-group">
                                     <label>Username</label>
                                     <input 
@@ -293,7 +297,7 @@ const Settings = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>{editingUser ? 'New Password (leave blank to keep current)' : 'Account Password'}</label>
+                                    <label>{editingUser ? 'New Password (Optional)' : 'Account Password'}</label>
                                     <input 
                                         type="password" 
                                         required={!editingUser}
@@ -302,22 +306,23 @@ const Settings = () => {
                                         placeholder="••••••••"
                                     />
                                 </div>
-                                <div className="form-group full-width">
-                                    <div className="checkbox-group">
+                                <div className="md:col-span-2">
+                                    <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
                                         <input 
                                             type="checkbox" 
                                             id="isActive"
                                             checked={formData.isActive} 
                                             onChange={(e) => setFormData({...formData, isActive: e.target.checked})} 
+                                            className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary"
                                         />
-                                        <label htmlFor="isActive">Account is Active (Allow login and system access)</label>
+                                        <label htmlFor="isActive" className="mb-0 font-medium text-slate-700">Account is Active (Allow login and system access)</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">{editingUser ? 'Save Updates' : 'Create Account'}</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">{editingUser ? 'Save Updates' : 'Create Account'}</button>
                             </div>
                         </form>
                     </div>

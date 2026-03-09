@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Guests.css';
 
 const Guests = () => {
     const [guests, setGuests] = useState([]);
@@ -104,18 +103,18 @@ const Guests = () => {
     };
 
     return (
-        <div className="guests-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Guest Management</h1>
-                    <p>Register and manage guest profiles and identities.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Guest Management</h1>
+                    <p className="text-text-slate text-base">Register and manage guest profiles and identities.</p>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>+ Register Guest</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>Register Guest</button>
             </div>
 
-            <div className="premium-card table-container">
+            <div className="premium-card overflow-x-auto">
                 {loading ? (
-                    <div className="loading">Loading guests...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading guests...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
@@ -131,24 +130,26 @@ const Guests = () => {
                             {guests.map((guest) => (
                                 <tr key={guest.id}>
                                     <td>
-                                        <div className="guest-main-info">
-                                            <span className="bold">{guest.fullName}</span>
-                                            <span className="sub-text">{guest.gender} • {guest.dateOfBirth}</span>
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="font-bold text-text-dark">{guest.fullName}</span>
+                                            <span className="text-[12px] text-text-slate">{guest.gender} • {guest.dateOfBirth}</span>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="contact-info">
-                                            <span>{guest.phone}</span>
-                                            <span className="sub-text">{guest.email}</span>
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-sm font-medium text-text-dark">{guest.phone}</span>
+                                            <span className="text-[12px] text-text-slate italic">{guest.email}</span>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="id-info">
-                                            <span className="badge-outline">{guest.idType}</span>
-                                            <span className="id-num">{guest.idNumber}</span>
+                                        <div className="flex flex-col gap-1.5">
+                                            <span className="inline-block px-1.5 py-0.5 border border-slate-200 rounded text-[10px] font-bold text-slate-600 uppercase w-fit leading-none">{guest.idType}</span>
+                                            <span className="text-xs font-mono text-text-dark">{guest.idNumber}</span>
                                         </div>
                                     </td>
-                                    <td>{guest.nationality}</td>
+                                    <td>
+                                        <span className="text-text-dark">{guest.nationality}</span>
+                                    </td>
                                     <td>
                                         <div className="table-actions">
                                             <button className="view-btn" onClick={() => handleOpenModal(guest)}>Edit</button>
@@ -163,7 +164,7 @@ const Guests = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card guest-modal">
+                    <div className="modal-content premium-card !w-[80%] !max-w-[1000px]">
                         <div className="modal-header">
                             <h2>{editingGuest ? 'Edit Guest Profile' : 'Register New Guest'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -229,17 +230,17 @@ const Guests = () => {
                                         value={formData.preferences} 
                                         onChange={(e) => setFormData({...formData, preferences: e.target.value})} 
                                         placeholder="Allergies, room preferences, dietary restrictions..."
-                                        style={{minHeight: '80px'}}
+                                        className="min-h-[80px]"
                                     />
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Address</label>
-                                    <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Full physical address..." rows="2" />
+                                    <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Full physical address..." className="min-h-[60px]" rows="2" />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Save Guest Profile</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">Save Guest Profile</button>
                             </div>
                         </form>
                     </div>

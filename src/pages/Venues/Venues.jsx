@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './Venues.css';
 
 const Venues = () => {
     const [venues, setVenues] = useState([]);
@@ -84,18 +83,18 @@ const Venues = () => {
     };
 
     return (
-        <div className="venues-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Venue Management</h1>
-                    <p>Manage conference halls, gardens, ballrooms and other event spaces.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Venue Management</h1>
+                    <p className="text-text-slate text-base">Manage conference halls, gardens, ballrooms and other event spaces.</p>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add New Venue</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Venue</button>
             </div>
 
-            <div className="premium-card table-container">
+            <div className="premium-card overflow-x-auto">
                 {loading ? (
-                    <div className="loading">Loading venues...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading venues...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
@@ -112,24 +111,28 @@ const Venues = () => {
                             {venues.length > 0 ? (
                                 venues.map((venue) => (
                                     <tr key={venue.id}>
-                                        <td className="bold">{venue.name}</td>
+                                        <td><span className="font-bold text-text-dark">{venue.name}</span></td>
                                         <td>
-                                            <span className={`status-badge info`}>{venue.type}</span>
+                                            <span className="status-badge info">{venue.type}</span>
                                         </td>
-                                        <td>{venue.capacity} pax</td>
-                                        <td className="amount">KES {parseFloat(venue.ratePerHour).toLocaleString()}</td>
-                                        <td className="amount">KES {parseFloat(venue.ratePerDay).toLocaleString()}</td>
+                                        <td className="text-text-slate font-medium">{venue.capacity} pax</td>
+                                        <td>
+                                            <span className="font-semibold text-slate-700">KES {parseFloat(venue.ratePerHour).toLocaleString()}</span>
+                                        </td>
+                                        <td>
+                                            <span className="font-semibold text-slate-700">KES {parseFloat(venue.ratePerDay).toLocaleString()}</span>
+                                        </td>
                                         <td>
                                             <div className="table-actions">
                                                 <button className="view-btn" onClick={() => handleOpenModal(venue)}>Edit</button>
-                                                <button className="delete-btn" onClick={() => handleDelete(venue.id)}>Delete</button>
+                                                <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300 ml-2" onClick={() => handleDelete(venue.id)}>Delete</button>
                                             </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="empty-state">No venues found. Click 'Add New Venue' to get started.</td>
+                                    <td colSpan="6" className="text-center py-20 text-text-slate italic">No venues found. Click 'Add New Venue' to get started.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -139,7 +142,7 @@ const Venues = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card venues-modal">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[1000px]">
                         <div className="modal-header">
                             <h2>{editingVenue ? 'Edit Venue' : 'Add New Venue'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -200,12 +203,13 @@ const Venues = () => {
                                         value={formData.description} 
                                         onChange={(e) => setFormData({...formData, description: e.target.value})}
                                         placeholder="Brief details about the venue..."
+                                        className="min-h-[100px]"
                                     ></textarea>
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">{editingVenue ? 'Update Venue' : 'Create Venue'}</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">{editingVenue ? 'Update Venue' : 'Create Venue'}</button>
                             </div>
                         </form>
                     </div>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import './RoomTypes.css';
 
 const RoomTypes = () => {
     const [roomTypes, setRoomTypes] = useState([]);
@@ -72,18 +71,18 @@ const RoomTypes = () => {
     };
 
     return (
-        <div className="room-types-page">
-            <div className="page-header">
+        <div className="flex flex-col">
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1>Room Types</h1>
-                    <p>Manage room categories and default pricing plans.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Room Types</h1>
+                    <p className="text-text-slate text-base">Manage room categories and default pricing plans.</p>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add Room Type</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Room Type</button>
             </div>
 
-            <div className="premium-card table-container">
+            <div className="premium-card overflow-x-auto">
                 {loading ? (
-                    <div className="loading">Loading room types...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading room types...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
@@ -97,13 +96,17 @@ const RoomTypes = () => {
                         <tbody>
                             {roomTypes.map((type) => (
                                 <tr key={type.id}>
-                                    <td><span className="bold">{type.name}</span></td>
-                                    <td>{type.description || 'No description'}</td>
-                                    <td>${type.defaultRate}</td>
+                                    <td><span className="font-bold text-text-dark">{type.name}</span></td>
+                                    <td className="max-w-md">
+                                        <p className="line-clamp-2 text-text-slate italic text-sm">{type.description || 'No description'}</p>
+                                    </td>
+                                    <td>
+                                        <span className="font-semibold text-text-dark">${type.defaultRate}</span>
+                                    </td>
                                     <td>
                                         <div className="table-actions">
                                             <button className="view-btn" onClick={() => handleOpenModal(type)}>Edit</button>
-                                            <button className="edit-btn" style={{backgroundColor: '#fee2e2', color: '#dc2626'}} onClick={() => handleDelete(type.id)}>Delete</button>
+                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleDelete(type.id)}>Delete</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -115,7 +118,7 @@ const RoomTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card room-types-modal">
+                    <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
                         <div className="modal-header">
                             <h2>{editingType ? 'Edit Room Type' : 'Add Room Type'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -138,6 +141,7 @@ const RoomTypes = () => {
                                         value={formData.description} 
                                         onChange={(e) => setFormData({...formData, description: e.target.value})} 
                                         placeholder="Enter details..."
+                                        className="min-h-[100px]"
                                         rows="3"
                                     />
                                 </div>
@@ -153,8 +157,8 @@ const RoomTypes = () => {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Save Room Type</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10">Save Room Type</button>
                             </div>
                         </form>
                     </div>
