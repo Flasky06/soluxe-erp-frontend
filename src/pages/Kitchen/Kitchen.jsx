@@ -124,7 +124,7 @@ const Kitchen = () => {
                                     <div className="flex flex-col gap-1">
                                         <h3 className="text-lg font-bold text-text-dark m-0">{item.name}</h3>
                                         <span className="text-[10px] font-bold text-text-slate uppercase tracking-wider">{item.category?.name || 'General'}</span>
-                                        <div className="text-base font-bold text-slate-700 mt-2">KES {item.price}</div>
+                                        <div className="text-base font-bold text-slate-700 mt-2">KSh {item.price}</div>
                                         {item.prepTimeMins && (
                                             <div className="text-[12px] text-text-slate mt-2 italic">⏱ {item.prepTimeMins} min prep</div>
                                         )}

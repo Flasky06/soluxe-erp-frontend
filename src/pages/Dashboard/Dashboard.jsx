@@ -98,15 +98,15 @@ const Dashboard = () => {
                             <>
                                 <div className="flex justify-between items-center text-text-dark">
                                     <span className="text-text-slate">Room Revenue</span>
-                                    <strong className="text-lg font-bold text-maroon">KES {(revenue.roomRevenue || 0).toLocaleString()}</strong>
+                                    <strong className="text-lg font-bold text-maroon">KSh {(revenue.roomRevenue || 0).toLocaleString()}</strong>
                                 </div>
                                 <div className="flex justify-between items-center text-text-dark">
                                     <span className="text-text-slate">F&B Revenue</span>
-                                    <strong className="text-lg font-bold text-maroon">KES {(revenue.foodAndBeverageRevenue || 0).toLocaleString()}</strong>
+                                    <strong className="text-lg font-bold text-maroon">KSh {(revenue.foodAndBeverageRevenue || 0).toLocaleString()}</strong>
                                 </div>
                                 <div className="flex justify-between items-center text-xl mt-4 pt-4 border-t-2 border-slate-100">
                                     <span className="font-bold text-text-dark">Total Expected</span>
-                                    <strong className="text-2xl font-extrabold text-green-600 font-mono">KES {(revenue.totalRevenue || 0).toLocaleString()}</strong>
+                                    <strong className="text-2xl font-extrabold text-green-600 font-mono">KSh {(revenue.totalRevenue || 0).toLocaleString()}</strong>
                                 </div>
                             </>
                         ) : (

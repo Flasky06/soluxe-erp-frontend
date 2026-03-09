@@ -77,14 +77,14 @@ const Reports = () => {
                         <div className="premium-card p-6 flex flex-col gap-2">
                             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Revenue</div>
                             <div className="text-3xl font-extrabold text-primary">
-                                KES {parseFloat(revenue?.totalRevenue || 0).toLocaleString()}
+                                KSh {parseFloat(revenue?.totalRevenue || 0).toLocaleString()}
                             </div>
                             <div className="text-[12px] text-slate-400 font-medium">For {selectedDate}</div>
                         </div>
                         <div className="premium-card p-6 flex flex-col gap-2">
                             <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">All-Time Folio Revenue</div>
                             <div className="text-3xl font-extrabold text-primary">
-                                KES {folioStats.totalRevenue.toLocaleString()}
+                                KSh {folioStats.totalRevenue.toLocaleString()}
                             </div>
                             <div className="text-[12px] text-slate-400 font-medium">{folioStats.open} open · {folioStats.closed} closed folios</div>
                         </div>
@@ -125,7 +125,7 @@ const Reports = () => {
                                                     />
                                                 </div>
                                                 <div className="w-[120px]">
-                                                    <span className="font-bold text-slate-800 text-[13px]">KES {parseFloat(amount).toLocaleString()}</span>
+                                                    <span className="font-bold text-slate-800 text-[13px]">KSh {parseFloat(amount).toLocaleString()}</span>
                                                 </div>
                                             </div>
                                         );

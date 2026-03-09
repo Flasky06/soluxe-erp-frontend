@@ -270,7 +270,7 @@ const Restaurant = () => {
                                         <>
                                             <p className="text-text-dark font-medium"><strong>Guest:</strong> {activeSessionForTable.guestName || 'Walk-in'}</p>
                                             <p className="text-text-slate"><strong>Time:</strong> {new Date(activeSessionForTable.openedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                                            <p className="text-primary font-bold"><strong>Bill:</strong> KES {parseFloat(activeSessionForTable.totalAmount || 0).toLocaleString()}</p>
+                                            <p className="text-primary font-bold"><strong>Bill:</strong> KSh {parseFloat(activeSessionForTable.totalAmount || 0).toLocaleString()}</p>
                                         </>
                                     ) : (
                                         <>
@@ -305,7 +305,7 @@ const Restaurant = () => {
                         <div className="flex flex-col gap-1">
                             <h3 className="font-bold text-text-dark m-0 leading-tight">{item.name}</h3>
                             <span className="text-[10px] font-bold text-primary uppercase tracking-wider">{item.category?.name || 'General'}</span>
-                            <div className="text-sm font-bold text-slate-700 mt-1">KES {item.price}</div>
+                            <div className="text-sm font-bold text-slate-700 mt-1">KSh {item.price}</div>
                         </div>
                         <button
                             className="btn-primary-outline px-3 py-1.5 text-[11px] font-bold"
@@ -516,10 +516,10 @@ const Restaurant = () => {
                                             <div key={order.id} className="flex justify-between items-center bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
                                                 <div className="flex flex-col gap-0.5">
                                                     <span className="font-bold text-slate-800 text-sm">{order.menuItem?.name || `Item #${order.menuItemId}`}</span>
-                                                    <span className="text-[11px] text-slate-500">x{order.quantity} @ KES {parseFloat(order.unitPrice || 0).toLocaleString()}</span>
+                                                    <span className="text-[11px] text-slate-500">x{order.quantity} @ KSh {parseFloat(order.unitPrice || 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="font-bold text-primary text-sm">KES {parseFloat(order.totalAmount || 0).toLocaleString()}</span>
+                                                    <span className="font-bold text-primary text-sm">KSh {parseFloat(order.totalAmount || 0).toLocaleString()}</span>
                                                     <button className="bg-red-50 text-red-600 hover:bg-red-200 w-8 h-8 rounded-full flex items-center justify-center text-lg leading-none pb-0.5 transition-all" onClick={() => handleRemoveOrder(order.id)}>×</button>
                                                 </div>
                                             </div>
@@ -529,7 +529,7 @@ const Restaurant = () => {
 
                                 <div className="flex justify-between items-center py-4 border-t-2 border-slate-200 mt-auto">
                                     <span className="text-base font-bold text-slate-700">Total</span>
-                                    <span className="text-2xl font-extrabold text-primary">KES {orderTotal.toLocaleString()}</span>
+                                    <span className="text-2xl font-extrabold text-primary">KSh {orderTotal.toLocaleString()}</span>
                                 </div>
 
                                 <button
@@ -549,7 +549,7 @@ const Restaurant = () => {
                                         <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-3 cursor-pointer transition-all hover:border-primary hover:shadow-md group" onClick={() => handleAddToOrder(item)}>
                                             <div className="font-bold text-slate-800 text-sm mb-0.5">{item.name}</div>
                                             <div className="text-[10px] text-slate-400 uppercase font-bold">{item.category?.name || 'General'}</div>
-                                            <div className="text-primary font-bold text-base mt-2">KES {parseFloat(item.price || 0).toLocaleString()}</div>
+                                            <div className="text-primary font-bold text-base mt-2">KSh {parseFloat(item.price || 0).toLocaleString()}</div>
                                             <div className="mt-2 text-[11px] text-green-600 font-bold group-hover:translate-x-1 transition-transform">+ Add</div>
                                         </div>
                                     ))}

@@ -101,7 +101,7 @@ const RoomTypes = () => {
                                         <p className="line-clamp-2 text-text-slate italic text-sm">{type.description || 'No description'}</p>
                                     </td>
                                     <td>
-                                        <span className="font-semibold text-text-dark">${type.defaultRate}</span>
+                                        <span className="font-semibold text-text-dark">KSh {type.defaultRate}</span>
                                     </td>
                                     <td>
                                         <div className="table-actions">
@@ -146,7 +146,7 @@ const RoomTypes = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Default Rate ($)</label>
+                                    <label>Default Rate (KSh)</label>
                                     <input 
                                         type="number" 
                                         required 
