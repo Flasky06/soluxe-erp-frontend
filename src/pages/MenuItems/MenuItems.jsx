@@ -126,11 +126,17 @@ const MenuItems = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center mb-8">
+            <div className="flex justify-end items-center gap-4 mb-8">
+                <button 
+                    className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
+                    onClick={() => setShowQuickCatModal(true)}
+                >
+                    Manage Categories
+                </button>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Menu Item</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="table-card overflow-x-auto">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse">Loading menu...</div>
                 ) : (
@@ -191,13 +197,6 @@ const MenuItems = () => {
                                 <div className="form-group">
                                     <div className="flex justify-between items-center mb-1">
                                         <label className="mb-0">Category</label>
-                                        <button 
-                                            type="button" 
-                                            className="text-primary text-[11px] font-bold hover:underline"
-                                            onClick={() => setShowQuickCatModal(true)}
-                                        >
-                                            + Add Category
-                                        </button>
                                     </div>
                                     <select required value={formData.categoryId} onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
                                         <option value="">Select Category</option>
@@ -237,7 +236,7 @@ const MenuItems = () => {
                 <div className="modal-overlay z-[1000]">
                     <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
                         <div className="modal-header">
-                            <h2 className="text-lg font-bold">Quick Add Category</h2>
+                            <h2 className="text-xl font-bold text-primary">Quick Add Category</h2>
                             <button className="close-modal-btn" onClick={() => setShowQuickCatModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleQuickAddCategory} className="p-4">

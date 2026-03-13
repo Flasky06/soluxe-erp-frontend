@@ -148,6 +148,12 @@ const VenueBookings = () => {
                         onChange={e => setSearch(e.target.value)}
                         className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm w-56"
                     />
+                    <button 
+                        className="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors shadow-sm" 
+                        onClick={() => window.location.href = '/venues'}
+                    >
+                        Manage Venues
+                    </button>
                     <button className="btn-primary" onClick={() => openModal()}>+ New Booking</button>
                 </div>
             </div>
@@ -246,7 +252,7 @@ const VenueBookings = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[90%] !max-w-[1100px]">
                         <div className="modal-header">
-                            <h2>{editing ? 'Edit Venue Booking' : 'New Venue Booking'}</h2>
+                            <h2 className="text-xl font-bold text-primary">{editing ? 'Edit Venue Booking' : 'New Venue Booking'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>
