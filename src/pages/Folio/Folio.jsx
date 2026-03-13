@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Search, Filter, Plus, FileText, CreditCard, CheckCircle2 } from 'lucide-react';
 
 const Folio = () => {
-    const navigate = useNavigate();
     const { user } = useAuthStore();
     const [folios, setFolios] = useState([]);
     const [loading, setLoading] = useState(true);

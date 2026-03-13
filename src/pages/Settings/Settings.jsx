@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../../services/api';
 import { Pencil, Trash2, Plus, Info } from 'lucide-react';
 
@@ -44,14 +44,14 @@ const Settings = () => {
     const [editingDef, setEditingDef] = useState(null);
     const [defFormData, setDefFormData] = useState({ name: '', description: '' });
 
-    const defTypes = [
+    const defTypes = useMemo(() => [
         { id: 'id-types', name: 'Identity Types', endpoint: '/id-types' },
         { id: 'inventory-units', name: 'Inventory Units', endpoint: '/inventory-units' },
         { id: 'charge-types', name: 'Charge Types', endpoint: '/charge-types' },
         { id: 'maintenance-issue-types', name: 'Maintenance Issues', endpoint: '/maintenance-issue-types' },
         { id: 'leave-types', name: 'Leave Types', endpoint: '/leave-types' },
         { id: 'payment-methods', name: 'Payment Methods', endpoint: '/folios/payment-methods' }
-    ];
+    ], []);
 
     const fetchUsers = async () => {
         try {
@@ -64,7 +64,7 @@ const Settings = () => {
         }
     };
 
-    const fetchDefinitions = async (typeId) => {
+    const fetchDefinitions = useCallback(async (typeId) => {
         setDefLoading(true);
         const type = defTypes.find(t => t.id === typeId);
         try {
@@ -75,7 +75,7 @@ const Settings = () => {
         } finally {
             setDefLoading(false);
         }
-    };
+    }, [defTypes]);
 
     useEffect(() => {
         if (activeTab === 'users') {
@@ -83,7 +83,7 @@ const Settings = () => {
         } else if (activeTab === 'definitions') {
             fetchDefinitions(activeDefType);
         }
-    }, [activeTab, activeDefType]);
+    }, [activeTab, activeDefType, fetchDefinitions]);
 
     const handleOpenModal = (user = null) => {
         if (user) {
