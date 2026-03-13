@@ -1,5 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import { LogIn, LogOut, BarChart3, Hotel } from 'lucide-react';
-
+import api from '../../services/api';
 const Dashboard = () => {
     const [stats, setStats] = useState([
         { label: 'Today Arrivals', value: '...', trend: '', icon: <LogIn size={24} />, key: 'totalArrivalsToday' },
