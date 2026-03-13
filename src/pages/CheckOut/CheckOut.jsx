@@ -12,6 +12,14 @@ const CheckOut = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Invoice Modal State
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+    const [selectedStay, setSelectedStay] = useState(null);
+    const [folio, setFolio] = useState(null);
+    const [charges, setCharges] = useState([]);
+    const [payments, setPayments] = useState([]);
+    const [invoiceLoading, setInvoiceLoading] = useState(false);
+
     const fetchData = async () => {
         setLoading(true);
         try {
