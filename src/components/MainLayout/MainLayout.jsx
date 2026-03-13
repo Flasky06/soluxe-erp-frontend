@@ -38,6 +38,7 @@ const pageTitles = {
     '/employees':         'Employees',
     '/departments':       'Departments',
     '/room-types':        'Room Types',
+    '/charge-types':      'Charge Types',
     '/settings':          'Settings',
 };
 

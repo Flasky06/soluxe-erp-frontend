@@ -28,6 +28,7 @@ import CheckOut from './pages/CheckOut/CheckOut';
 import CheckIn from './pages/CheckIn/CheckIn';
 import Maintenance from './pages/Maintenance/Maintenance';
 import VenueBookings from './pages/VenueBookings/VenueBookings';
+import ChargeTypes from './pages/ChargeTypes/ChargeTypes';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -68,6 +69,7 @@ function App() {
                 {/* Financials */}
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT']} />}>
                     <Route path="/folio" element={<Folio />} />
+                    <Route path="/charge-types" element={<ChargeTypes />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF']} />}>
                     <Route path="/kitchen" element={<Kitchen />} />

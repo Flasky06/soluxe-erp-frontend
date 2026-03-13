@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { Search } from 'lucide-react';
 
 const Employees = () => {
     const [employees, setEmployees] = useState([]);

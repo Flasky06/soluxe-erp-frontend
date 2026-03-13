@@ -178,7 +178,7 @@ const Folio = () => {
     return (
         <div className="flex flex-col">
             <div className="flex justify-end items-center gap-4 mb-8">
-                <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2" onClick={() => setShowChargeTypeModal(true)}>
+                <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2" onClick={() => navigate('/charge-types')}>
                     <Plus size={16} /> Manage Charge Types
                 </button>
                 <button className="btn-secondary flex items-center gap-2" onClick={() => setShowMethodModal(true)}>

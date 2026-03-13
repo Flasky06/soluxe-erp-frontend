@@ -65,6 +65,7 @@ const menuGroups = [
         icon: FileText,
         items: [
             { label: 'Folio & Billing', path: '/folio', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT'] },
+            { label: 'Charge Types', path: '/charge-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Reports', path: '/reports', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
         ]
     },
