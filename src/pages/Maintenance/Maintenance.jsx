@@ -33,6 +33,26 @@ const Maintenance = () => {
 
     const isMaintenanceStaff = hasRole('ROLE_MAINTENANCE') || hasRole('ROLE_HOTEL_ADMIN') || hasRole('ROLE_MANAGER');
 
+    const fetchAllData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [ticketsRes, roomsRes, usersRes, issueTypesRes] = await Promise.all([
+                api.get('/maintenance'),
+                api.get('/rooms'),
+                api.get('/users'),
+                api.get('/maintenance-issue-types')
+            ]);
+            setTickets(ticketsRes.data);
+            setRooms(roomsRes.data);
+            setUsers(usersRes.data);
+            setIssueTypes(issueTypesRes.data);
+            
+            // Auto-select first issue type if none selected
+            if (issueTypesRes.data.length > 0 && !formData.issueTypeId) {
+                setFormData(prev => ({ ...prev, issueTypeId: issueTypesRes.data[0].id }));
+            }
+        } catch (err) {
+            console.error('Failed to fetch maintenance data:', err);
         } finally {
             setLoading(false);
         }

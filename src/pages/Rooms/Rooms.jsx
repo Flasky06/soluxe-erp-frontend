@@ -6,12 +6,19 @@ const Rooms = () => {
     const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showTypeModal, setShowTypeModal] = useState(false);
     const [editingRoom, setEditingRoom] = useState(null);
     const [formData, setFormData] = useState({
         roomNumber: '',
         floor: '',
         roomTypeId: '',
         status: 'AVAILABLE'
+    });
+
+    const [typeFormData, setTypeFormData] = useState({
+        name: '',
+        description: '',
+        basePrice: ''
     });
 
     const fetchData = async () => {
@@ -29,10 +36,35 @@ const Rooms = () => {
             setLoading(false);
         }
     };
+    const fetchRoomTypes = async () => {
+        try {
+            const res = await api.get('/room-types');
+            setRoomTypes(res.data);
+        } catch (err) {
+            console.error('Failed to fetch room types:', err);
+        }
+    };
 
     useEffect(() => {
         fetchData();
     }, []);
+
+    const handleCreateType = async (e) => {
+        e.preventDefault();
+        try {
+            const payload = {
+                ...typeFormData,
+                basePrice: parseFloat(typeFormData.basePrice) || 0
+            };
+            await api.post('/room-types', payload);
+            setShowTypeModal(false);
+            setTypeFormData({ name: '', description: '', basePrice: '' });
+            fetchRoomTypes();
+        } catch (err) {
+            console.error('Failed to create room type', err);
+            alert('Failed to create room type.');
+        }
+    };
 
     const handleOpenModal = (room = null) => {
         if (room) {
@@ -92,11 +124,14 @@ const Rooms = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center mb-8">
+            <div className="flex justify-end items-center gap-4 mb-8">
+                <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" onClick={() => setShowTypeModal(true)}>
+                    Configure Types
+                </button>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Room</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="table-card overflow-x-auto">
                 {loading && rooms.length === 0 ? (
                     <div className="text-center py-20 text-text-slate animate-pulse">Loading rooms...</div>
                 ) : (
@@ -154,7 +189,7 @@ const Rooms = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
                         <div className="modal-header">
-                            <h2>{editingRoom ? 'Edit Room' : 'Add New Room'}</h2>
+                            <h2 className="text-xl font-bold text-primary">{editingRoom ? 'Edit Room' : 'Add New Room'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>
@@ -193,6 +228,34 @@ const Rooms = () => {
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
                                 <button type="submit" className="btn-primary !px-10">{editingRoom ? 'Save Changes' : 'Save Room'}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {showTypeModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
+                        <div className="modal-header">
+                            <h2 className="text-xl font-bold text-primary">Add Room Category</h2>
+                            <button className="close-modal-btn" onClick={() => setShowTypeModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleCreateType} className="form-grid">
+                            <div className="form-group full-width">
+                                <label>Category Name</label>
+                                <input type="text" required value={typeFormData.name} onChange={e => setTypeFormData({...typeFormData, name: e.target.value})} placeholder="e.g. Deluxe Suite" />
+                            </div>
+                            <div className="form-group full-width">
+                                <label>Base Price (KSh)</label>
+                                <input type="number" required value={typeFormData.basePrice} onChange={e => setTypeFormData({...typeFormData, basePrice: e.target.value})} placeholder="5000" />
+                            </div>
+                            <div className="form-group full-width">
+                                <label>Description</label>
+                                <textarea required value={typeFormData.description} onChange={e => setTypeFormData({...typeFormData, description: e.target.value})} placeholder="Features and amenities..." />
+                            </div>
+                            <div className="modal-footer col-span-full">
+                                <button type="button" onClick={() => setShowTypeModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary">Create Category</button>
                             </div>
                         </form>
                     </div>
