@@ -194,8 +194,8 @@ const Reservations = () => {
     };
 
     const getGuest = (id) => guests.find(g => g.id === id) || { fullName: `Guest ${id}`, email: '' };
-    const getRoomTypeName = (id) => roomTypes.find(t => t.id === id)?.name || 'N/A';
-    const getTableName = (id) => tables.find(t => t.id === id)?.tableName || 'N/A';
+    const getRoomTypeName = (id) => roomTypes.find(t => t.id === id)?.name || '-';
+    const getTableName = (id) => tables.find(t => t.id === id)?.tableName || '-';
 
     const getInitials = (name) => {
         return name
@@ -349,19 +349,19 @@ const Reservations = () => {
                                                 {res.dateIn ? (
                                                     <div className="flex items-center gap-2">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[13px] font-bold text-text-dark leading-none">{new Date(res.dateIn).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
+                                                            <span className="text-[14px] font-bold text-slate-800 leading-none">{new Date(res.dateIn).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
                                                             <span className="text-[10px] text-slate-400 mt-1 uppercase font-bold text-center">In</span>
                                                         </div>
                                                         <ChevronRight size={14} className="text-slate-300" />
                                                         <div className="flex flex-col">
-                                                            <span className="text-[13px] font-bold text-text-dark leading-none">{new Date(res.dateOut).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
+                                                            <span className="text-[14px] font-bold text-slate-800 leading-none">{new Date(res.dateOut).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
                                                             <span className="text-[10px] text-slate-400 mt-1 uppercase font-bold text-center">Out</span>
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex items-center gap-2 text-[13px] font-bold text-text-dark leading-none">
+                                                    <div className="flex items-center gap-2 text-[14px] font-bold text-slate-800 leading-none">
                                                         <Clock size={14} className="text-slate-400" />
-                                                        {res.tableReservationTime ? new Date(res.tableReservationTime).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+                                                        {res.tableReservationTime ? new Date(res.tableReservationTime).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
                                                     </div>
                                                 )}
                                             </td>

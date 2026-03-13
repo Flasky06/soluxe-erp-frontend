@@ -137,8 +137,8 @@ const Inventory = () => {
             alert('Failed to create inventory unit');
         }
     };
-    const getCategoryName = (id) => categories.find(c => c.id === id)?.name || 'Uncategorized';
-    const getUnitName = (id) => units.find(u => u.id === id)?.name || 'N/A';
+    const getCategoryName = (id) => categories.find(c => c.id === id)?.name || '-';
+    const getUnitName = (id) => units.find(u => u.id === id)?.name || '-';
 
     const [searchTerm, setSearchTerm] = useState('');
 

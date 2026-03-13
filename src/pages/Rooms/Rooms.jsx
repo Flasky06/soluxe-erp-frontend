@@ -21,6 +21,8 @@ const Rooms = () => {
         basePrice: ''
     });
 
+    const [searchTerm, setSearchTerm] = useState('');
+
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -36,6 +38,14 @@ const Rooms = () => {
             setLoading(false);
         }
     };
+
+    const filteredRooms = rooms.filter(room => {
+        const roomNum = room.roomNumber.toLowerCase();
+        const typeName = (room.roomType?.name || '').toLowerCase();
+        const search = searchTerm.toLowerCase();
+        return roomNum.includes(search) || typeName.includes(search);
+    });
+
     const fetchRoomTypes = async () => {
         try {
             const res = await api.get('/room-types');
@@ -124,34 +134,48 @@ const Rooms = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center gap-4 mb-8">
-                <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" onClick={() => setShowTypeModal(true)}>
-                    Configure Types
-                </button>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Room</button>
+            <div className="table-tools">
+                <div className="table-search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input 
+                        type="text" 
+                        placeholder="Search Room Number or Type..." 
+                        className="search-input"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center gap-4">
+                    <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" onClick={() => setShowTypeModal(true)}>
+                        Configure Types
+                    </button>
+                    <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Room</button>
+                </div>
             </div>
 
-            <div className="table-card overflow-x-auto">
+            <div className="table-card">
                 {loading && rooms.length === 0 ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading rooms...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading rooms...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th>Room Number</th>
-                                <th>Type</th>
-                                <th>Floor</th>
-                                <th>Status</th>
-                                <th>Housekeeping</th>
-                                <th>Actions</th>
+                                <th style={{ width: '20%' }}>Room Number</th>
+                                <th style={{ width: '20%' }}>Type</th>
+                                <th style={{ width: '15%' }}>Floor</th>
+                                <th style={{ width: '15%' }}>Status</th>
+                                <th style={{ width: '15%' }}>Housekeeping</th>
+                                <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {rooms.length > 0 ? (
-                                rooms.map((room) => (
+                            {filteredRooms.length > 0 ? (
+                                filteredRooms.map((room) => (
                                     <tr key={room.id}>
-                                        <td className="font-bold text-text-dark">Room {room.roomNumber}</td>
-                                        <td>{room.roomType?.name || 'N/A'}</td>
+                                        <td className="font-bold text-slate-900">Room {room.roomNumber}</td>
+                                        <td>
+                                            <span className="font-semibold text-slate-700">{room.roomType?.name || '-'}</span>
+                                        </td>
                                         <td>Floor {room.floor}</td>
                                         <td>
                                             <span className={`status-badge ${getStatusClass(room.status)}`}>
@@ -159,25 +183,27 @@ const Rooms = () => {
                                             </span>
                                         </td>
                                         <td>
-                                            <div className="flex items-center gap-2 text-xs font-medium">
+                                            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider">
                                                 {room.status === 'DIRTY' ? (
                                                     <span className="text-amber-600">Needs Cleaning</span>
                                                 ) : (
-                                                    <span className="text-green-600">Clean</span>
+                                                    <span className="text-emerald-600">Clean</span>
                                                 )}
                                             </div>
                                         </td>
                                         <td>
                                             <div className="table-actions">
                                                 <button className="view-btn" onClick={() => handleOpenModal(room)}>Edit</button>
-                                                <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleDelete(room.id)}>Delete</button>
+                                                <button className="delete-btn" onClick={() => handleDelete(room.id)}>Delete</button>
                                             </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-20 text-text-slate italic">No rooms found. Add your first room to get started.</td>
+                                    <td colSpan="6" className="text-center py-20 text-slate-400 font-medium italic">
+                                        {searchTerm ? 'No rooms match your search.' : 'No rooms found.'}
+                                    </td>
                                 </tr>
                             )}
                         </tbody>

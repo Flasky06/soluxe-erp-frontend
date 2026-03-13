@@ -10,13 +10,7 @@ const CheckOut = () => {
     const [rooms, setRooms] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Invoice Modal State
-    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-    const [selectedStay, setSelectedStay] = useState(null);
-    const [folio, setFolio] = useState(null);
-    const [charges, setCharges] = useState([]);
-    const [payments, setPayments] = useState([]);
-    const [invoiceLoading, setInvoiceLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const fetchData = async () => {
         setLoading(true);
@@ -43,6 +37,13 @@ const CheckOut = () => {
         fetchData();
     }, []);
 
+    const filteredStays = stays.filter(stay => {
+        const guestName = getGuestName(stay.guestId).toLowerCase();
+        const roomNum = getRoomNumber(stay.roomId).toLowerCase();
+        const search = searchTerm.toLowerCase();
+        return guestName.includes(search) || roomNum.includes(search);
+    });
+
     const handleCheckOut = async (stayId) => {
         if (!window.confirm('Confirm check-out for this guest? Room will be set to DIRTY.')) return;
         try {
@@ -60,12 +61,10 @@ const CheckOut = () => {
         setShowInvoiceModal(true);
         setInvoiceLoading(true);
         try {
-            // 1. Get Folio by Stay ID
             const folioRes = await api.get(`/folios/stay/${stay.id}`);
             const folioData = folioRes.data;
             setFolio(folioData);
 
-            // 2. Get Charges and Payments
             const [chargesRes, paymentsRes] = await Promise.all([
                 api.get(`/folios/${folioData.id}/charges`),
                 api.get(`/folios/${folioData.id}/payments`)
@@ -74,8 +73,6 @@ const CheckOut = () => {
             setPayments(paymentsRes.data);
         } catch (err) {
             console.error('Failed to load invoice details:', err);
-            // It's possible the folio doesn't exist if no charges were ever made, 
-            // but the system should auto-create it on check-in.
         } finally {
             setInvoiceLoading(false);
         }
@@ -87,56 +84,70 @@ const CheckOut = () => {
 
     const getGuestName = (guestId) => {
         const guest = guests.find(g => g.id === guestId);
-        return guest ? guest.fullName : `Guest ${guestId}`;
+        return guest ? guest.fullName : `-`;
     };
 
     const getRoomNumber = (roomId) => {
         const room = rooms.find(r => r.id === roomId);
-        return room ? room.roomNumber : 'N/A';
+        return room ? room.roomNumber : '-';
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return '-';
         return new Date(dateString).toLocaleDateString();
     };
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
+            <div className="table-tools">
+                <div className="table-search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input 
+                        type="text" 
+                        placeholder="Search Guest or Room..." 
+                        className="search-input"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="table-card">
                 {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading active stays...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading active stays...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th>Room</th>
-                                <th>Guest</th>
-                                <th>Date In</th>
-                                <th>Expected Out</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th style={{ width: '25%' }}>Room</th>
+                                <th style={{ width: '30%' }}>Guest</th>
+                                <th style={{ width: '15%' }}>Date In</th>
+                                <th style={{ width: '15%' }}>Expected Out</th>
+                                <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {stays.length > 0 ? (
-                                stays.map((stay) => (
+                            {filteredStays.length > 0 ? (
+                                filteredStays.map((stay) => (
                                     <tr key={stay.id}>
-                                        <td><span className="font-bold text-text-dark">Room {getRoomNumber(stay.roomId)}</span></td>
-                                        <td>{getGuestName(stay.guestId)}</td>
+                                        <td>
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-slate-900">Room {getRoomNumber(stay.roomId)}</span>
+                                                <span className="text-[11px] text-slate-500">ID: {stay.id}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span className="font-semibold text-slate-800">{getGuestName(stay.guestId)}</span>
+                                        </td>
                                         <td>{formatDate(stay.dateIn)}</td>
                                         <td>{formatDate(stay.dateOut)}</td>
                                         <td>
-                                            <span className="status-badge active">Checked In</span>
-                                        </td>
-                                        <td>
                                             <div className="table-actions">
                                                 <button 
-                                                    className="bg-primary text-white hover:bg-primary-dark px-4 py-1.5 rounded-md text-[12px] font-bold transition-all duration-300 shadow-sm"
+                                                    className="bg-maroon text-white hover:bg-[#6b0f11] px-4 py-2 rounded-lg text-[12px] font-bold transition-all shadow-sm flex items-center gap-2"
                                                     onClick={() => handleViewInvoice(stay)}
                                                 >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                                     View Folio
                                                 </button>
                                             </div>
@@ -145,7 +156,9 @@ const CheckOut = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-20 text-text-slate italic">No active stays found. All guests have been checked out.</td>
+                                    <td colSpan="5" className="text-center py-20 text-slate-400 font-medium italic">
+                                        {searchTerm ? 'No guests match your search.' : 'All guests have been checked out.'}
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
