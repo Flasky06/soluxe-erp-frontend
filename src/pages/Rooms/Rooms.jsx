@@ -241,6 +241,7 @@ const Rooms = () => {
                                         ))}
                                     </select>
                                 </div>
+
                                 <div className="form-group">
                                     <label>Status</label>
                                     <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
@@ -266,6 +267,7 @@ const Rooms = () => {
                             <h2 className="text-xl font-bold text-primary">Add Room Category</h2>
                             <button className="close-modal-btn" onClick={() => setShowTypeModal(false)}>&times;</button>
                         </div>
+
                         <form onSubmit={handleCreateType} className="form-grid">
                             <div className="form-group full-width">
                                 <label>Category Name</label>
@@ -284,6 +286,7 @@ const Rooms = () => {
                                 <button type="submit" className="btn-primary">Create Category</button>
                             </div>
                         </form>
+
                     </div>
                 </div>
             )}
