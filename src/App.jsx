@@ -18,6 +18,8 @@ import Restaurant from './pages/Restaurant/Restaurant';
 import POS from './pages/POS/POS';
 import Settings from './pages/Settings/Settings';
 import Reports from './pages/Reports/Reports';
+import Expenses from './pages/Expenses/Expenses';
+import ExpenseTypes from './pages/ExpenseTypes/ExpenseTypes';
 import Tables from './pages/Tables/Tables';
 import MenuItems from './pages/MenuItems/MenuItems';
 import Suppliers from './pages/Suppliers/Suppliers';
@@ -76,6 +78,7 @@ function App() {
                     <Route path="/folio" element={<Folio />} />
                     <Route path="/charge-types" element={<ChargeTypes />} />
                     <Route path="/payment-methods" element={<PaymentMethods />} />
+                    <Route path="/expense-types" element={<ExpenseTypes />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF']} />}>
                     <Route path="/kitchen" element={<Kitchen />} />
@@ -88,6 +91,7 @@ function App() {
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT']} />}>
                     <Route path="/reports" element={<Reports />} />
+                    <Route path="/expenses" element={<Expenses />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
                     <Route path="/menu-items" element={<MenuItems />} />

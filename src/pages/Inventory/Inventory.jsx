@@ -29,7 +29,7 @@ const Inventory = () => {
     const fetchData = async () => {
         try {
             const [itemsRes, catsRes, unitsRes] = await Promise.all([
-                api.get('/inventory-items'),
+                api.get('/inventory'),
                 api.get('/inventory-categories'),
                 api.get('/inventory-units')
             ]);
@@ -105,9 +105,9 @@ const Inventory = () => {
                 buyingPrice: parseFloat(formData.buyingPrice) || 0
             };
             if (editingItem) {
-                await api.put(`/inventory-items/${editingItem.id}`, payload);
+                await api.put(`/inventory/${editingItem.id}`, payload);
             } else {
-                await api.post('/inventory-items', payload);
+                await api.post('/inventory', payload);
             }
             setShowModal(false);
             fetchData();
