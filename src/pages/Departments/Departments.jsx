@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
+import { Search, Plus, Building2 } from 'lucide-react';
 
 const Departments = () => {
     const [departments, setDepartments] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentDepartment, setCurrentDepartment] = useState({ name: '', description: '' });
     const [isEditing, setIsEditing] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const fetchDepartments = async () => {
-        setLoading(true);
+    const fetchDepartments = useCallback(async () => {
         try {
             const response = await api.get('/departments');
-            setDepartments(response.data);
+            setDepartments(response.data || []);
             setError(null);
         } catch (err) {
             console.error('Error fetching departments:', err);
             setError('Failed to load departments. Please try again later.');
-        } finally {
-            setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchDepartments();
-    }, []);
+    }, [fetchDepartments]);
 
     const handleOpenModal = (dept = { name: '', description: '' }) => {
         setCurrentDepartment(dept);
@@ -67,17 +66,28 @@ const Departments = () => {
         }
     };
 
-    if (loading && departments.length === 0) {
-        return <div className="loading-state">Loading departments...</div>;
-    }
+    const filteredDepartments = (departments || []).filter(dept => 
+        dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (dept.description && dept.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
 
     return (
         <div className="flex flex-col">
-            <header className="flex justify-end items-center mb-8">
+            <div className="table-tools">
+                <div className="table-search">
+                    <Search size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search departments..." 
+                        className="search-input w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>
                     Add Department
                 </button>
-            </header>
+            </div>
 
             {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-8">
@@ -89,28 +99,36 @@ const Departments = () => {
                 <table className="management-table">
                     <thead>
                         <tr>
-                            <th>Department Name</th>
-                            <th>Description</th>
-                            <th>Actions</th>
+                            <th style={{ width: '30%' }}>Department Name</th>
+                            <th style={{ width: '55%' }}>Description</th>
+                            <th style={{ width: '15%' }} className="text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {departments.map((dept) => (
+                        {filteredDepartments.length > 0 ? filteredDepartments.map((dept) => (
                             <tr key={dept.id}>
                                 <td>
-                                    <span className="font-bold text-text-dark">{dept.name}</span>
+                                    <div className="flex items-center gap-3">
+                                        <span className="font-bold text-slate-800">{dept.name}</span>
+                                    </div>
                                 </td>
                                 <td>
-                                    <p className="text-text-slate line-clamp-2 max-w-xl">{dept.description}</p>
+                                    <p className="text-slate-500 text-sm italic truncate">{dept.description || 'No description'}</p>
                                 </td>
                                 <td>
                                     <div className="table-actions">
                                         <button className="view-btn" onClick={() => handleOpenModal(dept)}>Edit</button>
-                                        <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300 ml-2" onClick={() => handleDelete(dept.id)}>Delete</button>
+                                        <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleDelete(dept.id)}>Delete</button>
                                     </div>
                                 </td>
                             </tr>
-                        ))}
+                        )) : (
+                            <tr>
+                                <td colSpan="3" className="text-center py-20 text-slate-400 italic">
+                                    {searchTerm ? 'No departments match your search.' : 'No departments found.'}
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>

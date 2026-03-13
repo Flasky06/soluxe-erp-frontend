@@ -32,6 +32,7 @@ const menuGroups = [
         items: [
             { label: 'Dashboard', path: '/', icon: LayoutDashboard },
             { label: 'Maintenance', path: '/maintenance', icon: Wrench, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE', 'ROLE_RECEPTIONIST'] },
+            { label: 'Issue Types', path: '/maintenance-issue-types', icon: Settings2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
         ]
     },
     {
@@ -66,6 +67,7 @@ const menuGroups = [
         items: [
             { label: 'Folio & Billing', path: '/folio', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT'] },
             { label: 'Charge Types', path: '/charge-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Payment Methods', path: '/payment-methods', icon: CreditCard, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Reports', path: '/reports', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
         ]
     },
@@ -74,7 +76,8 @@ const menuGroups = [
         icon: Box,
         items: [
             { label: 'Stock Management', path: '/inventory', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-            { label: 'Inventory Categories', path: '/inventory-categories', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Stock Categories', path: '/inventory-categories', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Stock Units', path: '/inventory-units', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
             { label: 'Suppliers', path: '/suppliers', icon: Truck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
         ]
     },
@@ -86,6 +89,7 @@ const menuGroups = [
             { label: 'Employees', path: '/employees', icon: UsersRound, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Departments', path: '/departments', icon: Building2, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Room Types', path: '/room-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Leave Types', path: '/leave-types', icon: CalendarPlus, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Settings', path: '/settings', icon: Settings2, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
         ]
     }

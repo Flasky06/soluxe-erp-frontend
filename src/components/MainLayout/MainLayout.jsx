@@ -39,6 +39,10 @@ const pageTitles = {
     '/departments':       'Departments',
     '/room-types':        'Room Types',
     '/charge-types':      'Charge Types',
+    '/payment-methods':   'Payment Methods',
+    '/inventory-units':   'Inventory Units',
+    '/leave-types':       'Leave Types',
+    '/maintenance-issue-types': 'Maintenance Issue Types',
     '/settings':          'Settings',
 };
 

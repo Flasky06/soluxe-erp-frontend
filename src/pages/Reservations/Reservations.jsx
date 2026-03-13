@@ -185,10 +185,10 @@ const Reservations = () => {
 
     const getStatusInfo = (status) => {
         switch(status?.toUpperCase()) {
-            case 'BOOKED': return { icon: <Clock className="w-3.5 h-3.5" />, class: 'booked', label: 'Confirmed' };
-            case 'CHECKED_IN': return { icon: <CheckCircle2 className="w-3.5 h-3.5" />, class: 'checked_in', label: 'In-House' };
-            case 'CHECKED_OUT': return { icon: <LogOut className="w-3.5 h-3.5" />, class: 'checked_out', label: 'Completed' };
-            case 'CANCELLED': return { icon: <AlertCircle className="w-3.5 h-3.5" />, class: 'cancelled', label: 'Cancelled' };
+            case 'BOOKED': return { icon: null, class: 'booked', label: 'Confirmed' };
+            case 'CHECKED_IN': return { icon: null, class: 'checked_in', label: 'In-House' };
+            case 'CHECKED_OUT': return { icon: null, class: 'checked_out', label: 'Completed' };
+            case 'CANCELLED': return { icon: null, class: 'cancelled', label: 'Cancelled' };
             default: return { icon: null, class: '', label: status || 'UNKNOWN' };
         }
     };
@@ -332,27 +332,27 @@ const Reservations = () => {
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col gap-1.5">
                                                     {res.roomTypeId && (
-                                                        <div className="flex items-center gap-2 text-[12px] text-text-dark font-medium">
-                                                            <div className="w-5 h-5 bg-blue-50 text-blue-500 rounded flex items-center justify-center"><Bed size={12} /></div>
-                                                            <span>Room: {getRoomTypeName(res.roomTypeId)} ({res.adults}A, {res.children}C)</span>
+                                                        <div className="flex items-center gap-2 text-[12px] text-text-dark font-medium leading-none">
+                                                            <span className="font-bold">Room:</span>
+                                                            <span>{getRoomTypeName(res.roomTypeId)} ({res.adults}A, {res.children}C)</span>
                                                         </div>
                                                     )}
                                                     {res.tableId && (
-                                                        <div className="flex items-center gap-2 text-[12px] text-text-dark font-medium">
-                                                            <div className="w-5 h-5 bg-amber-50 text-amber-500 rounded flex items-center justify-center"><Utensils size={12} /></div>
-                                                            <span>Table: {getTableName(res.tableId)} ({res.tablePax} Pax)</span>
+                                                        <div className="flex items-center gap-2 text-[12px] text-text-dark font-medium leading-none">
+                                                            <span className="font-bold">Table:</span>
+                                                            <span>{getTableName(res.tableId)} ({res.tablePax} Pax)</span>
                                                         </div>
                                                     )}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 {res.dateIn ? (
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex items-center gap-3">
                                                         <div className="flex flex-col">
                                                             <span className="text-[14px] font-bold text-slate-800 leading-none">{new Date(res.dateIn).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
                                                             <span className="text-[10px] text-slate-400 mt-1 uppercase font-bold text-center">In</span>
                                                         </div>
-                                                        <ChevronRight size={14} className="text-slate-300" />
+                                                        <span className="text-slate-300 font-bold leading-none">-</span>
                                                         <div className="flex flex-col">
                                                             <span className="text-[14px] font-bold text-slate-800 leading-none">{new Date(res.dateOut).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
                                                             <span className="text-[10px] text-slate-400 mt-1 uppercase font-bold text-center">Out</span>
@@ -360,14 +360,12 @@ const Reservations = () => {
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center gap-2 text-[14px] font-bold text-slate-800 leading-none">
-                                                        <Clock size={14} className="text-slate-400" />
                                                         {res.tableReservationTime ? new Date(res.tableReservationTime).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
                                                     </div>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`status-badge ${sInfo.class} flex items-center gap-1.5 w-fit`}>
-                                                    {sInfo.icon}
+                                                <span className={`status-badge ${sInfo.class} flex items-center justify-center min-w-[100px] h-7`}>
                                                     {sInfo.label}
                                                 </span>
                                             </td>

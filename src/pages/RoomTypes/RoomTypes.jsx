@@ -10,10 +10,8 @@ const RoomTypes = () => {
         name: '',
         description: '',
         defaultRate: '',
-        weekendRate: '',
         capacity: 2,
-        bedType: 'Queen',
-        amenities: ''
+        bedType: 'Queen'
     });
 
     const fetchRoomTypes = async () => {
@@ -34,14 +32,14 @@ const RoomTypes = () => {
     const handleOpenModal = (type = null) => {
         if (type) {
             setEditingType(type);
+            // Merge features/amenities into description for the form if they exist separately in DB
+            const mergedDesc = [type.description, type.amenities].filter(Boolean).join('\nAmenities: ');
             setFormData({
                 name: type.name,
-                description: type.description || '',
+                description: mergedDesc,
                 defaultRate: type.defaultRate || '',
-                weekendRate: type.weekendRate || '',
                 capacity: type.capacity || 2,
-                bedType: type.bedType || 'Queen',
-                amenities: type.amenities || ''
+                bedType: type.bedType || 'Queen'
             });
         } else {
             setEditingType(null);
@@ -49,10 +47,8 @@ const RoomTypes = () => {
                 name: '', 
                 description: '', 
                 defaultRate: '',
-                weekendRate: '',
                 capacity: 2,
-                bedType: 'Queen',
-                amenities: ''
+                bedType: 'Queen'
             });
         }
         setShowModal(true);
@@ -64,7 +60,9 @@ const RoomTypes = () => {
             const payload = {
                 ...formData,
                 defaultRate: parseFloat(formData.defaultRate) || 0,
-                weekendRate: parseFloat(formData.weekendRate) || 0
+                // We'll send empty or same for weekendRate to satisfy backend if required
+                weekendRate: parseFloat(formData.defaultRate) || 0,
+                amenities: '' // Moved into description
             };
             if (editingType) {
                 await api.put(`/room-types/${editingType.id}`, payload);
@@ -102,46 +100,41 @@ const RoomTypes = () => {
 
             <div className="premium-card overflow-x-auto">
                 {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading room types...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading room directory...</div>
                 ) : (
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Details</th>
-                                <th>Capacity</th>
-                                <th>Default Rate</th>
-                                <th>Actions</th>
+                                <th style={{ width: '25%' }}>Type Name</th>
+                                <th style={{ width: '45%' }}>Description & Amenities</th>
+                                <th style={{ width: '15%' }}>Setup</th>
+                                <th style={{ width: '15%' }}>Rate</th>
+                                <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {roomTypes.map((type) => (
                                 <tr key={type.id}>
-                                    <td><span className="font-bold text-text-dark">{type.name}</span></td>
-                                    <td className="max-w-md">
-                                        <div className="flex flex-col gap-1">
-                                            <p className="line-clamp-2 text-text-slate text-sm">{type.description || 'No description'}</p>
-                                            {type.amenities && <p className="text-xs text-slate-500 italic line-clamp-1">Includes: {type.amenities}</p>}
+                                    <td><span className="font-bold text-slate-800">{type.name}</span></td>
+                                    <td>
+                                        <div className="flex flex-col">
+                                            <p className="line-clamp-2 text-slate-600 text-sm leading-snug">{type.description || 'No details'}</p>
+                                            {type.amenities && <p className="text-[11px] text-slate-400 mt-1 italic">Features: {type.amenities}</p>}
                                         </div>
                                     </td>
                                     <td>
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-slate-700">{type.capacity} Guests</span>
-                                            <span className="text-xs text-slate-500">{type.bedType}</span>
+                                            <span className="text-sm font-bold text-slate-700">{type.capacity} Pax</span>
+                                            <span className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">{type.bedType}</span>
                                         </div>
                                     </td>
                                     <td>
-                                        <div className="flex flex-col">
-                                            <span className="font-semibold text-text-dark">KSh {parseFloat(type.defaultRate || 0).toLocaleString()} <span className="text-[10px] text-slate-400 font-normal">Base</span></span>
-                                            {type.weekendRate && (
-                                                <span className="font-semibold text-slate-500 text-sm">KSh {parseFloat(type.weekendRate).toLocaleString()} <span className="text-[10px] font-normal">Wknd</span></span>
-                                            )}
-                                        </div>
+                                        <span className="font-extrabold text-slate-900 tracking-tight">KSh {parseFloat(type.defaultRate || 0).toLocaleString()}</span>
                                     </td>
                                     <td>
                                         <div className="table-actions">
                                             <button className="view-btn" onClick={() => handleOpenModal(type)}>Edit</button>
-                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleDelete(type.id)}>Delete</button>
+                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleDelete(type.id)}>Delete</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -153,90 +146,74 @@ const RoomTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
                         <div className="modal-header">
-                            <h2>{editingType ? 'Edit Room Type' : 'Add Room Type'}</h2>
+                            <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Room Type' : 'Register New Type'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Name</label>
+                                    <label>Room Category Name</label>
                                     <input 
                                         type="text" 
                                         required 
                                         value={formData.name} 
                                         onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                                        placeholder="e.g. Deluxe Suite"
+                                        placeholder="e.g. Executive Queen Suite"
                                     />
                                 </div>
-                                <div className="form-group full-width">
-                                        <label>Description</label>
-                                        <textarea 
-                                            value={formData.description} 
-                                            onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                                            placeholder="Enter details..."
-                                            className="min-h-[80px]"
-                                            rows="2"
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Max Capacity</label>
-                                        <input 
-                                            type="number" 
-                                            required 
-                                            min="1"
-                                            value={formData.capacity} 
-                                            onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value) || 1})} 
-                                            placeholder="2"
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Bed Type</label>
-                                        <select 
-                                            value={formData.bedType} 
-                                            onChange={(e) => setFormData({...formData, bedType: e.target.value})}
-                                        >
-                                            <option value="Single">Single</option>
-                                            <option value="Double">Double</option>
-                                            <option value="Twin">Twin</option>
-                                            <option value="Queen">Queen</option>
-                                            <option value="King">King</option>
-                                        </select>
-                                    </div>
-                                    <div className="form-group full-width">
-                                        <label>Amenities (comma separated)</label>
-                                        <textarea 
-                                            value={formData.amenities} 
-                                            onChange={(e) => setFormData({...formData, amenities: e.target.value})} 
-                                            placeholder="e.g. WiFi, AC, Mini-bar, Ocean View"
-                                            className="min-h-[60px]"
-                                            rows="2"
-                                        />
-                                    </div>
+                                
                                 <div className="form-group">
-                                    <label>Default Rate (KSh)</label>
+                                    <label>Max Occupancy</label>
+                                    <input 
+                                        type="number" 
+                                        required 
+                                        min="1"
+                                        value={formData.capacity} 
+                                        onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value) || 1})} 
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Bed Configuration</label>
+                                    <select 
+                                        value={formData.bedType} 
+                                        onChange={(e) => setFormData({...formData, bedType: e.target.value})}
+                                    >
+                                        <option value="Single">Single Bed</option>
+                                        <option value="Double">Double Bed</option>
+                                        <option value="Twin">Twin Beds</option>
+                                        <option value="Queen">Queen Size</option>
+                                        <option value="King">King Size</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group full-width">
+                                    <label>Description & Amenities</label>
+                                    <textarea 
+                                        value={formData.description} 
+                                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                                        placeholder="Enter room details and amenities here..."
+                                        className="min-h-[120px]"
+                                        rows="4"
+                                    />
+                                </div>
+
+                                <div className="form-group full-width">
+                                    <label>Room Rate (KSh per Night)</label>
                                     <input 
                                         type="number" 
                                         required 
                                         value={formData.defaultRate} 
                                         onChange={(e) => setFormData({...formData, defaultRate: e.target.value})} 
                                         placeholder="0.00"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Weekend Rate (KSh)</label>
-                                    <input 
-                                        type="number" 
-                                        value={formData.weekendRate} 
-                                        onChange={(e) => setFormData({...formData, weekendRate: e.target.value})} 
-                                        placeholder="Optional..."
+                                        className="!text-lg !font-bold text-primary"
                                     />
                                 </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">Save Room Type</button>
+                                <button type="submit" className="btn-primary !px-10">Save Settings</button>
                             </div>
                         </form>
                     </div>

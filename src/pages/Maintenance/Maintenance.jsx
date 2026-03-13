@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
+import { Plus } from 'lucide-react';
 
 const Maintenance = () => {
     const { user, hasRole } = useAuthStore();
@@ -260,11 +261,21 @@ const Maintenance = () => {
 
                             <div className="form-group">
                                 <label>Issue Type</label>
-                                <select required value={formData.issueTypeId} onChange={e => setFormData({...formData, issueTypeId: e.target.value})}>
-                                    {issueTypes.map(type => (
-                                        <option key={type.id} value={type.id}>{type.name}</option>
-                                    ))}
-                                </select>
+                                <div className="flex gap-2">
+                                    <select className="flex-1" required value={formData.issueTypeId} onChange={e => setFormData({...formData, issueTypeId: e.target.value})}>
+                                        {issueTypes.map(type => (
+                                            <option key={type.id} value={type.id}>{type.name}</option>
+                                        ))}
+                                    </select>
+                                    <button 
+                                        type="button"
+                                        className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center transition-colors"
+                                        onClick={() => setShowIssueTypeModal(true)}
+                                        title="Add New Category"
+                                    >
+                                        <Plus size={18} />
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="form-group">

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Search, Filter, Plus, FileText, CreditCard } from 'lucide-react';
 
 const Folio = () => {
+    const navigate = useNavigate();
     const { user } = useAuthStore();
     const [folios, setFolios] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -341,12 +343,22 @@ const Folio = () => {
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Payment Method</label>
-                                    <select required value={newPayment.paymentMethodId} onChange={(e) => setNewPayment({...newPayment, paymentMethodId: e.target.value})}>
-                                        <option value="">Select Method</option>
-                                        {paymentMethods.map(method => (
-                                            <option key={method.id} value={method.id}>{method.name}</option>
-                                        ))}
-                                    </select>
+                                    <div className="flex gap-2">
+                                        <select className="flex-1" required value={newPayment.paymentMethodId} onChange={(e) => setNewPayment({...newPayment, paymentMethodId: e.target.value})}>
+                                            <option value="">Select Method</option>
+                                            {paymentMethods.map(method => (
+                                                <option key={method.id} value={method.id}>{method.name}</option>
+                                            ))}
+                                        </select>
+                                        <button 
+                                            type="button"
+                                            className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center transition-colors"
+                                            onClick={() => setShowMethodModal(true)}
+                                            title="Add New Payment Method"
+                                        >
+                                            <Plus size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Amount (KSh)</label>

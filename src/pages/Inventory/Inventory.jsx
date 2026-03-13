@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { Search } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 
 const Inventory = () => {
     const [items, setItems] = useState([]);
@@ -266,11 +266,21 @@ const Inventory = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Inventory Unit</label>
-                                    <select required value={formData.unitId} onChange={(e) => setFormData({...formData, unitId: e.target.value})}>
-                                        {units.map(u => (
-                                            <option key={u.id} value={u.id}>{u.name}</option>
-                                        ))}
-                                    </select>
+                                    <div className="flex gap-2">
+                                        <select className="flex-1" required value={formData.unitId} onChange={(e) => setFormData({...formData, unitId: e.target.value})}>
+                                            {units.map(u => (
+                                                <option key={u.id} value={u.id}>{u.name}</option>
+                                            ))}
+                                        </select>
+                                        <button 
+                                            type="button"
+                                            className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center transition-colors px-3"
+                                            onClick={() => setShowUnitModal(true)}
+                                            title="Add New Unit"
+                                        >
+                                            <Plus size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Buying Price (KSh)</label>

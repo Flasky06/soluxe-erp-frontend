@@ -21,7 +21,8 @@ const Employees = () => {
         departmentId: '',
         nationality: '',
         idTypeId: '',
-        idNumber: ''
+        idNumber: '',
+        kraPin: ''
     });
     const [deptFormData, setDeptFormData] = useState({ name: '', description: '' });
     const [serverErrors, setServerErrors] = useState({});
@@ -92,7 +93,8 @@ const Employees = () => {
                 departmentId: employee.departmentId || '',
                 nationality: employee.nationality || '',
                 idTypeId: employee.idTypeId || '',
-                idNumber: employee.idNumber || ''
+                idNumber: employee.idNumber || '',
+                kraPin: employee.kraPin || ''
             });
         } else {
             setEditingEmployee(null);
@@ -107,7 +109,8 @@ const Employees = () => {
                 departmentId: departments.length > 0 ? departments[0].id : '',
                 nationality: 'Kenyan',
                 idTypeId: idTypes.length > 0 ? idTypes[0].id : '',
-                idNumber: ''
+                idNumber: '',
+                kraPin: ''
             });
         }
         setServerErrors({});
@@ -219,6 +222,9 @@ const Employees = () => {
                                         <div className="flex flex-col gap-0.5">
                                             <span className="text-xs font-bold text-text-slate uppercase">{emp.idTypeName || '-'}</span>
                                             <span className="text-xs font-mono text-text-dark">{emp.idNumber || '-'}</span>
+                                            {emp.kraPin && (
+                                                <span className="text-[10px] font-bold text-emerald-600 uppercase mt-1">KRA: {emp.kraPin}</span>
+                                            )}
                                         </div>
                                     </td>
                                     <td>
@@ -313,6 +319,10 @@ const Employees = () => {
                                     <label>Passport / ID Number</label>
                                     <input type="text" required value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="A12345678" />
                                     {serverErrors.idNumber && <p className="text-red-500 text-xs mt-1">{serverErrors.idNumber}</p>}
+                                </div>
+                                <div className="form-group">
+                                    <label>KRA PIN (Optional)</label>
+                                    <input type="text" value={formData.kraPin} onChange={(e) => setFormData({...formData, kraPin: e.target.value})} placeholder="A000000000Z" />
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Languages Spoken (comma separated)</label>

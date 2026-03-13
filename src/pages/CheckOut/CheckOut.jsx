@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
+import { Search, FileText, CheckCircle, Printer, X } from 'lucide-react';
 const CheckOut = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
@@ -45,12 +46,29 @@ const CheckOut = () => {
         fetchData();
     }, []);
 
-    const filteredStays = stays.filter(stay => {
-        const guestName = getGuestName(stay.guestId).toLowerCase();
-        const roomNum = getRoomNumber(stay.roomId).toLowerCase();
-        const search = searchTerm.toLowerCase();
-        return guestName.includes(search) || roomNum.includes(search);
-    });
+    const getGuestName = useCallback((guestId) => {
+        const guest = guests.find(g => g.id === guestId);
+        return guest ? guest.fullName : `-`;
+    }, [guests]);
+
+    const getRoomNumber = useCallback((roomId) => {
+        const room = rooms.find(r => r.id === roomId);
+        return room ? room.roomNumber : '-';
+    }, [rooms]);
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        return new Date(dateString).toLocaleDateString();
+    };
+
+    const filteredStays = useMemo(() => {
+        return stays.filter(stay => {
+            const guestName = getGuestName(stay.guestId).toLowerCase();
+            const roomNum = getRoomNumber(stay.roomId).toLowerCase();
+            const search = searchTerm.toLowerCase();
+            return guestName.includes(search) || roomNum.includes(search);
+        });
+    }, [stays, searchTerm, getGuestName, getRoomNumber]);
 
     const handleCheckOut = async (stayId) => {
         if (!window.confirm('Confirm check-out for this guest? Room will be set to DIRTY.')) return;
@@ -90,30 +108,16 @@ const CheckOut = () => {
         window.print();
     };
 
-    const getGuestName = (guestId) => {
-        const guest = guests.find(g => g.id === guestId);
-        return guest ? guest.fullName : `-`;
-    };
-
-    const getRoomNumber = (roomId) => {
-        const room = rooms.find(r => r.id === roomId);
-        return room ? room.roomNumber : '-';
-    };
-
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        return new Date(dateString).toLocaleDateString();
-    };
 
     return (
         <div className="flex flex-col">
             <div className="table-tools">
                 <div className="table-search">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <Search size={18} />
                     <input 
                         type="text" 
                         placeholder="Search Guest or Room..." 
-                        className="search-input"
+                        className="search-input w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -155,7 +159,7 @@ const CheckOut = () => {
                                                     className="bg-maroon text-white hover:bg-[#6b0f11] px-4 py-2 rounded-lg text-[12px] font-bold transition-all shadow-sm flex items-center gap-2"
                                                     onClick={() => handleViewInvoice(stay)}
                                                 >
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                                    <FileText size={14} />
                                                     View Folio
                                                 </button>
                                             </div>
@@ -183,7 +187,9 @@ const CheckOut = () => {
                                 <h2 className="text-xl font-bold text-slate-800">Folio & Check-out</h2>
                                 <p className="text-sm text-text-slate mt-0.5">Review charges and process final checkout.</p>
                             </div>
-                            <button className="close-modal-btn" onClick={() => setShowInvoiceModal(false)}>&times;</button>
+                            <button className="close-modal-btn" onClick={() => setShowInvoiceModal(false)}>
+                                <X size={20} />
+                            </button>
                         </div>
 
                         {invoiceLoading ? (

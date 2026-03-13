@@ -29,6 +29,10 @@ import CheckIn from './pages/CheckIn/CheckIn';
 import Maintenance from './pages/Maintenance/Maintenance';
 import VenueBookings from './pages/VenueBookings/VenueBookings';
 import ChargeTypes from './pages/ChargeTypes/ChargeTypes';
+import PaymentMethods from './pages/PaymentMethods/PaymentMethods';
+import InventoryUnits from './pages/InventoryUnits/InventoryUnits';
+import LeaveTypes from './pages/LeaveTypes/LeaveTypes';
+import MaintenanceIssueTypes from './pages/MaintenanceIssueTypes/MaintenanceIssueTypes';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -64,12 +68,14 @@ function App() {
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE', 'ROLE_RECEPTIONIST']} />}>
                     <Route path="/maintenance" element={<Maintenance />} />
+                    <Route path="/maintenance-issue-types" element={<MaintenanceIssueTypes />} />
                 </Route>
 
                 {/* Financials */}
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT']} />}>
                     <Route path="/folio" element={<Folio />} />
                     <Route path="/charge-types" element={<ChargeTypes />} />
+                    <Route path="/payment-methods" element={<PaymentMethods />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF']} />}>
                     <Route path="/kitchen" element={<Kitchen />} />
@@ -95,6 +101,7 @@ function App() {
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER']} />}>
                     <Route path="/inventory" element={<Inventory />} />
                     <Route path="/inventory-categories" element={<InventoryCategories />} />
+                    <Route path="/inventory-units" element={<InventoryUnits />} />
                     <Route path="/suppliers" element={<Suppliers />} />
                 </Route>
 
@@ -102,7 +109,8 @@ function App() {
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN']} />}>
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/departments" element={<Departments />} />
-                    <Route path="/room-types" element={<RoomTypes />} /> {/* Added route */}
+                    <Route path="/room-types" element={<RoomTypes />} /> 
+                    <Route path="/leave-types" element={<LeaveTypes />} />
                     <Route path="/employees" element={<Employees />} />
                     <Route path="/users" element={<Users />} />
                 </Route>
