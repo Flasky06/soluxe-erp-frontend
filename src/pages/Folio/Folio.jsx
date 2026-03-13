@@ -14,6 +14,8 @@ const Folio = () => {
     const [selectedFolioId, setSelectedFolioId] = useState(null);
     const [receipts, setReceipts] = useState([]);
     const [showReceiptModal, setShowReceiptModal] = useState(false);
+    const [showChargeTypeModal, setShowChargeTypeModal] = useState(false);
+    const [newChargeType, setNewChargeType] = useState({ name: '', description: '', active: true });
     
     // Search and Filter State
     const [searchQuery, setSearchQuery] = useState('');
@@ -135,6 +137,21 @@ const Folio = () => {
         }
     };
 
+    const handleCreateChargeType = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await api.post('/charge-types', newChargeType);
+            const response = await api.get('/charge-types');
+            setChargeTypes(response.data);
+            setNewCharge(prev => ({ ...prev, chargeTypeId: res.data.id }));
+            setNewChargeType({ name: '', description: '', active: true });
+            setShowChargeTypeModal(false);
+        } catch (err) {
+            console.error('Failed to create charge type', err);
+            alert('Failed to create charge type.');
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -160,7 +177,10 @@ const Folio = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center mb-8">
+            <div className="flex justify-end items-center gap-4 mb-8">
+                <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2" onClick={() => setShowChargeTypeModal(true)}>
+                    <Plus size={16} /> Manage Charge Types
+                </button>
                 <button className="btn-secondary flex items-center gap-2" onClick={() => setShowMethodModal(true)}>
                     <CreditCard size={16} /> Manage Payment Methods
                 </button>
@@ -271,11 +291,21 @@ const Folio = () => {
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Charge Type</label>
-                                    <select value={newCharge.chargeTypeId} onChange={(e) => setNewCharge({...newCharge, chargeTypeId: e.target.value})}>
-                                        {chargeTypes.map(type => (
-                                            <option key={type.id} value={type.id}>{type.name}</option>
-                                        ))}
-                                    </select>
+                                    <div className="flex gap-2">
+                                        <select className="flex-1" value={newCharge.chargeTypeId} onChange={(e) => setNewCharge({...newCharge, chargeTypeId: e.target.value})}>
+                                            {chargeTypes.map(type => (
+                                                <option key={type.id} value={type.id}>{type.name}</option>
+                                            ))}
+                                        </select>
+                                        <button 
+                                            type="button"
+                                            className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center transition-colors"
+                                            onClick={() => setShowChargeTypeModal(true)}
+                                            title="Add New Charge Type"
+                                        >
+                                            <Plus size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Description</label>
@@ -435,6 +465,51 @@ const Folio = () => {
                                 </div>
                             )}
                         </div>
+                    </div>
+                </div>
+            )}
+            {/* Manage Charge Types Modal */}
+            {showChargeTypeModal && (
+                <div className="modal-overlay z-[1100]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
+                        <div className="modal-header">
+                            <h2 className="text-xl font-bold text-primary">Manage Charge Types</h2>
+                            <button className="close-modal-btn" onClick={() => setShowChargeTypeModal(false)}>&times;</button>
+                        </div>
+                        
+                        <div className="mb-8 max-h-[200px] overflow-y-auto border border-slate-200 p-5 rounded-xl bg-slate-50">
+                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Existing Types</h4>
+                            {chargeTypes.length > 0 ? (
+                                <div className="flex flex-col gap-2">
+                                    {chargeTypes.map(t => (
+                                        <div key={t.id} className="flex justify-between items-center py-2 border-b border-slate-200 last:border-0">
+                                            <span className="font-bold text-slate-700">{t.name}</span>
+                                            <span className="text-[12px] text-slate-500">{t.description}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-center py-4 text-slate-400 text-sm italic">No charge types defined yet.</p>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleCreateChargeType} className="border-t border-slate-200 pt-6">
+                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Add New Type</h4>
+                            <div className="form-grid">
+                                <div className="form-group">
+                                    <label>Type Name</label>
+                                    <input type="text" required value={newChargeType.name} onChange={(e) => setNewChargeType({...newChargeType, name: e.target.value})} placeholder="e.g. Laundry, Mini-bar" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Description</label>
+                                    <input type="text" value={newChargeType.description} onChange={(e) => setNewChargeType({...newChargeType, description: e.target.value})} placeholder="Optional" />
+                                </div>
+                            </div>
+                            <div className="modal-footer mt-6">
+                                <button type="button" onClick={() => setShowChargeTypeModal(false)} className="btn-secondary !px-8">Close</button>
+                                <button type="submit" className="btn-primary !px-8">Add Type</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
