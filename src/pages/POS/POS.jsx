@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { CreditCard, Bed } from 'lucide-react';
 
 const POS = () => {
     const [menuItems, setMenuItems] = useState([]);
@@ -225,14 +226,14 @@ const POS = () => {
                                     className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                     onClick={() => setCheckoutMode('PAY_NOW')}
                                 >
-                                    <span>💸 Pay Now (Walk-in)</span>
+                                    <CreditCard size={18} /> Pay Now (Walk-in)
                                 </button>
                                 <button 
                                     disabled={cart.length === 0}
                                     className="w-full bg-slate-800 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                     onClick={() => setCheckoutMode('CHARGE_TO_ROOM')}
                                 >
-                                    <span>🛏️ Charge to Room</span>
+                                    <Bed size={18} /> Charge to Room
                                 </button>
                             </div>
                         ) : (

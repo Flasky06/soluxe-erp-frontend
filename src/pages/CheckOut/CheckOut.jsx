@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../services/api';
-import useAuthStore from '../../store/authStore';
+import { useNavigate } from 'react-router-dom';
 
 const CheckOut = () => {
+    const navigate = useNavigate();
     const { user } = useAuthStore();
     const [stays, setStays] = useState([]);
     const [guests, setGuests] = useState([]);
@@ -297,13 +296,13 @@ const CheckOut = () => {
                                         className="btn-secondary !bg-slate-100" 
                                         onClick={handlePrintInvoice}
                                     >
-                                        🖨️ Print Invoice
+                                        Print Invoice
                                     </button>
-
+                                    
                                     {folio.totalAmount > 0 ? (
                                         <div className="bg-red-50 text-red-600 px-4 py-2.5 rounded-lg border border-red-100 flex items-center gap-3">
-                                            <span className="text-sm font-bold">⚠️ Balance must be KSh 0 to Check-out.</span>
-                                            <button className="bg-white border border-red-200 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 px-3 py-1 rounded text-xs font-bold transition-all" onClick={() => {setShowInvoiceModal(false); /* The user will navigate to Folio from sidebar to pay, or we can add a quick-link */ }}>
+                                            <span className="text-sm font-bold">Balance must be KSh 0 to Check-out.</span>
+                                            <button className="bg-white border border-red-200 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 px-3 py-1 rounded text-xs font-bold transition-all" onClick={() => {setShowInvoiceModal(false); navigate('/folios'); }}>
                                                 Go to Folio Billing
                                             </button>
                                         </div>
@@ -312,7 +311,7 @@ const CheckOut = () => {
                                             className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold tracking-wide shadow-sm transition-all flex items-center gap-2"
                                             onClick={() => handleCheckOut(selectedStay.id)}
                                         >
-                                            ✅ Confirm Check-out
+                                            Confirm Check-out
                                         </button>
                                     )}
                                 </div>

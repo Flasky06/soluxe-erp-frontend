@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../services/api';
+import { LogIn, LogOut, BarChart3, Hotel } from 'lucide-react';
 
 const Dashboard = () => {
     const [stats, setStats] = useState([
-        { label: 'Today Arrivals', value: '...', trend: '', icon: '📥', key: 'totalArrivalsToday' },
-        { label: 'Today Departures', value: '...', trend: '', icon: '📤', key: 'totalDeparturesToday' },
-        { label: 'Total Occupancy', value: '...', trend: '', icon: '📊', key: 'occupancyRate' },
-        { label: 'Active Stays', value: '...', trend: '', icon: '🏨', key: 'activeStays' },
+        { label: 'Today Arrivals', value: '...', trend: '', icon: <LogIn size={24} />, key: 'totalArrivalsToday' },
+        { label: 'Today Departures', value: '...', trend: '', icon: <LogOut size={24} />, key: 'totalDeparturesToday' },
+        { label: 'Total Occupancy', value: '...', trend: '', icon: <BarChart3 size={24} />, key: 'occupancyRate' },
+        { label: 'Active Stays', value: '...', trend: '', icon: <Hotel size={24} />, key: 'activeStays' },
     ]);
     const [recentArrivals, setRecentArrivals] = useState([]);
     const [revenue, setRevenue] = useState(null);
@@ -57,7 +56,7 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {stats.map((stat) => (
                     <div key={stat.label} className="premium-card flex items-center gap-5">
-                        <div className="text-[28px] w-14 h-14 bg-slate-800/10 rounded-2xl flex items-center justify-center">{stat.icon}</div>
+                        <div className="w-14 h-14 bg-slate-800/10 rounded-2xl flex items-center justify-center text-slate-600">{stat.icon}</div>
                         <div className="flex-1">
                             <span className="text-[13px] font-semibold text-text-slate uppercase tracking-wider">{stat.label}</span>
                             <div className="flex items-baseline justify-between mt-1">

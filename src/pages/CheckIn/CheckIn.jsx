@@ -6,8 +6,11 @@ import useAuthStore from '../../store/authStore';
 const CheckIn = () => {
     const { user } = useAuthStore();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('reservation'); // 'reservation' | 'walkin'
     const [loading, setLoading] = useState(true);
+
+    // Modal states
+    const [showWalkInModal, setShowWalkInModal] = useState(false);
+    const [showReservationModal, setShowReservationModal] = useState(false);
 
     // Reservation check-in state
     const [reservations, setReservations] = useState([]);
@@ -15,7 +18,6 @@ const CheckIn = () => {
     const [roomTypes, setRoomTypes] = useState([]);
     const [availableRooms, setAvailableRooms] = useState([]);
     const [selectedReservation, setSelectedReservation] = useState(null);
-    const [showReservationModal, setShowReservationModal] = useState(false);
     const [resCheckInRoomId, setResCheckInRoomId] = useState('');
     const [resCheckInLoading, setResCheckInLoading] = useState(false);
 
@@ -68,13 +70,15 @@ const CheckIn = () => {
     const handleOpenResModal = async (res) => {
         setSelectedReservation(res);
         setResCheckInRoomId('');
-        // Match rooms by roomType — handle both nested object (room.roomType.id) and flat (room.roomTypeId) API shapes
         const availableAll = allRooms.filter(r => r.status === 'AVAILABLE');
         const filtered = availableAll.filter(r => {
-            const roomTypeId = r.roomType?.id ?? r.roomTypeId;
-            return roomTypeId === res.roomTypeId;
+            const rTypeId = r.roomType?.id ?? r.roomTypeId;
+            return Number(rTypeId) === Number(res.roomTypeId);
         });
-        // If roomTypeId matching yields no results (e.g. API shape mismatch), fall back to all available rooms
+        
+        if (filtered.length === 0 && res.roomTypeId) {
+            console.warn(`No rooms found for RoomType ID: ${res.roomTypeId}. Falling back to all available rooms.`);
+        }
         setAvailableRooms(filtered.length > 0 ? filtered : availableAll);
         setShowReservationModal(true);
     };
@@ -88,10 +92,9 @@ const CheckIn = () => {
                 roomId: parseInt(resCheckInRoomId),
                 userId: user?.id || 1,
             };
-            console.log('Processing Reservation Check-in:', payload);
             await api.post('/stays/check-in', payload);
             setShowReservationModal(false);
-            alert('✅ Check-in successful! Stay is now active.');
+            alert('Check-in successful. Stay is now active.');
             fetchAllData();
         } catch (err) {
             console.error('Reservation check-in failed:', err);
@@ -117,8 +120,12 @@ const CheckIn = () => {
                 children: parseInt(walkInData.children) || 0,
                 userId: user?.id || 1,
             });
-            setWalkInSuccess(`✅ Walk-in successful! Stay #${res.data.id} is now ACTIVE.`);
+            setWalkInSuccess(`Walk-in successful. Stay #${res.data.id} is now ACTIVE.`);
             setWalkInData({ guestId: '', roomId: '', adults: 1, children: 0 });
+            setTimeout(() => {
+                setShowWalkInModal(false);
+                setWalkInSuccess(null);
+            }, 2000);
             fetchAllData();
         } catch (err) {
             setWalkInError(err.response?.data?.message || 'Walk-in check-in failed. Please try again.');
@@ -131,147 +138,155 @@ const CheckIn = () => {
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Check-in</h1>
-                    <p className="text-text-slate text-base">Process guest arrivals — from reservations or walk-ins.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Arrivals & Check-in</h1>
+                    <p className="text-text-slate text-base">Select a reservation to check-in or start a new walk-in.</p>
                 </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-2 mb-6 border-b border-border-gray">
-                <button
-                    onClick={() => setActiveTab('reservation')}
-                    className={`px-5 py-3 text-sm font-semibold border-b-2 transition-all duration-200 ${activeTab === 'reservation' ? 'border-maroon text-maroon' : 'border-transparent text-text-slate hover:text-text-dark'}`}
+                <button 
+                    className="btn-primary flex items-center gap-2"
+                    onClick={() => {
+                        setWalkInSuccess(null);
+                        setWalkInError(null);
+                        setShowWalkInModal(true);
+                    }}
                 >
-                    🗓️ From Reservation
-                </button>
-                <button
-                    onClick={() => setActiveTab('walkin')}
-                    className={`px-5 py-3 text-sm font-semibold border-b-2 transition-all duration-200 ${activeTab === 'walkin' ? 'border-maroon text-maroon' : 'border-transparent text-text-slate hover:text-text-dark'}`}
-                >
-                    🚶 Walk-in
+                    + Walk-in Check-in
                 </button>
             </div>
 
-            {/* RESERVATION TAB */}
-            {activeTab === 'reservation' && (
-                <div className="premium-card overflow-x-auto">
-                    {loading ? (
-                        <div className="text-center py-20 text-text-slate animate-pulse">Loading arrivals...</div>
-                    ) : reservations.length === 0 ? (
-                        <div className="text-center py-20 text-text-slate italic">No pending arrivals to check in.</div>
-                    ) : (
-                        <table className="management-table">
-                            <thead>
-                                <tr>
-                                    <th>Guest</th>
-                                    <th>Room Category</th>
-                                    <th>Check-in Date</th>
-                                    <th>Check-out Date</th>
-                                    <th>Occupancy</th>
-                                    <th>Actions</th>
+            {/* RESERVATIONS LIST */}
+            <div className="premium-card overflow-x-auto">
+                <div className="px-6 py-4 border-b border-border-gray flex justify-between items-center">
+                    <h2 className="text-lg font-bold text-text-dark">Pending Arrivals</h2>
+                    <span className="bg-maroon/10 text-maroon text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                        From Reservations
+                    </span>
+                </div>
+                {loading ? (
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading arrivals...</div>
+                ) : reservations.length === 0 ? (
+                    <div className="text-center py-20 text-text-slate italic">No pending arrivals to check in.</div>
+                ) : (
+                    <table className="management-table">
+                        <thead>
+                            <tr>
+                                <th>Guest</th>
+                                <th>Room Category</th>
+                                <th>Check-in Date</th>
+                                <th>Check-out Date</th>
+                                <th>Occupancy</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {reservations.map(res => (
+                                <tr key={res.id}>
+                                    <td><span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span></td>
+                                    <td>{getRoomTypeName(res.roomTypeId)}</td>
+                                    <td>{res.dateIn ? new Date(res.dateIn).toLocaleDateString() : '—'}</td>
+                                    <td>{res.dateOut ? new Date(res.dateOut).toLocaleDateString() : '—'}</td>
+                                    <td>{res.adults} Adults, {res.children || 0} Children</td>
+                                    <td>
+                                        <div className="table-actions">
+                                            <button className="view-btn" onClick={() => handleOpenResModal(res)}>
+                                                Check In
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {reservations.map(res => (
-                                    <tr key={res.id}>
-                                        <td><span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span></td>
-                                        <td>{getRoomTypeName(res.roomTypeId)}</td>
-                                        <td>{res.dateIn ? new Date(res.dateIn).toLocaleDateString() : '—'}</td>
-                                        <td>{res.dateOut ? new Date(res.dateOut).toLocaleDateString() : '—'}</td>
-                                        <td>{res.adults} Adults, {res.children || 0} Children</td>
-                                        <td>
-                                            <div className="table-actions">
-                                                <button className="view-btn" onClick={() => handleOpenResModal(res)}>
-                                                    Check In
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
-                </div>
-            )}
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
 
-            {/* WALK-IN TAB */}
-            {activeTab === 'walkin' && (
-                <div className="premium-card !max-w-[700px]">
-                    <h2 className="text-lg font-bold text-text-dark mb-1">Walk-in Check-in</h2>
-                    <p className="text-text-slate text-sm mb-6">Assign a room directly to a guest without a prior reservation.</p>
+            {/* WALK-IN MODAL */}
+            {showWalkInModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
+                        <div className="modal-header">
+                            <div>
+                                <h2 className="text-xl font-bold text-text-dark">Walk-in Check-in</h2>
+                                <p className="text-sm text-text-slate mt-0.5">Direct room assignment for guests without prior booking.</p>
+                            </div>
+                            <button className="close-modal-btn" onClick={() => setShowWalkInModal(false)}>&times;</button>
+                        </div>
+                        
+                        {walkInSuccess && (
+                            <div className="m-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm font-medium animate-pulse">{walkInSuccess}</div>
+                        )}
+                        {walkInError && (
+                            <div className="m-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">{walkInError}</div>
+                        )}
 
-                    {walkInSuccess && (
-                        <div className="mb-4 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm font-medium">{walkInSuccess}</div>
-                    )}
-                    {walkInError && (
-                        <div className="mb-4 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">{walkInError}</div>
-                    )}
+                        <form onSubmit={handleWalkIn} className="p-6">
+                            <div className="form-grid">
+                                <div className="form-group full-width">
+                                    <label>Select Guest</label>
+                                    <select
+                                        required
+                                        value={walkInData.guestId}
+                                        onChange={e => setWalkInData({ ...walkInData, guestId: e.target.value })}
+                                    >
+                                        <option value="">-- Choose Guest --</option>
+                                        {guests.map(g => (
+                                            <option key={g.id} value={g.id}>{g.fullName} {g.email ? `(${g.email})` : ''}</option>
+                                        ))}
+                                    </select>
+                                    <div className="flex justify-between items-center mt-1">
+                                        <span className="text-xs text-text-slate italic">Not in the list?</span>
+                                        <button
+                                            type="button"
+                                            className="text-maroon hover:underline text-[11px] font-bold"
+                                            onClick={() => navigate('/guests')}
+                                        >
+                                            + REGISTER NEW GUEST
+                                        </button>
+                                    </div>
+                                </div>
 
-                    <form onSubmit={handleWalkIn} className="form-grid">
-                        <div className="form-group full-width">
-                            <label>Select Guest</label>
-                            <select
-                                required
-                                value={walkInData.guestId}
-                                onChange={e => setWalkInData({ ...walkInData, guestId: e.target.value })}
-                            >
-                                <option value="">-- Choose Guest --</option>
-                                {guests.map(g => (
-                                    <option key={g.id} value={g.id}>{g.fullName} {g.email ? `(${g.email})` : ''}</option>
-                                ))}
-                            </select>
-                            <div className="flex justify-between items-center mt-1">
-                                <span className="text-xs text-text-slate italic">Not in the list?</span>
-                                <button
-                                    type="button"
-                                    className="bg-maroon/10 text-maroon hover:bg-maroon hover:text-white px-3 py-1 rounded-md text-[11px] font-bold transition-all duration-300 shadow-sm border border-maroon/20"
-                                    onClick={() => navigate('/guests')}
-                                >
-                                    + ADD NEW GUEST
+                                <div className="form-group full-width">
+                                    <label>Assign Available Room</label>
+                                    <select
+                                        required
+                                        value={walkInData.roomId}
+                                        onChange={e => setWalkInData({ ...walkInData, roomId: e.target.value })}
+                                    >
+                                        <option value="">-- Choose Room --</option>
+                                        {availableWalkInRooms.map(room => (
+                                            <option key={room.id} value={room.id}>
+                                                Room {room.roomNumber} — Floor {room.floor} {room.roomType?.name ? `(${room.roomType.name})` : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Adults</label>
+                                    <input
+                                        type="number" min="1" required
+                                        value={walkInData.adults}
+                                        onChange={e => setWalkInData({ ...walkInData, adults: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Children</label>
+                                    <input
+                                        type="number" min="0" required
+                                        value={walkInData.children}
+                                        onChange={e => setWalkInData({ ...walkInData, children: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="modal-footer !px-0 mt-8">
+                                <button type="button" onClick={() => setShowWalkInModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10" disabled={walkInLoading}>
+                                    {walkInLoading ? 'Loading...' : 'Complete Check-in'}
                                 </button>
                             </div>
-                        </div>
-
-                        <div className="form-group full-width">
-                            <label>Select Available Room</label>
-                            <select
-                                required
-                                value={walkInData.roomId}
-                                onChange={e => setWalkInData({ ...walkInData, roomId: e.target.value })}
-                            >
-                                <option value="">-- Choose Room --</option>
-                                {availableWalkInRooms.map(room => (
-                                    <option key={room.id} value={room.id}>
-                                        Room {room.roomNumber} — Floor {room.floor} {room.roomType?.name ? `(${room.roomType.name})` : ''}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Adults</label>
-                            <input
-                                type="number" min="1" required
-                                value={walkInData.adults}
-                                onChange={e => setWalkInData({ ...walkInData, adults: e.target.value })}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Children</label>
-                            <input
-                                type="number" min="0" required
-                                value={walkInData.children}
-                                onChange={e => setWalkInData({ ...walkInData, children: e.target.value })}
-                            />
-                        </div>
-
-                        <div className="col-span-full mt-4">
-                            <button type="submit" className="btn-primary w-full" disabled={walkInLoading}>
-                                {walkInLoading ? 'Processing...' : '✅ Complete Walk-in Check-in'}
-                            </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             )}
 
@@ -292,7 +307,7 @@ const CheckIn = () => {
                             <div className="form-group full-width">
                                 <label>Available Rooms</label>
                                 {availableRooms.length === 0 ? (
-                                    <p className="text-red-500 text-sm font-medium mt-1">⚠️ No available rooms match this category.</p>
+                                    <p className="text-red-500 text-sm font-medium mt-1">No available rooms match this category.</p>
                                 ) : (
                                     <select
                                         required

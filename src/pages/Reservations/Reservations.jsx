@@ -1,186 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { 
+    Search, Filter, Bed, Utensils, Calendar, User, 
+    ChevronRight, MoreVertical, CheckCircle2, 
+    LogOut, AlertCircle, Clock
+} from 'lucide-react';
 
-// ─────────────────────────────────────────
-//  Calendar Helper Utilities
-// ─────────────────────────────────────────
-const addDays = (date, days) => {
-    const d = new Date(date);
-    d.setDate(d.getDate() + days);
-    return d;
-};
-const fmtDate = (d) => d.toISOString().split('T')[0];
-const fmtDisplay = (d) => d.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
-
-const STATUS_COLORS = {
-    BOOKED: { bg: '#3B82F6', text: '#fff', label: 'BOOKED' },
-    CHECKED_IN: { bg: '#22C55E', text: '#fff', label: 'IN' },
-    CHECKED_OUT: { bg: '#94A3B8', text: '#fff', label: 'OUT' },
-    CANCELLED: { bg: '#EF4444', text: '#fff', label: 'CANCELLED' },
-};
-
-// ─────────────────────────────────────────
-//  Reservation Calendar Component
-// ─────────────────────────────────────────
-const ReservationCalendar = ({ reservations, roomTypes, guests }) => {
-    const [weekStart, setWeekStart] = useState(() => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return today;
-    });
-    const DAYS = 14; // show 2 weeks
-
-    const days = Array.from({ length: DAYS }, (_, i) => addDays(weekStart, i));
-
-    const getGuestName = (id) => {
-        const g = guests.find(g => g.id === id);
-        return g ? g.fullName : `Guest ${id}`;
-    };
-    const getRtName = (id) => {
-        const t = roomTypes.find(t => t.id === id);
-        return t ? t.name : `Type ${id}`;
-    };
-
-    // Group reservations by roomTypeId for display
-    const roomOnly = reservations.filter(r => r.roomTypeId);
-    const rtIds = [...new Set(roomOnly.map(r => r.roomTypeId))];
-
-    // eslint-disable-next-line no-unused-vars
-    const getBarStyle = (res) => {
-        const start = new Date(res.dateIn);
-        const end = new Date(res.dateOut);
-        start.setHours(0, 0, 0, 0);
-        end.setHours(0, 0, 0, 0);
-        const wEnd = days[DAYS - 1];
-
-        const clampedStart = start < weekStart ? weekStart : start;
-        const clampedEnd = end > wEnd ? wEnd : end;
-
-        const startCol = Math.round((clampedStart - weekStart) / 86400000);
-        const span = Math.max(1, Math.round((clampedEnd - clampedStart) / 86400000));
-        return { startCol, span };
-    };
-
-    return (
-        <div className="premium-card p-6 overflow-x-auto">
-            {/* Navigation */}
-            <div className="flex items-center justify-between mb-6">
-                <button
-                    className="btn-secondary !py-1.5 !px-4 text-sm"
-                    onClick={() => setWeekStart(d => addDays(d, -7))}
-                >← Prev Week</button>
-                <div className="flex items-center gap-4">
-                    <span className="text-base font-bold text-slate-700">
-                        {fmtDisplay(weekStart)} — {fmtDisplay(days[DAYS - 1])}
-                    </span>
-                    <button className="text-xs font-semibold text-primary hover:underline" onClick={() => { const t = new Date(); t.setHours(0,0,0,0); setWeekStart(t); }}>Today</button>
-                </div>
-                <button
-                    className="btn-secondary !py-1.5 !px-4 text-sm"
-                    onClick={() => setWeekStart(d => addDays(d, 7))}
-                >Next Week →</button>
-            </div>
-
-            {/* Legend */}
-            <div className="flex gap-4 mb-5 flex-wrap">
-                {Object.entries(STATUS_COLORS).map(([s, c]) => (
-                    <div key={s} className="flex items-center gap-1.5 text-xs font-semibold text-slate-600">
-                        <span className="w-3 h-3 rounded-sm inline-block" style={{ background: c.bg }}></span>{s}
-                    </div>
-                ))}
-            </div>
-
-            {/* Grid */}
-            <div className="min-w-[900px]">
-                {/* Header row */}
-                <div className="grid gap-0 mb-1" style={{ gridTemplateColumns: `160px repeat(${DAYS}, 1fr)` }}>
-                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">Room Type</div>
-                    {days.map((d, i) => {
-                        const isToday = fmtDate(d) === fmtDate(new Date());
-                        return (
-                            <div key={i} className={`text-center text-[11px] font-semibold py-1 px-0.5 rounded-md ${isToday ? 'bg-primary/10 text-primary font-bold' : 'text-slate-400'}`}>
-                                <div>{d.toLocaleDateString('en-GB', { weekday: 'short' })}</div>
-                                <div className={`text-[13px] font-extrabold ${isToday ? 'text-primary' : 'text-slate-600'}`}>{d.getDate()}</div>
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Rows */}
-                {rtIds.length === 0 && (
-                    <div className="py-20 text-center text-slate-400 italic text-sm">No room reservations to display for this period.</div>
-                )}
-                {rtIds.map(rtId => {
-                    const rtRes = roomOnly.filter(r => r.roomTypeId === rtId && r.status !== 'CANCELLED');
-                    const cancelledRes = roomOnly.filter(r => r.roomTypeId === rtId && r.status === 'CANCELLED');
-                    const allRes = [...rtRes, ...cancelledRes];
-
-                    return (
-                        <div key={rtId} className="border-t border-slate-100 grid gap-0 relative items-start py-2" style={{ gridTemplateColumns: `160px repeat(${DAYS}, 1fr)` }}>
-                            {/* Room type label */}
-                            <div className="flex items-center pr-3">
-                                <span className="text-sm font-bold text-slate-700 truncate">{getRtName(rtId)}</span>
-                            </div>
-
-                            {/* Day columns background */}
-                            {days.map((d, i) => (
-                                <div key={i} className={`h-full min-h-[48px] border-l border-slate-100 ${fmtDate(d) === fmtDate(new Date()) ? 'bg-primary/5' : ''}`}></div>
-                            ))}
-
-                            {/* Overlay: reservation bars */}
-                            <div className="absolute inset-0 pointer-events-none" style={{ paddingLeft: 160 }}>
-                                <div className="relative w-full h-full" style={{ display: 'grid', gridTemplateColumns: `repeat(${DAYS}, 1fr)` }}>
-                                    {allRes.map(res => {
-                                        const start = new Date(res.dateIn);
-                                        const end = new Date(res.dateOut);
-                                        start.setHours(0, 0, 0, 0);
-                                        end.setHours(0, 0, 0, 0);
-                                        const wEnd = days[DAYS - 1];
-                                        if (end <= weekStart || start > wEnd) return null;
-
-                                        const clampedStart = start < weekStart ? weekStart : start;
-                                        const clampedEnd = end > addDays(wEnd, 1) ? addDays(wEnd, 1) : end;
-
-                                        const startCol = Math.round((clampedStart - weekStart) / 86400000) + 1;
-                                        const span = Math.max(1, Math.round((clampedEnd - clampedStart) / 86400000));
-                                        const colors = STATUS_COLORS[res.status] || STATUS_COLORS.BOOKED;
-
-                                        return (
-                                            <div
-                                                key={res.id}
-                                                title={`${getGuestName(res.guestId)} | ${res.dateIn} → ${res.dateOut} | ${res.status}`}
-                                                className="absolute top-1.5 h-8 rounded-md flex items-center px-2 text-[11px] font-bold truncate pointer-events-auto cursor-pointer shadow-sm hover:brightness-90 transition-all"
-                                                style={{
-                                                    left: `calc(${(startCol - 1) * (100 / DAYS)}%)`,
-                                                    width: `calc(${span * (100 / DAYS)}% - 4px)`,
-                                                    background: colors.bg,
-                                                    color: colors.text,
-                                                }}
-                                            >
-                                                {getGuestName(res.guestId)}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-};
-
-// ─────────────────────────────────────────
-//  Main Reservations Page
-// ─────────────────────────────────────────
 const Reservations = () => {
     const [reservations, setReservations] = useState([]);
     const [guests, setGuests] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
     const [tables, setTables] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [view, setView] = useState('list'); // 'list' | 'calendar'
+    
+    // Filters & Search
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('ALL');
 
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
@@ -243,18 +78,6 @@ const Reservations = () => {
                 vehicleRegistration: guest.vehicleRegistration || '',
                 emergencyContactName: guest.emergencyContactName || '',
                 emergencyContactPhone: guest.emergencyContactPhone || ''
-            });
-        } else {
-            setFormData({
-                ...formData,
-                guestId: '',
-                nationality: '',
-                idType: 'PASSPORT',
-                idNumber: '',
-                preferences: '',
-                vehicleRegistration: '',
-                emergencyContactName: '',
-                emergencyContactPhone: ''
             });
         }
     };
@@ -344,145 +167,255 @@ const Reservations = () => {
             fetchAllData();
         } catch (err) {
             console.error('Failed to save booking:', err);
-            alert('Failed to save booking.');
         }
     };
 
     const handleCancelBooking = async (id) => {
-        if (window.confirm('Are you sure you want to cancel this booking?')) {
+        if (window.confirm('Cancel this booking?')) {
             try {
                 await api.post(`/reservations/${id}/cancel`);
                 fetchAllData();
             } catch (err) {
                 console.error('Failed to cancel:', err);
-                alert('Failed to cancel booking.');
             }
         }
     };
 
-    const getStatusClass = (status) => {
-        if (!status) return 'unknown';
-        return status.toLowerCase();
+    const getStatusInfo = (status) => {
+        switch(status?.toUpperCase()) {
+            case 'BOOKED': return { icon: <Clock className="w-3.5 h-3.5" />, class: 'booked', label: 'Confirmed' };
+            case 'CHECKED_IN': return { icon: <CheckCircle2 className="w-3.5 h-3.5" />, class: 'checked_in', label: 'In-House' };
+            case 'CHECKED_OUT': return { icon: <LogOut className="w-3.5 h-3.5" />, class: 'checked_out', label: 'Completed' };
+            case 'CANCELLED': return { icon: <AlertCircle className="w-3.5 h-3.5" />, class: 'cancelled', label: 'Cancelled' };
+            default: return { icon: null, class: '', label: status || 'UNKNOWN' };
+        }
     };
 
-    const getGuestName = (id) => {
-        const guest = guests.find(g => g.id === id);
-        return guest ? guest.fullName : `Guest ${id}`;
+    const getGuest = (id) => guests.find(g => g.id === id) || { fullName: `Guest ${id}`, email: '' };
+    const getRoomTypeName = (id) => roomTypes.find(t => t.id === id)?.name || 'N/A';
+    const getTableName = (id) => tables.find(t => t.id === id)?.tableName || 'N/A';
+
+    const getInitials = (name) => {
+        return name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
     };
 
-    const getRoomTypeName = (id) => {
-        const type = roomTypes.find(t => t.id === id);
-        return type ? type.name : null;
-    };
+    // Filtering logic
+    const filteredReservations = reservations.filter(res => {
+        const guest = getGuest(res.guestId);
+        const matchesSearch = guest.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = statusFilter === 'ALL' || res.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
 
-    const getTableName = (id) => {
-        const table = tables.find(t => t.id === id);
-        return table ? table.tableName : null;
+    const stats = {
+        total: reservations.length,
+        booked: reservations.filter(r => r.status === 'BOOKED').length,
+        inHouse: reservations.filter(r => r.status === 'CHECKED_IN').length,
     };
 
     return (
-        <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col gap-6">
+            {/* Header & New Action */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Reservations & Bookings</h1>
-                    <p className="text-text-slate text-base">Manage room stays and restaurant table reservations.</p>
+                    <h1 className="text-[32px] font-bold text-text-dark tracking-tight">Reservations</h1>
+                    <p className="text-text-slate text-base mt-1">Manage guest arrivals, stays, and table bookings.</p>
                 </div>
-                <div className="flex items-center gap-3">
-                    {/* View toggle */}
-                    <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
-                        <button
-                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${view === 'list' ? 'bg-white text-primary shadow-sm' : 'text-slate-400 hover:text-slate-700'}`}
-                            onClick={() => setView('list')}
-                        >List</button>
-                        <button
-                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${view === 'calendar' ? 'bg-white text-primary shadow-sm' : 'text-slate-400 hover:text-slate-700'}`}
-                            onClick={() => setView('calendar')}
-                        >Calendar</button>
+                <button className="btn-primary flex items-center gap-2 h-11" onClick={() => handleOpenBookingModal()}>
+                    <span>+ New Reservation</span>
+                </button>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="premium-card p-5 border-l-4 border-l-maroon flex items-center justify-between">
+                    <div>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Bookings</p>
+                        <h3 className="text-2xl font-black text-text-dark mt-1">{stats.total}</h3>
                     </div>
-                    <button className="btn-primary" onClick={() => handleOpenBookingModal()}>New Reservation</button>
+                    <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
+                        <Calendar size={20} />
+                    </div>
+                </div>
+                <div className="premium-card p-5 border-l-4 border-l-blue-500 flex items-center justify-between">
+                    <div>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending Arrivals</p>
+                        <h3 className="text-2xl font-black text-text-dark mt-1">{stats.booked}</h3>
+                    </div>
+                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-500">
+                        <Clock size={20} />
+                    </div>
+                </div>
+                <div className="premium-card p-5 border-l-4 border-l-emerald-500 flex items-center justify-between">
+                    <div>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">In-House Now</p>
+                        <h3 className="text-2xl font-black text-text-dark mt-1">{stats.inHouse}</h3>
+                    </div>
+                    <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500">
+                        <User size={20} />
+                    </div>
                 </div>
             </div>
 
-            {view === 'calendar' ? (
-                <ReservationCalendar reservations={reservations} roomTypes={roomTypes} guests={guests} />
-            ) : (
-                <div className="premium-card overflow-x-auto">
-                    {loading && reservations.length === 0 ? (
-                        <div className="text-center py-20 text-text-slate animate-pulse">Loading reservations...</div>
-                    ) : (
-                        <table className="management-table">
-                            <thead>
-                                <tr>
-                                    <th>Guest</th>
-                                    <th>Booking Info</th>
-                                    <th>Dates / Time</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {reservations.length > 0 ? (
-                                    reservations.map((res) => (
-                                        <tr key={res.id}>
-                                            <td>
-                                                <span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span>
+            {/* Filter & Search Bar */}
+            <div className="premium-card px-5 py-4 flex flex-col md:flex-row items-center gap-4">
+                <div className="relative flex-1 group w-full">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-maroon transition-colors" size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search by guest name..." 
+                        className="w-full pl-11 pr-4 py-2 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-maroon/10 outline-none transition-all"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                    <div className="flex items-center gap-2 text-slate-400 text-sm font-semibold whitespace-nowrap px-2">
+                        <Filter size={16} /> Filter:
+                    </div>
+                    <select 
+                        className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-maroon/10 outline-none cursor-pointer hover:border-slate-300 transition-all w-full md:w-[160px]"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="ALL">All Status</option>
+                        <option value="BOOKED">Pending</option>
+                        <option value="CHECKED_IN">In-House</option>
+                        <option value="CHECKED_OUT">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* Main Table */}
+            <div className="premium-card overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-slate-50/50">
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Guest</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Type & Info</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Schedule</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Status</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td colSpan="5" className="px-6 py-8">
+                                            <div className="h-4 bg-slate-100 rounded w-full"></div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : filteredReservations.length > 0 ? (
+                                filteredReservations.map((res) => {
+                                    const guest = getGuest(res.guestId);
+                                    const sInfo = getStatusInfo(res.status);
+                                    return (
+                                        <tr key={res.id} className="hover:bg-slate-50/80 transition-colors group">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500 group-hover:bg-maroon/10 group-hover:text-maroon transition-all">
+                                                        {getInitials(guest.fullName)}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-bold text-text-dark">{guest.fullName}</p>
+                                                        <p className="text-[11px] text-text-slate">{guest.email || 'No email provided'}</p>
+                                                    </div>
+                                                </div>
                                             </td>
-                                            <td>
-                                                <div className="flex flex-col gap-1">
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-1.5">
                                                     {res.roomTypeId && (
-                                                        <div className="text-xs text-text-slate flex items-center gap-1.5">🛏️ {getRoomTypeName(res.roomTypeId)}</div>
+                                                        <div className="flex items-center gap-2 text-[12px] text-text-dark font-medium">
+                                                            <div className="w-5 h-5 bg-blue-50 text-blue-500 rounded flex items-center justify-center"><Bed size={12} /></div>
+                                                            <span>Room: {getRoomTypeName(res.roomTypeId)} ({res.adults}A, {res.children}C)</span>
+                                                        </div>
                                                     )}
                                                     {res.tableId && (
-                                                        <div className="text-xs text-text-slate flex items-center gap-1.5">🍽️ {getTableName(res.tableId)}</div>
+                                                        <div className="flex items-center gap-2 text-[12px] text-text-dark font-medium">
+                                                            <div className="w-5 h-5 bg-amber-50 text-amber-500 rounded flex items-center justify-center"><Utensils size={12} /></div>
+                                                            <span>Table: {getTableName(res.tableId)} ({res.tablePax} Pax)</span>
+                                                        </div>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td className="px-6 py-4">
                                                 {res.dateIn ? (
-                                                    <div className="text-sm text-text-dark font-medium leading-tight">
-                                                        <div>{new Date(res.dateIn).toLocaleDateString()}</div>
-                                                        <div className="text-[10px] text-text-slate font-normal uppercase">to</div>
-                                                        <div>{new Date(res.dateOut).toLocaleDateString()}</div>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[13px] font-bold text-text-dark leading-none">{new Date(res.dateIn).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
+                                                            <span className="text-[10px] text-slate-400 mt-1 uppercase font-bold text-center">In</span>
+                                                        </div>
+                                                        <ChevronRight size={14} className="text-slate-300" />
+                                                        <div className="flex flex-col">
+                                                            <span className="text-[13px] font-bold text-text-dark leading-none">{new Date(res.dateOut).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
+                                                            <span className="text-[10px] text-slate-400 mt-1 uppercase font-bold text-center">Out</span>
+                                                        </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="text-sm text-text-dark font-medium">
-                                                        {res.tableReservationTime ? new Date(res.tableReservationTime).toLocaleString() : 'N/A'}
+                                                    <div className="flex items-center gap-2 text-[13px] font-bold text-text-dark leading-none">
+                                                        <Clock size={14} className="text-slate-400" />
+                                                        {res.tableReservationTime ? new Date(res.tableReservationTime).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
                                                     </div>
                                                 )}
                                             </td>
-                                            <td>
-                                                <span className={`status-badge ${getStatusClass(res.status)}`}>
-                                                    {res.status || 'UNKNOWN'}
+                                            <td className="px-6 py-4">
+                                                <span className={`status-badge ${sInfo.class} flex items-center gap-1.5 w-fit`}>
+                                                    {sInfo.icon}
+                                                    {sInfo.label}
                                                 </span>
                                             </td>
-                                            <td>
-                                                <div className="table-actions">
-                                                    {res.status === 'BOOKED' && (
-                                                        <>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex justify-end items-center gap-2">
+                                                    {res.status === 'BOOKED' ? (
+                                                        <div className="table-actions">
                                                             <button className="edit-btn" onClick={() => handleOpenBookingModal(res)}>Edit</button>
-                                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleCancelBooking(res.id)}>Cancel</button>
-                                                        </>
+                                                            <button className="delete-btn" onClick={() => handleCancelBooking(res.id)}>Cancel</button>
+                                                        </div>
+                                                    ) : (
+                                                        <button className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+                                                            <MoreVertical size={16} />
+                                                        </button>
                                                     )}
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="5" className="text-center py-20 text-text-slate italic">No reservations found.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    )}
+                                    );
+                                })
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" className="px-6 py-24 text-center">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="w-16 h-16 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center">
+                                                <Search size={32} />
+                                            </div>
+                                            <div>
+                                                <p className="text-md font-bold text-text-dark">No reservations found</p>
+                                                <p className="text-sm text-text-slate">Try adjusting your filters or search query.</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </div>
-            )}
+            </div>
 
+            {/* Booking Modal */}
             {showBookingModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[1200px]">
+                    <div className="modal-content !w-[90%] !max-w-[1000px]">
                         <div className="modal-header">
-                            <h2>{selectedReservation ? 'Edit Reservation' : 'New Reservation'}</h2>
+                            <h2>{selectedReservation ? 'Modify Reservation' : 'Create New Booking'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowBookingModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmitBooking}>
@@ -495,7 +428,7 @@ const Reservations = () => {
                                         onChange={(e) => handleGuestChange(e.target.value)}
                                         disabled={!!selectedReservation}
                                     >
-                                        <option value="">-- Choose Guest --</option>
+                                        <option value="">-- Search for a Guest --</option>
                                         {guests.map(guest => (
                                             <option key={guest.id} value={guest.id}>{guest.fullName} ({guest.email})</option>
                                         ))}
@@ -504,56 +437,54 @@ const Reservations = () => {
 
                                 <div className="form-group full-width">
                                     <label>Booking Type</label>
-                                    <div className="flex gap-8 mt-2">
-                                        <label className="flex items-center gap-2 cursor-pointer text-text-dark font-medium"><input type="radio" className="accent-maroon" value="ROOM" checked={formData.bookingType === 'ROOM'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Room Only</label>
-                                        <label className="flex items-center gap-2 cursor-pointer text-text-dark font-medium"><input type="radio" className="accent-maroon" value="TABLE" checked={formData.bookingType === 'TABLE'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Table Only</label>
-                                        <label className="flex items-center gap-2 cursor-pointer text-text-dark font-medium"><input type="radio" className="accent-maroon" value="BOTH" checked={formData.bookingType === 'BOTH'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} /> Room + Table</label>
+                                    <div className="flex gap-10 mt-2">
+                                        <label className="flex items-center gap-2.5 cursor-pointer text-[14px] font-bold text-text-dark">
+                                            <input type="radio" value="ROOM" checked={formData.bookingType === 'ROOM'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> Room Only
+                                        </label>
+                                        <label className="flex items-center gap-2.5 cursor-pointer text-[14px] font-bold text-text-dark">
+                                            <input type="radio" value="TABLE" checked={formData.bookingType === 'TABLE'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> Table Only
+                                        </label>
+                                        <label className="flex items-center gap-2.5 cursor-pointer text-[14px] font-bold text-text-dark">
+                                            <input type="radio" value="BOTH" checked={formData.bookingType === 'BOTH'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> Both
+                                        </label>
                                     </div>
                                 </div>
 
                                 {(formData.bookingType === 'ROOM' || formData.bookingType === 'BOTH') && (
                                     <>
-                                        <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-4 col-span-full text-base tracking-tight uppercase">Room Details</div>
+                                        <div className="form-section-title">Stay Configuration</div>
                                         <div className="form-group">
-                                            <label>Room Type</label>
+                                            <label>Room Category</label>
                                             <select required={formData.bookingType !== 'TABLE'} value={formData.roomTypeId} onChange={(e) => setFormData({...formData, roomTypeId: parseInt(e.target.value)})}>
-                                                <option value="">-- Choose Room Type --</option>
+                                                <option value="">-- Select Type --</option>
                                                 {roomTypes.map(type => (
-                                                    <option key={type.id} value={type.id}>{type.name} - ${type.defaultRate}</option>
+                                                    <option key={type.id} value={type.id}>{type.name} (${type.defaultRate}/night)</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className="form-group">
-                                            <label>Adults / Children</label>
-                                            <div className="flex gap-2">
-                                                <input type="number" min="1" required className="flex-1" value={formData.adults} onChange={(e) => setFormData({...formData, adults: e.target.value})} />
-                                                <input type="number" min="0" className="flex-1" value={formData.children} onChange={(e) => setFormData({...formData, children: e.target.value})} />
+                                            <label>Occupancy (Adults / Kids)</label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <input type="number" min="1" required value={formData.adults} onChange={(e) => setFormData({...formData, adults: e.target.value})} />
+                                                <input type="number" min="0" value={formData.children} onChange={(e) => setFormData({...formData, children: e.target.value})} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label>Check-in Date</label>
+                                            <label>Check-in</label>
                                             <input type="date" required={formData.bookingType !== 'TABLE'} value={formData.dateIn} onChange={(e) => setFormData({...formData, dateIn: e.target.value})} />
                                         </div>
                                         <div className="form-group">
-                                            <label>Check-out Date</label>
+                                            <label>Check-out</label>
                                             <input type="date" required={formData.bookingType !== 'TABLE'} value={formData.dateOut} onChange={(e) => setFormData({...formData, dateOut: e.target.value})} />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>ETA (Time)</label>
-                                            <input type="time" value={formData.eta} onChange={(e) => setFormData({...formData, eta: e.target.value})} />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>ETD (Time)</label>
-                                            <input type="time" value={formData.etd} onChange={(e) => setFormData({...formData, etd: e.target.value})} />
                                         </div>
                                     </>
                                 )}
 
                                 {(formData.bookingType === 'TABLE' || formData.bookingType === 'BOTH') && (
                                     <>
-                                        <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-4 col-span-full text-base tracking-tight uppercase">Restaurant Details</div>
+                                        <div className="form-section-title">Dining Reservation</div>
                                         <div className="form-group">
-                                            <label>Select Table</label>
+                                            <label>Table Assignment</label>
                                             <select required={formData.bookingType !== 'ROOM'} value={formData.tableId} onChange={(e) => setFormData({...formData, tableId: parseInt(e.target.value)})}>
                                                 <option value="">-- Choose Table --</option>
                                                 {tables.map(table => (
@@ -562,7 +493,7 @@ const Reservations = () => {
                                             </select>
                                         </div>
                                         <div className="form-group">
-                                            <label>Reservation Time</label>
+                                            <label>Dining Time</label>
                                             <input type="datetime-local" required={formData.bookingType !== 'ROOM'} value={formData.tableReservationTime} onChange={(e) => setFormData({...formData, tableReservationTime: e.target.value})} />
                                         </div>
                                         <div className="form-group">
@@ -572,37 +503,20 @@ const Reservations = () => {
                                     </>
                                 )}
 
-                                <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-4 col-span-full text-base tracking-tight uppercase">Additional Information</div>
+                                <div className="form-section-title">Notes & Requests</div>
                                 <div className="form-group full-width">
-                                    <label>Nationality / ID Info</label>
-                                    <div className="flex flex-wrap md:flex-nowrap gap-3">
-                                        <input type="text" value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} placeholder="Nationality" className="flex-1" />
-                                        <select value={formData.idType} onChange={(e) => setFormData({...formData, idType: e.target.value})} className="flex-1">
-                                            <option value="PASSPORT">Passport</option>
-                                            <option value="NATIONAL_ID">National ID</option>
-                                        </select>
-                                        <input type="text" value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="ID Number" className="flex-[1.5]" />
-                                    </div>
-                                </div>
-
-                                <div className="form-group full-width">
-                                    <label>Vehicle / Emergency Contact</label>
-                                    <div className="flex flex-wrap md:flex-nowrap gap-3">
-                                        <input type="text" value={formData.vehicleRegistration} onChange={(e) => setFormData({...formData, vehicleRegistration: e.target.value})} placeholder="Vehicle Reg" className="flex-1" />
-                                        <input type="text" value={formData.emergencyContactName} onChange={(e) => setFormData({...formData, emergencyContactName: e.target.value})} placeholder="Contact Name" className="flex-1" />
-                                        <input type="text" value={formData.emergencyContactPhone} onChange={(e) => setFormData({...formData, emergencyContactPhone: e.target.value})} placeholder="Contact Phone" className="flex-1" />
-                                    </div>
-                                </div>
-
-                                <div className="form-group full-width">
-                                    <label>Special Requests & Preferences</label>
-                                    <textarea value={formData.specialRequests} onChange={(e) => setFormData({...formData, specialRequests: e.target.value})} className="min-h-[80px]" placeholder="Anything else we should know?" />
+                                    <textarea 
+                                        value={formData.specialRequests} 
+                                        onChange={(e) => setFormData({...formData, specialRequests: e.target.value})} 
+                                        className="min-h-[100px]" 
+                                        placeholder="Enter any guest requests or preferences..." 
+                                    />
                                 </div>
                             </div>
 
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowBookingModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">{selectedReservation ? 'Save Changes' : 'Create Booking'}</button>
+                                <button type="button" onClick={() => setShowBookingModal(false)} className="btn-secondary">Discard</button>
+                                <button type="submit" className="btn-primary !px-12">{selectedReservation ? 'Update Booking' : 'Confirm Reservation'}</button>
                             </div>
                         </form>
                     </div>

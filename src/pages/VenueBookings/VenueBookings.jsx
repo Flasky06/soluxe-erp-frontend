@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { Check, X } from 'lucide-react';
 
 const EVENT_TYPES = ['CONFERENCE', 'WEDDING', 'BIRTHDAY', 'GALA', 'SEMINAR', 'WORKSHOP', 'CORPORATE', 'OTHER'];
 const SETUP_TYPES = ['THEATER', 'CLASSROOM', 'BOARDROOM', 'BANQUET', 'COCKTAIL', 'U_SHAPE', 'HOLLOW_SQUARE', 'OPEN'];
@@ -212,8 +213,8 @@ const VenueBookings = () => {
                                         {b.deposit ? (
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-sm font-semibold">{parseFloat(b.deposit).toLocaleString()}</span>
-                                                <span className={`text-[10px] font-bold uppercase ${b.depositPaid ? 'text-green-600' : 'text-red-500'}`}>
-                                                    {b.depositPaid ? '✓ Paid' : '✗ Unpaid'}
+                                                <span className={`text-[10px] font-bold uppercase flex items-center gap-1 ${b.depositPaid ? 'text-green-600' : 'text-red-500'}`}>
+                                                    {b.depositPaid ? <><Check size={10} /> Paid</> : <><X size={10} /> Unpaid</>}
                                                 </span>
                                             </div>
                                         ) : '—'}

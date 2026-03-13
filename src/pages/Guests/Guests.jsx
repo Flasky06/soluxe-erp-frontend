@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { User } from 'lucide-react';
 
 const Guests = () => {
     const [guests, setGuests] = useState([]);
@@ -233,7 +234,7 @@ const Guests = () => {
                                             {formData.imageUrl ? (
                                                 <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                                             ) : (
-                                                <div className="text-slate-300 text-3xl">👤</div>
+                                                <div className="text-slate-300 text-3xl"><User size={48} /></div>
                                             )}
                                             {uploading && (
                                                 <div className="absolute inset-0 bg-white/80 flex items-center justify-center">

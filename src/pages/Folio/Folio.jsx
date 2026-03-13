@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
+import { Search, Filter, Plus, FileText, CreditCard, CheckCircle2 } from 'lucide-react';
 
 const Folio = () => {
+    const navigate = useNavigate();
     const { user } = useAuthStore();
     const [folios, setFolios] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -13,6 +16,11 @@ const Folio = () => {
     const [selectedFolioId, setSelectedFolioId] = useState(null);
     const [receipts, setReceipts] = useState([]);
     const [showReceiptModal, setShowReceiptModal] = useState(false);
+    
+    // Search and Filter State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('ALL');
+
     const [newMethod, setNewMethod] = useState({ name: '', description: '' });
     const [chargeTypes, setChargeTypes] = useState([]);
     const [newCharge, setNewCharge] = useState({
@@ -156,10 +164,40 @@ const Folio = () => {
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Folio & Billing</h1>
-                    <p className="text-text-slate text-base">Track guest spending and manage financial accounts.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">Billing & Folio</h1>
+                    <p className="text-text-slate text-base">Manage guest financial records and payments.</p>
                 </div>
-                <button className="btn-secondary" onClick={() => setShowMethodModal(true)}>Manage Payment Methods</button>
+                <button className="btn-secondary flex items-center gap-2" onClick={() => setShowMethodModal(true)}>
+                    <CreditCard size={16} /> Manage Payment Methods
+                </button>
+            </div>
+
+            {/* Search & Filter Bar */}
+            <div className="premium-card px-5 py-4 mb-6 flex flex-col md:flex-row items-center gap-4">
+                <div className="relative flex-1 group w-full">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-maroon transition-colors" size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search by Folio ID or Type..." 
+                        className="w-full pl-11 pr-4 py-2 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-maroon/10 outline-none transition-all"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                    <div className="flex items-center gap-2 text-slate-400 text-sm font-semibold whitespace-nowrap px-2">
+                        <Filter size={16} /> Status:
+                    </div>
+                    <select 
+                        className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-maroon/10 outline-none cursor-pointer hover:border-slate-300 transition-all w-full md:w-[160px]"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="ALL">All Status</option>
+                        <option value="OPEN">Open</option>
+                        <option value="CLOSED">Closed</option>
+                    </select>
+                </div>
             </div>
 
             <div className="premium-card overflow-hidden">
@@ -178,8 +216,18 @@ const Folio = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {folios.length > 0 ? (
-                                folios.map((folio) => (
+                            {folios.filter(f => {
+                                const matchesSearch = f.id.toString().includes(searchQuery) || f.folioType.toLowerCase().includes(searchQuery.toLowerCase());
+                                const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
+                                return matchesSearch && matchesStatus;
+                            }).length > 0 ? (
+                                folios
+                                    .filter(f => {
+                                        const matchesSearch = f.id.toString().includes(searchQuery) || f.folioType.toLowerCase().includes(searchQuery.toLowerCase());
+                                        const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
+                                        return matchesSearch && matchesStatus;
+                                    })
+                                    .map((folio) => (
                                     <tr key={folio.id} className="hover:bg-slate-50 transition-colors">
                                         <td className="font-bold text-slate-700">#{folio.id.toString().padStart(5, '0')}</td>
                                         <td>{folio.folioType}</td>
