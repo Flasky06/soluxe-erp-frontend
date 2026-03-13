@@ -28,6 +28,7 @@ const CheckIn = () => {
         roomId: '',
         adults: 1,
         children: 0,
+        dateOut: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
     });
     const [walkInLoading, setWalkInLoading] = useState(false);
     const [walkInSuccess, setWalkInSuccess] = useState(null);
@@ -118,10 +119,17 @@ const CheckIn = () => {
                 roomId: parseInt(walkInData.roomId),
                 adults: parseInt(walkInData.adults) || 1,
                 children: parseInt(walkInData.children) || 0,
+                dateOut: `${walkInData.dateOut}T11:00:00`,
                 userId: user?.id || 1,
             });
             setWalkInSuccess(`Walk-in successful. Stay #${res.data.id} is now ACTIVE.`);
-            setWalkInData({ guestId: '', roomId: '', adults: 1, children: 0 });
+            setWalkInData({ 
+                guestId: '', 
+                roomId: '', 
+                adults: 1, 
+                children: 0,
+                dateOut: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
+            });
             setTimeout(() => {
                 setShowWalkInModal(false);
                 setWalkInSuccess(null);
@@ -275,6 +283,20 @@ const CheckIn = () => {
                                         value={walkInData.children}
                                         onChange={e => setWalkInData({ ...walkInData, children: e.target.value })}
                                     />
+                                </div>
+                                
+                                <div className="form-group full-width">
+                                    <label>Expected Checkout Date</label>
+                                    <input
+                                        type="date"
+                                        required
+                                        min={new Date().toISOString().split('T')[0]}
+                                        value={walkInData.dateOut}
+                                        onChange={e => setWalkInData({ ...walkInData, dateOut: e.target.value })}
+                                    />
+                                    <p className="text-[10px] text-text-slate mt-1 italic leading-tight">
+                                        The total room charge will be calculated and posted to the folio automatically based on this date.
+                                    </p>
                                 </div>
                             </div>
 
