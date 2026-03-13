@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 
@@ -10,11 +10,18 @@ const Maintenance = () => {
     const [loading, setLoading] = useState(true);
 
     const [showModal, setShowModal] = useState(false);
+    const [showIssueTypeModal, setShowIssueTypeModal] = useState(false);
     const [issueTypes, setIssueTypes] = useState([]);
+    
     const [formData, setFormData] = useState({
         roomId: '',
         issueTypeId: '',
         priority: 'MEDIUM',
+        description: ''
+    });
+
+    const [issueTypeFormData, setIssueTypeFormData] = useState({
+        name: '',
         description: ''
     });
 
@@ -26,32 +33,23 @@ const Maintenance = () => {
 
     const isMaintenanceStaff = hasRole('ROLE_MAINTENANCE') || hasRole('ROLE_HOTEL_ADMIN') || hasRole('ROLE_MANAGER');
 
-    const fetchAllData = async () => {
-        setLoading(true);
-        try {
-            const [ticketsRes, roomsRes, usersRes, issueTypesRes] = await Promise.all([
-                api.get('/maintenance'),
-                api.get('/rooms'),
-                api.get('/users'),
-                api.get('/maintenance-issue-types')
-            ]);
-            setTickets(ticketsRes.data);
-            setRooms(roomsRes.data);
-            setUsers(usersRes.data);
-            setIssueTypes(issueTypesRes.data);
-            if (issueTypesRes.data.length > 0) {
-                setFormData(prev => ({ ...prev, issueTypeId: issueTypesRes.data[0].id }));
-            }
-        } catch (err) {
-            console.error('Failed to fetch maintenance data:', err);
         } finally {
             setLoading(false);
         }
-    };
+    }, [formData.issueTypeId]);
+
+    const fetchIssueTypes = useCallback(async () => {
+        try {
+            const res = await api.get('/maintenance-issue-types');
+            setIssueTypes(res.data);
+        } catch (err) {
+            console.error('Failed to fetch issue types:', err);
+        }
+    }, []);
 
     useEffect(() => {
         fetchAllData();
-    }, []);
+    }, [fetchAllData]);
 
     const handleCreateTicket = async (e) => {
         e.preventDefault();
@@ -69,6 +67,19 @@ const Maintenance = () => {
         } catch (err) {
             console.error('Failed to create ticket', err);
             alert('Failed to create ticket. Please try again.');
+        }
+    };
+
+    const handleCreateIssueType = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post('/maintenance-issue-types', issueTypeFormData);
+            setShowIssueTypeModal(false);
+            setIssueTypeFormData({ name: '', description: '' });
+            fetchIssueTypes(); // Refresh the list
+        } catch (err) {
+            console.error('Failed to create issue type', err);
+            alert('Failed to create issue type. Please try again.');
         }
     };
 
@@ -141,11 +152,16 @@ const Maintenance = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center mb-8">
+            <div className="flex justify-end items-center gap-4 mb-8">
+                {hasRole('ROLE_HOTEL_ADMIN') && (
+                    <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" onClick={() => setShowIssueTypeModal(true)}>
+                        Configure Categories
+                    </button>
+                )}
                 <button className="btn-primary" onClick={() => setShowModal(true)}>+ Report Issue</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="table-card overflow-x-auto">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse">Loading maintenance tickets...</div>
                 ) : (
@@ -208,7 +224,7 @@ const Maintenance = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[90%] !max-w-[600px]">
                         <div className="modal-header">
-                            <h2>Report Maintenance Issue</h2>
+                            <h2 className="text-xl font-bold text-primary">Report Maintenance Issue</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleCreateTicket} className="form-grid">
@@ -255,11 +271,36 @@ const Maintenance = () => {
                 </div>
             )}
 
+            {showIssueTypeModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
+                        <div className="modal-header">
+                            <h2 className="text-xl font-bold text-primary">Add Issue Category</h2>
+                            <button className="close-modal-btn" onClick={() => setShowIssueTypeModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleCreateIssueType} className="form-grid">
+                            <div className="form-group full-width">
+                                <label>Category Name</label>
+                                <input type="text" required value={issueTypeFormData.name} onChange={e => setIssueTypeFormData({...issueTypeFormData, name: e.target.value})} placeholder="e.g. Electrical, Plumbing" />
+                            </div>
+                            <div className="form-group full-width">
+                                <label>Short Description</label>
+                                <textarea required value={issueTypeFormData.description} onChange={e => setIssueTypeFormData({...issueTypeFormData, description: e.target.value})} placeholder="What kind of issues fall under this category?" />
+                            </div>
+                            <div className="modal-footer col-span-full">
+                                <button type="button" onClick={() => setShowIssueTypeModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary">Create Category</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {showResolveModal && (
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
                         <div className="modal-header">
-                            <h2>Resolve Ticket</h2>
+                            <h2 className="text-xl font-bold text-primary">Resolve Ticket</h2>
                             <button className="close-modal-btn" onClick={() => setShowResolveModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={submitResolve} className="form-grid">
