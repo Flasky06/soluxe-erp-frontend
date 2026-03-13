@@ -25,8 +25,12 @@ api.interceptors.response.use((response) => {
     return response;
 }, (error) => {
     if (error.response && error.response.status === 401) {
-        useAuthStore.getState().logout();
-        window.location.href = '/login';
+        // Only trigger if the user is currently considered authenticated
+        // (avoids double-redirect race with manual logout)
+        if (useAuthStore.getState().isAuthenticated) {
+            useAuthStore.getState().logout();
+            window.location.href = '/login';
+        }
     }
     return Promise.reject(error);
 });

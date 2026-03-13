@@ -9,7 +9,11 @@ const RoomTypes = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        defaultRate: ''
+        defaultRate: '',
+        weekendRate: '',
+        capacity: 2,
+        bedType: 'Queen',
+        amenities: ''
     });
 
     const fetchRoomTypes = async () => {
@@ -33,11 +37,23 @@ const RoomTypes = () => {
             setFormData({
                 name: type.name,
                 description: type.description || '',
-                defaultRate: type.defaultRate
+                defaultRate: type.defaultRate || '',
+                weekendRate: type.weekendRate || '',
+                capacity: type.capacity || 2,
+                bedType: type.bedType || 'Queen',
+                amenities: type.amenities || ''
             });
         } else {
             setEditingType(null);
-            setFormData({ name: '', description: '', defaultRate: '' });
+            setFormData({ 
+                name: '', 
+                description: '', 
+                defaultRate: '',
+                weekendRate: '',
+                capacity: 2,
+                bedType: 'Queen',
+                amenities: ''
+            });
         }
         setShowModal(true);
     };
@@ -47,7 +63,8 @@ const RoomTypes = () => {
         try {
             const payload = {
                 ...formData,
-                defaultRate: parseFloat(formData.defaultRate) || 0
+                defaultRate: parseFloat(formData.defaultRate) || 0,
+                weekendRate: parseFloat(formData.weekendRate) || 0
             };
             if (editingType) {
                 await api.put(`/room-types/${editingType.id}`, payload);
@@ -92,7 +109,8 @@ const RoomTypes = () => {
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Description</th>
+                                <th>Details</th>
+                                <th>Capacity</th>
                                 <th>Default Rate</th>
                                 <th>Actions</th>
                             </tr>
@@ -102,10 +120,24 @@ const RoomTypes = () => {
                                 <tr key={type.id}>
                                     <td><span className="font-bold text-text-dark">{type.name}</span></td>
                                     <td className="max-w-md">
-                                        <p className="line-clamp-2 text-text-slate italic text-sm">{type.description || 'No description'}</p>
+                                        <div className="flex flex-col gap-1">
+                                            <p className="line-clamp-2 text-text-slate text-sm">{type.description || 'No description'}</p>
+                                            {type.amenities && <p className="text-xs text-slate-500 italic line-clamp-1">Includes: {type.amenities}</p>}
+                                        </div>
                                     </td>
                                     <td>
-                                        <span className="font-semibold text-text-dark">KSh {parseFloat(type.defaultRate || 0).toLocaleString()}</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-medium text-slate-700">{type.capacity} Guests</span>
+                                            <span className="text-xs text-slate-500">{type.bedType}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className="flex flex-col">
+                                            <span className="font-semibold text-text-dark">KSh {parseFloat(type.defaultRate || 0).toLocaleString()} <span className="text-[10px] text-slate-400 font-normal">Base</span></span>
+                                            {type.weekendRate && (
+                                                <span className="font-semibold text-slate-500 text-sm">KSh {parseFloat(type.weekendRate).toLocaleString()} <span className="text-[10px] font-normal">Wknd</span></span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td>
                                         <div className="table-actions">
@@ -140,15 +172,49 @@ const RoomTypes = () => {
                                     />
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Description</label>
-                                    <textarea 
-                                        value={formData.description} 
-                                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                                        placeholder="Enter details..."
-                                        className="min-h-[100px]"
-                                        rows="3"
-                                    />
-                                </div>
+                                        <label>Description</label>
+                                        <textarea 
+                                            value={formData.description} 
+                                            onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                                            placeholder="Enter details..."
+                                            className="min-h-[80px]"
+                                            rows="2"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Max Capacity</label>
+                                        <input 
+                                            type="number" 
+                                            required 
+                                            min="1"
+                                            value={formData.capacity} 
+                                            onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value) || 1})} 
+                                            placeholder="2"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Bed Type</label>
+                                        <select 
+                                            value={formData.bedType} 
+                                            onChange={(e) => setFormData({...formData, bedType: e.target.value})}
+                                        >
+                                            <option value="Single">Single</option>
+                                            <option value="Double">Double</option>
+                                            <option value="Twin">Twin</option>
+                                            <option value="Queen">Queen</option>
+                                            <option value="King">King</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group full-width">
+                                        <label>Amenities (comma separated)</label>
+                                        <textarea 
+                                            value={formData.amenities} 
+                                            onChange={(e) => setFormData({...formData, amenities: e.target.value})} 
+                                            placeholder="e.g. WiFi, AC, Mini-bar, Ocean View"
+                                            className="min-h-[60px]"
+                                            rows="2"
+                                        />
+                                    </div>
                                 <div className="form-group">
                                     <label>Default Rate (KSh)</label>
                                     <input 
@@ -157,6 +223,15 @@ const RoomTypes = () => {
                                         value={formData.defaultRate} 
                                         onChange={(e) => setFormData({...formData, defaultRate: e.target.value})} 
                                         placeholder="0.00"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Weekend Rate (KSh)</label>
+                                    <input 
+                                        type="number" 
+                                        value={formData.weekendRate} 
+                                        onChange={(e) => setFormData({...formData, weekendRate: e.target.value})} 
+                                        placeholder="Optional..."
                                     />
                                 </div>
                             </div>

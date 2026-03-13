@@ -8,10 +8,7 @@
   --color-text-dark: #1e293b;
   --color-text-slate: #64748b;
   --color-card-gray: #f8f9fa;
-  
-  --shadow-premium: 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-  --shadow-modal: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
-  
+
   --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -21,165 +18,162 @@
 }
 
 @layer base {
-  * {
-    @apply m-0 p-0 box-border;
-  }
-  
+  * { @apply m-0 p-0 box-border; }
+
   body {
-    @apply font-inter bg-white text-text-dark antialiased leading-relaxed;
+    @apply font-inter bg-[#f5f6f8] text-text-dark antialiased leading-relaxed;
   }
 }
 
+/* ─── Core Card ─────────────────────────────────────────────────────────────── */
 @utility premium-card {
-  @apply bg-card-gray border border-border-gray rounded-2xl p-6 shadow-premium;
+  @apply bg-white border border-slate-200 rounded-lg;
 }
 
+/* ─── Buttons ────────────────────────────────────────────────────────────────── */
 @utility btn-primary {
-  @apply bg-maroon text-white px-6 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 hover:bg-yellow-dark hover:text-maroon hover:-translate-y-0.5;
+  @apply bg-maroon text-white px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer
+         border border-maroon transition-colors duration-150
+         hover:bg-[#6b0f11] active:bg-[#5e0d0f];
 }
 
 @utility btn-secondary {
-  @apply bg-yellow text-maroon px-6 py-3 rounded-lg font-semibold cursor-pointer transition-all duration-300 hover:bg-yellow-dark hover:-translate-y-0.5;
+  @apply bg-white text-slate-700 px-5 py-2 rounded-lg text-sm font-semibold cursor-pointer
+         border border-slate-300 transition-colors duration-150
+         hover:bg-slate-50 active:bg-slate-100;
 }
 
-/* Modal & Form Utilities - Keeping as legacy classes during migration */
+@utility search-input {
+  @apply px-3.5 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 bg-white
+         focus:ring-0 focus:border-maroon outline-none transition-colors duration-150
+         placeholder:text-slate-400;
+}
+
 @layer components {
+
+  /* ─── Modal ────────────────────────────────────────────────────────────────── */
   .modal-overlay {
-    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-[1000] backdrop-blur-sm;
+    @apply fixed inset-0 bg-black/40 flex items-center justify-center z-[1000];
   }
 
   .modal-content {
-    @apply bg-white p-10 rounded-[20px] relative shadow-modal max-h-[95vh] min-w-[500px] overflow-y-auto animate-[modalSlideUp_0.3s_ease-out];
+    @apply bg-white rounded-lg border border-slate-200 max-h-[95vh] overflow-y-auto;
   }
 
   .modal-header {
-    @apply flex justify-between items-center mb-8 border-b border-border-gray pb-4;
+    @apply flex justify-between items-center px-8 pt-6 pb-5 border-b border-slate-200;
   }
 
   .modal-header h2 {
-    @apply text-maroon m-0 text-[1.6rem] tracking-tight;
+    @apply text-[17px] font-bold text-slate-800 tracking-tight m-0;
   }
 
   .close-modal-btn {
-    @apply bg-transparent border-none text-2xl text-text-slate cursor-pointer p-1 leading-none transition-all duration-300 hover:text-maroon;
+    @apply w-7 h-7 flex items-center justify-center rounded-md text-slate-400 text-lg
+           cursor-pointer transition-colors duration-150
+           hover:bg-slate-100 hover:text-slate-600 border-none bg-transparent leading-none;
   }
 
+  /* ─── Forms ────────────────────────────────────────────────────────────────── */
   .form-grid {
-    @apply grid grid-cols-2 gap-5;
+    @apply grid grid-cols-2 gap-x-5 gap-y-4 px-8 py-6;
   }
 
-  .form-grid.triple {
-    @apply grid-cols-3;
-  }
+  .form-grid.triple { @apply grid-cols-3; }
 
-  .form-group {
-    @apply flex flex-col gap-2;
-  }
+  .form-group { @apply flex flex-col gap-1.5; }
 
   .form-group label {
-    @apply font-semibold text-[0.9rem] text-text-dark;
+    @apply text-[11px] font-bold text-slate-500 uppercase tracking-[0.06em];
   }
 
-  .form-group input, 
-  .form-group select, 
+  .form-group input,
+  .form-group select,
   .form-group textarea {
-    @apply p-[10px_12px] border border-border-gray rounded-lg font-[inherit] text-[0.95rem] transition-all duration-300 focus:outline-none focus:border-maroon;
+    @apply px-3 py-2 border border-slate-300 rounded-lg
+           text-[13.5px] font-normal text-slate-800 bg-white
+           transition-colors duration-150 outline-none
+           focus:border-maroon
+           placeholder:text-slate-400;
+    min-width: 0;
   }
 
-  .form-group.full-width {
-    @apply col-span-full;
-  }
+  .form-group select { @apply cursor-pointer; }
+  .form-group textarea { @apply resize-y; }
+  .form-group.full-width { @apply col-span-full; }
 
   .modal-footer {
-    @apply flex justify-end gap-3 mt-8;
+    @apply flex justify-end gap-3 px-8 py-5 border-t border-slate-200;
   }
 
-  /* Status Badges */
+  .form-section-title {
+    @apply col-span-full text-[10.5px] font-extrabold text-maroon
+           uppercase tracking-[0.1em] mt-2 pb-2 border-b border-slate-200;
+  }
+
+  /* ─── Status Badges ────────────────────────────────────────────────────────── */
   .status-badge {
-    @apply inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+    @apply inline-flex items-center px-2 py-[2px] rounded text-[10px] font-bold uppercase tracking-wide whitespace-nowrap;
   }
 
-  .status-badge.booked, 
-  .status-badge.confirmed, 
-  .status-badge.info {
-    @apply bg-blue-50 text-blue-600 border border-blue-100;
-  }
+  .status-badge.booked,
+  .status-badge.confirmed,
+  .status-badge.info        { @apply bg-blue-50 text-blue-700 border border-blue-200; }
 
-  .status-badge.checked_in, 
-  .status-badge.checked-in, 
-  .status-badge.success {
-    @apply bg-green-50 text-green-600 border border-green-100;
-  }
+  .status-badge.checked_in,
+  .status-badge.checked-in,
+  .status-badge.success     { @apply bg-emerald-50 text-emerald-700 border border-emerald-200; }
 
-  .status-badge.checked_out, 
-  .status-badge.checked-out, 
-  .status-badge.secondary {
-    @apply bg-slate-100 text-slate-600 border border-slate-200;
-  }
+  .status-badge.checked_out,
+  .status-badge.checked-out,
+  .status-badge.secondary   { @apply bg-slate-100 text-slate-500 border border-slate-300; }
 
-  .status-badge.pending, 
-  .status-badge.warning {
-    @apply bg-amber-50 text-amber-600 border border-amber-100;
-  }
+  .status-badge.pending,
+  .status-badge.warning     { @apply bg-amber-50 text-amber-700 border border-amber-200; }
 
-  .status-badge.cancelled, 
-  .status-badge.danger {
-    @apply bg-red-50 text-red-600 border border-red-100;
-  }
+  .status-badge.cancelled,
+  .status-badge.danger      { @apply bg-red-50 text-red-700 border border-red-200; }
 
-  /* Management Table */
+  /* ─── Management Table ─────────────────────────────────────────────────────── */
   .management-table {
     @apply w-full border-collapse text-left;
   }
 
   .management-table th {
-    @apply p-4 bg-slate-50/50 border-b border-border-gray text-[11px] text-text-slate uppercase tracking-widest font-bold;
+    @apply px-4 py-2.5 bg-slate-50 border-b border-slate-200
+           text-[10px] text-slate-500 uppercase tracking-[0.1em] font-bold;
   }
 
   .management-table td {
-    @apply p-4 border-b border-slate-50 text-[14px] text-text-dark;
+    @apply px-4 py-3 border-b border-slate-100 text-[13px] text-slate-700 align-middle;
   }
 
-  .management-table tr:hover td {
-    @apply bg-slate-50/30;
-  }
+  .management-table tr:last-child td { @apply border-b-0; }
 
-  .table-actions {
-    @apply flex items-center gap-2;
-  }
+  .management-table tbody tr:hover td { @apply bg-slate-50; }
+
+  /* ─── Table Actions ────────────────────────────────────────────────────────── */
+  .table-actions { @apply flex items-center gap-1.5; }
 
   .table-actions button {
-    @apply px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300;
+    @apply px-3 py-1.5 rounded-md text-[11px] font-semibold border transition-colors duration-150;
   }
 
   .table-actions .view-btn {
-    @apply bg-slate-100 text-slate-700 hover:bg-maroon hover:text-white;
+    @apply bg-white text-slate-600 border-slate-300 hover:bg-slate-100;
   }
 
   .table-actions .edit-btn {
-    @apply bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white;
+    @apply bg-white text-blue-600 border-blue-200 hover:bg-blue-50;
   }
 
   .table-actions .delete-btn {
-    @apply bg-red-50 text-red-600 hover:bg-red-600 hover:text-white;
+    @apply bg-white text-red-600 border-red-200 hover:bg-red-50;
   }
 }
 
-@keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  @apply bg-slate-100;
-}
-::-webkit-scrollbar-thumb {
-  @apply bg-maroon rounded-full;
-}
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-yellow;
-}
+/* ─── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar          { width: 5px; height: 5px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { @apply bg-slate-300 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }

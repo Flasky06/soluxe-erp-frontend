@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { useLocation, NavLink, useNavigate } from 'react-router-dom';
+import { useLocation, NavLink } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 
 const menuGroups = [
@@ -7,6 +7,7 @@ const menuGroups = [
         title: 'Overview',
         items: [
             { label: 'Dashboard', path: '/' },
+            { label: 'Maintenance', path: '/maintenance', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE', 'ROLE_RECEPTIONIST'] },
         ]
     },
     {
@@ -18,13 +19,15 @@ const menuGroups = [
             { label: 'Guests', path: '/guests', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Rooms', path: '/rooms', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Venues', path: '/venues', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Housekeeping', path: '/housekeeping', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING'] },
+            { label: 'Venue Bookings', path: '/venue-bookings', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Housekeeping', path: '/housekeeping', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST'] },
         ]
     },
     {
         title: 'Kitchen & Dining',
         items: [
             { label: 'Restaurant POS', path: '/restaurant', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER'] },
+            { label: 'Quick POS', path: '/pos', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER', 'ROLE_RECEPTIONIST'] },
             { label: 'Kitchen Orders', path: '/kitchen', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF'] },
             { label: 'Menu Items', path: '/menu-items', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
             { label: 'Menu Categories', path: '/menu-categories', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
@@ -61,11 +64,10 @@ const menuGroups = [
 const Sidebar = () => {
     const { user, logout } = useAuthStore();
     const location = useLocation();
-    const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        window.location.href = '/login';
     };
 
     // Helper to check if item is allowed for current user
@@ -165,7 +167,7 @@ const Sidebar = () => {
                     onClick={handleLogout} 
                     title="Sign Out"
                 >
-                    <span>Logout 🚪</span>
+                    <span>Logout</span>
                 </button>
             </div>
         </aside>

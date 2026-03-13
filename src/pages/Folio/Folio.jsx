@@ -14,8 +14,9 @@ const Folio = () => {
     const [receipts, setReceipts] = useState([]);
     const [showReceiptModal, setShowReceiptModal] = useState(false);
     const [newMethod, setNewMethod] = useState({ name: '', description: '' });
+    const [chargeTypes, setChargeTypes] = useState([]);
     const [newCharge, setNewCharge] = useState({
-        chargeType: 'ROOM_SERVICE',
+        chargeTypeId: '',
         description: '',
         quantity: 1,
         unitPrice: 0,
@@ -38,6 +39,7 @@ const Folio = () => {
         try {
             const payload = {
                 ...newCharge,
+                chargeTypeId: parseInt(newCharge.chargeTypeId) || 0,
                 quantity: parseFloat(newCharge.quantity) || 0,
                 unitPrice: parseFloat(newCharge.unitPrice) || 0,
                 taxPct: parseFloat(newCharge.taxPct) || 0,
@@ -47,7 +49,7 @@ const Folio = () => {
             setShowModal(false);
             const response = await api.get('/folios');
             setFolios(response.data);
-            setNewCharge({ chargeType: 'ROOM_SERVICE', description: '', quantity: 1, unitPrice: 0, taxPct: 0, discountPct: 0 });
+            setNewCharge({ chargeTypeId: chargeTypes[0]?.id || '', description: '', quantity: 1, unitPrice: 0, taxPct: 0, discountPct: 0 });
         } catch (err) {
             console.error('Failed to post charge', err);
             alert('Failed to post charge.');
@@ -128,21 +130,26 @@ const Folio = () => {
     };
 
     useEffect(() => {
-        const fetchFolios = async () => {
+        const fetchData = async () => {
             try {
-                const [foliosRes, methodsRes] = await Promise.all([
+                const [foliosRes, methodsRes, chargeTypesRes] = await Promise.all([
                     api.get('/folios'),
-                    api.get('/folios/payment-methods')
+                    api.get('/folios/payment-methods'),
+                    api.get('/charge-types')
                 ]);
                 setFolios(foliosRes.data);
                 setPaymentMethods(methodsRes.data);
+                setChargeTypes(chargeTypesRes.data);
+                if (chargeTypesRes.data.length > 0) {
+                    setNewCharge(prev => ({ ...prev, chargeTypeId: chargeTypesRes.data[0].id }));
+                }
             } catch (err) {
                 console.error('Failed to fetch data:', err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchFolios();
+        fetchData();
     }, []);
 
     return (
@@ -225,14 +232,10 @@ const Folio = () => {
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Charge Type</label>
-                                    <select value={newCharge.chargeType} onChange={(e) => setNewCharge({...newCharge, chargeType: e.target.value})}>
-                                        <option value="ROOM_SERVICE">ROOM_SERVICE</option>
-                                        <option value="RESTAURANT">RESTAURANT</option>
-                                        <option value="BAR">BAR</option>
-                                        <option value="MINIBAR">MINIBAR</option>
-                                        <option value="SPA">SPA</option>
-                                        <option value="LAUNDRY">LAUNDRY</option>
-                                        <option value="OTHER">OTHER</option>
+                                    <select value={newCharge.chargeTypeId} onChange={(e) => setNewCharge({...newCharge, chargeTypeId: e.target.value})}>
+                                        {chargeTypes.map(type => (
+                                            <option key={type.id} value={type.id}>{type.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="form-group full-width">

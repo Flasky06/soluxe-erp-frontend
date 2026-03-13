@@ -17,6 +17,7 @@ const CheckIn = () => {
     const [selectedReservation, setSelectedReservation] = useState(null);
     const [showReservationModal, setShowReservationModal] = useState(false);
     const [resCheckInRoomId, setResCheckInRoomId] = useState('');
+    const [resCheckInLoading, setResCheckInLoading] = useState(false);
 
     // Walk-in state
     const [allRooms, setAllRooms] = useState([]);
@@ -67,24 +68,36 @@ const CheckIn = () => {
     const handleOpenResModal = async (res) => {
         setSelectedReservation(res);
         setResCheckInRoomId('');
-        const filtered = allRooms.filter(r => r.status === 'AVAILABLE' && (r.roomType?.id === res.roomTypeId || r.roomTypeId === res.roomTypeId));
-        setAvailableRooms(filtered);
+        // Match rooms by roomType — handle both nested object (room.roomType.id) and flat (room.roomTypeId) API shapes
+        const availableAll = allRooms.filter(r => r.status === 'AVAILABLE');
+        const filtered = availableAll.filter(r => {
+            const roomTypeId = r.roomType?.id ?? r.roomTypeId;
+            return roomTypeId === res.roomTypeId;
+        });
+        // If roomTypeId matching yields no results (e.g. API shape mismatch), fall back to all available rooms
+        setAvailableRooms(filtered.length > 0 ? filtered : availableAll);
         setShowReservationModal(true);
     };
 
     const handleResCheckIn = async (e) => {
         e.preventDefault();
+        setResCheckInLoading(true);
         try {
-            await api.post('/stays/check-in', {
+            const payload = {
                 reservationId: selectedReservation.id,
                 roomId: parseInt(resCheckInRoomId),
                 userId: user?.id || 1,
-            });
+            };
+            console.log('Processing Reservation Check-in:', payload);
+            await api.post('/stays/check-in', payload);
             setShowReservationModal(false);
+            alert('✅ Check-in successful! Stay is now active.');
             fetchAllData();
         } catch (err) {
             console.error('Reservation check-in failed:', err);
-            alert(err.response?.data?.message || 'Check-in failed.');
+            alert(err.response?.data?.message || 'Check-in failed. Please ensure the room is available.');
+        } finally {
+            setResCheckInLoading(false);
         }
     };
 
@@ -207,12 +220,16 @@ const CheckIn = () => {
                                     <option key={g.id} value={g.id}>{g.fullName} {g.email ? `(${g.email})` : ''}</option>
                                 ))}
                             </select>
-                            <span
-                                className="text-xs text-maroon underline cursor-pointer mt-1 inline-block"
-                                onClick={() => navigate('/guests')}
-                            >
-                                + Add new guest
-                            </span>
+                            <div className="flex justify-between items-center mt-1">
+                                <span className="text-xs text-text-slate italic">Not in the list?</span>
+                                <button
+                                    type="button"
+                                    className="bg-maroon/10 text-maroon hover:bg-maroon hover:text-white px-3 py-1 rounded-md text-[11px] font-bold transition-all duration-300 shadow-sm border border-maroon/20"
+                                    onClick={() => navigate('/guests')}
+                                >
+                                    + ADD NEW GUEST
+                                </button>
+                            </div>
                         </div>
 
                         <div className="form-group full-width">
@@ -291,7 +308,9 @@ const CheckIn = () => {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowReservationModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary" disabled={!resCheckInRoomId || availableRooms.length === 0}>Complete Check-in</button>
+                                <button type="submit" className="btn-primary" disabled={!resCheckInRoomId || availableRooms.length === 0 || resCheckInLoading}>
+                                    {resCheckInLoading ? 'Checking In...' : 'Complete Check-in'}
+                                </button>
                             </div>
                         </form>
                     </div>

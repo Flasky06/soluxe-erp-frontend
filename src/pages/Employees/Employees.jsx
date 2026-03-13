@@ -7,6 +7,7 @@ const Employees = () => {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingEmployee, setEditingEmployee] = useState(null);
+    const [idTypes, setIdTypes] = useState([]);
     const [formData, setFormData] = useState({
         fullName: '',
         phone: '',
@@ -17,18 +18,28 @@ const Employees = () => {
         languagesSpoken: '',
         departmentId: '',
         nationality: '',
-        idType: 'NATIONAL_ID',
+        idTypeId: '',
         idNumber: ''
     });
 
     const fetchData = async () => {
         try {
-            const [employeesRes, deptsRes] = await Promise.all([
+            const [employeesRes, deptsRes, idTypesRes] = await Promise.all([
                 api.get('/employees'),
-                api.get('/departments')
+                api.get('/departments'),
+                api.get('/id-types')
             ]);
             setEmployees(employeesRes.data);
             setDepartments(deptsRes.data);
+            setIdTypes(idTypesRes.data);
+            
+            if (deptsRes.data.length > 0 && idTypesRes.data.length > 0) {
+                setFormData(prev => ({ 
+                    ...prev, 
+                    departmentId: deptsRes.data[0].id,
+                    idTypeId: idTypesRes.data[0].id 
+                }));
+            }
         } catch (err) {
             console.error('Failed to fetch data:', err);
         } finally {
@@ -53,7 +64,7 @@ const Employees = () => {
                 languagesSpoken: employee.languagesSpoken || '',
                 departmentId: employee.departmentId || '',
                 nationality: employee.nationality || '',
-                idType: employee.idType || 'NATIONAL_ID',
+                idTypeId: employee.idTypeId || '',
                 idNumber: employee.idNumber || ''
             });
         } else {
@@ -68,7 +79,7 @@ const Employees = () => {
                 languagesSpoken: '',
                 departmentId: departments.length > 0 ? departments[0].id : '',
                 nationality: 'Kenyan',
-                idType: 'NATIONAL_ID',
+                idTypeId: idTypes.length > 0 ? idTypes[0].id : '',
                 idNumber: ''
             });
         }
@@ -81,6 +92,7 @@ const Employees = () => {
             const payload = {
                 ...formData,
                 departmentId: parseInt(formData.departmentId) || 0,
+                idTypeId: parseInt(formData.idTypeId) || 0,
                 basicSalary: parseFloat(formData.basicSalary) || 0
             };
             if (editingEmployee) {
@@ -121,6 +133,7 @@ const Employees = () => {
                                 <th>Employee</th>
                                 <th>Department & Role</th>
                                 <th>Salary & Joining</th>
+                                <th>Identity</th>
                                 <th>Languages</th>
                                 <th>Actions</th>
                             </tr>
@@ -144,6 +157,12 @@ const Employees = () => {
                                         <div className="flex flex-col gap-0.5">
                                             <span className="font-semibold text-slate-800">KSh {parseFloat(emp.basicSalary || 0).toLocaleString()}</span>
                                             <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-xs font-bold text-text-slate uppercase">{emp.idTypeName}</span>
+                                            <span className="text-xs font-mono text-text-dark">{emp.idNumber}</span>
                                         </div>
                                     </td>
                                     <td>
@@ -213,10 +232,10 @@ const Employees = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>ID Type</label>
-                                    <select required value={formData.idType} onChange={(e) => setFormData({...formData, idType: e.target.value})}>
-                                        <option value="NATIONAL_ID">National ID</option>
-                                        <option value="PASSPORT">Passport</option>
-                                        <option value="DRIVING_LICENSE">Driving License</option>
+                                    <select required value={formData.idTypeId} onChange={(e) => setFormData({...formData, idTypeId: e.target.value})}>
+                                        {idTypes.map(type => (
+                                            <option key={type.id} value={type.id}>{type.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="form-group">

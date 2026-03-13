@@ -7,22 +7,26 @@ const Inventory = () => {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [units, setUnits] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
         categoryId: '',
         currentStock: 0,
-        unit: 'PIECES',
-        unitCost: 0
+        unitId: '',
+        unitCost: 0,
+        buyingPrice: 0
     });
 
     const fetchData = async () => {
         try {
-            const [itemsRes, catsRes] = await Promise.all([
+            const [itemsRes, catsRes, unitsRes] = await Promise.all([
                 api.get('/inventory-items'),
-                api.get('/inventory-categories')
+                api.get('/inventory-categories'),
+                api.get('/inventory-units')
             ]);
             setItems(itemsRes.data);
             setCategories(catsRes.data);
+            setUnits(unitsRes.data);
         } catch (err) {
             console.error('Failed to fetch inventory data:', err);
         } finally {
@@ -40,7 +44,10 @@ const Inventory = () => {
             setFormData({
                 name: item.name || '',
                 categoryId: item.categoryId || '',
-                currentStock: item.currentStock || 0
+                currentStock: item.currentStock || 0,
+                unitId: item.unitId || '',
+                unitCost: item.unitCost || 0,
+                buyingPrice: item.buyingPrice || 0
             });
         } else {
             setEditingItem(null);
@@ -48,8 +55,9 @@ const Inventory = () => {
                 name: '',
                 categoryId: categories.length > 0 ? categories[0].id : '',
                 currentStock: 0,
-                unit: 'PIECES',
-                unitCost: 0
+                unitId: units.length > 0 ? units[0].id : '',
+                unitCost: 0,
+                buyingPrice: 0
             });
         }
         setShowModal(true);
@@ -61,8 +69,10 @@ const Inventory = () => {
             const payload = {
                 ...formData,
                 categoryId: parseInt(formData.categoryId) || categories[0]?.id || 0,
+                unitId: parseInt(formData.unitId) || units[0]?.id || 0,
                 currentStock: parseFloat(formData.currentStock) || 0,
-                unitCost: parseFloat(formData.unitCost) || 0
+                unitCost: parseFloat(formData.unitCost) || 0,
+                buyingPrice: parseFloat(formData.buyingPrice) || 0
             };
             if (editingItem) {
                 await api.put(`/inventory-items/${editingItem.id}`, payload);
@@ -77,6 +87,7 @@ const Inventory = () => {
         }
     };
     const getCategoryName = (id) => categories.find(c => c.id === id)?.name || 'Uncategorized';
+    const getUnitName = (id) => units.find(u => u.id === id)?.name || 'N/A';
 
     return (
         <div className="flex flex-col">
@@ -106,6 +117,7 @@ const Inventory = () => {
                                     <th>Item Name</th>
                                     <th>Stock Level</th>
                                     <th>Category</th>
+                                    <th>Unit</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -124,6 +136,9 @@ const Inventory = () => {
                                         </td>
                                         <td>
                                             <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-bold uppercase w-fit leading-none">{getCategoryName(item.categoryId)}</span>
+                                        </td>
+                                        <td>
+                                            <span className="text-sm text-text-slate">{getUnitName(item.unitId)}</span>
                                         </td>
                                         <td>
                                             <div className="table-actions">
@@ -165,17 +180,18 @@ const Inventory = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Inventory Unit</label>
-                                    <select required value={formData.unit} onChange={(e) => setFormData({...formData, unit: e.target.value})}>
-                                        <option value="KG">Kilograms (kg)</option>
-                                        <option value="LITRES">Litres (L)</option>
-                                        <option value="PIECES">Pieces (pcs)</option>
-                                        <option value="BOXES">Boxes</option>
-                                        <option value="PACKETS">Packets</option>
-                                        <option value="OTHER">Other</option>
+                                    <select required value={formData.unitId} onChange={(e) => setFormData({...formData, unitId: e.target.value})}>
+                                        {units.map(u => (
+                                            <option key={u.id} value={u.id}>{u.name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Unit Cost (KSh)</label>
+                                    <label>Buying Price (KSh)</label>
+                                    <input type="number" step="0.01" required value={formData.buyingPrice} onChange={(e) => setFormData({...formData, buyingPrice: e.target.value})} />
+                                </div>
+                                <div className="form-group">
+                                    <label>Selling Price (KSh)</label>
                                     <input type="number" step="0.01" required value={formData.unitCost} onChange={(e) => setFormData({...formData, unitCost: e.target.value})} />
                                 </div>
                             </div>

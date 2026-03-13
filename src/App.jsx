@@ -15,6 +15,7 @@ import Inventory from './pages/Inventory/Inventory';
 import Venues from './pages/Venues/Venues';
 import Kitchen from './pages/Kitchen/Kitchen';
 import Restaurant from './pages/Restaurant/Restaurant';
+import POS from './pages/POS/POS';
 import Settings from './pages/Settings/Settings';
 import Reports from './pages/Reports/Reports';
 import Tables from './pages/Tables/Tables';
@@ -25,6 +26,8 @@ import Users from './pages/Users/Users';
 import MenuCategories from './pages/MenuCategories/MenuCategories';
 import CheckOut from './pages/CheckOut/CheckOut';
 import CheckIn from './pages/CheckIn/CheckIn';
+import Maintenance from './pages/Maintenance/Maintenance';
+import VenueBookings from './pages/VenueBookings/VenueBookings';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -53,9 +56,13 @@ function App() {
                     <Route path="/guests" element={<Guests />} />
                     <Route path="/check-out" element={<CheckOut />} />
                     <Route path="/venues" element={<Venues />} />
+                    <Route path="/venue-bookings" element={<VenueBookings />} />
                 </Route>
-                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING']} />}>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST']} />}>
                     <Route path="/housekeeping" element={<Housekeeping />} />
+                </Route>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE', 'ROLE_RECEPTIONIST']} />}>
+                    <Route path="/maintenance" element={<Maintenance />} />
                 </Route>
 
                 {/* Financials */}
@@ -68,11 +75,25 @@ function App() {
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER']} />}>
                     <Route path="/restaurant" element={<Restaurant />} />
                 </Route>
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER', 'ROLE_RECEPTIONIST']} />}>
+                    <Route path="/pos" element={<POS />} />
+                </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT']} />}>
                     <Route path="/reports" element={<Reports />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
                     <Route path="/menu-items" element={<MenuItems />} />
+                </Route>
+
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
+                    <Route path="/menu-categories" element={<MenuCategories />} />
+                    <Route path="/tables" element={<Tables />} />
+                </Route>
+
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER']} />}>
+                    <Route path="/inventory" element={<Inventory />} />
+                    <Route path="/inventory-categories" element={<InventoryCategories />} />
+                    <Route path="/suppliers" element={<Suppliers />} />
                 </Route>
 
                 {/* System */}
@@ -81,11 +102,6 @@ function App() {
                     <Route path="/departments" element={<Departments />} />
                     <Route path="/room-types" element={<RoomTypes />} /> {/* Added route */}
                     <Route path="/employees" element={<Employees />} />
-                    <Route path="/inventory" element={<Inventory />} />
-                    <Route path="/inventory-categories" element={<InventoryCategories />} />
-                    <Route path="/menu-categories" element={<MenuCategories />} />
-                    <Route path="/suppliers" element={<Suppliers />} />
-                    <Route path="/tables" element={<Tables />} />
                     <Route path="/users" element={<Users />} />
                 </Route>
 

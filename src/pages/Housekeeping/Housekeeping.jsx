@@ -92,7 +92,7 @@ const Housekeeping = () => {
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-40 text-center gap-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[32px]">
-                    <div className="w-20 h-20 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-4xl shadow-inner">✨</div>
+                    <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center text-2xl font-bold">HQ</div>
                     <div className="max-w-md">
                         <h2 className="text-2xl font-black text-slate-800 mb-2">All rooms are clean!</h2>
                         <p className="text-slate-500 font-medium leading-relaxed">No rooms currently require housekeeping attention. Excellent work by the team!</p>
