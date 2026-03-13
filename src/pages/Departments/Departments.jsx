@@ -73,11 +73,7 @@ const Departments = () => {
 
     return (
         <div className="flex flex-col">
-            <header className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Department Management</h1>
-                    <p className="text-text-slate text-base">Configure and manage hotel departments</p>
-                </div>
+            <header className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>
                     Add Department
                 </button>

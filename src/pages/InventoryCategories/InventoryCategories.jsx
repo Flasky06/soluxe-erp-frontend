@@ -73,11 +73,7 @@ const InventoryCategories = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Inventory Categories</h1>
-                    <p className="text-text-slate text-base">Organize your stock items into logical groupings.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Category</button>
             </div>
 
@@ -115,10 +111,7 @@ const InventoryCategories = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Define category names and purpose for inventory stock.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>

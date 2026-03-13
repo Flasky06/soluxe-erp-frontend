@@ -103,10 +103,6 @@ const CheckOut = () => {
     return (
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Guest Check-out</h1>
-                    <p className="text-text-slate text-base">Manage departures and finalize guest stays.</p>
-                </div>
             </div>
 
             <div className="premium-card overflow-x-auto">

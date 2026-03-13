@@ -35,7 +35,7 @@ const MenuCategories = () => {
                 name: category.name,
                 description: category.description || '',
                 sortOrder: category.sortOrder || 0,
-                isActive: category.isActive !== undefined ? category.isActive : true
+                isActive: (category.isActive ?? category.active) !== undefined ? (category.isActive ?? category.active) : true
             });
         } else {
             setEditingCategory(null);
@@ -79,11 +79,7 @@ const MenuCategories = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Menu Categories</h1>
-                    <p className="text-text-slate text-base">Organize your restaurant menu into sections like Starters, Mains, Drinks.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Category</button>
             </div>
 
@@ -108,8 +104,8 @@ const MenuCategories = () => {
                                     <td className="text-text-slate text-sm italic">{cat.description || 'No description'}</td>
                                     <td>{cat.sortOrder}</td>
                                     <td>
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${cat.isActive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                                            {cat.isActive ? 'Active' : 'Inactive'}
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${(cat.isActive ?? cat.active) ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                            {(cat.isActive ?? cat.active) ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                     <td>
@@ -129,10 +125,7 @@ const MenuCategories = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[70%] !max-w-[700px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Define menu sections for the POS and Kitchen.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>

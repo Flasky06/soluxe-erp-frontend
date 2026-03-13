@@ -17,6 +17,11 @@ const Inventory = () => {
         buyingPrice: 0
     });
 
+    // Quick Category Add
+    const [showQuickCatModal, setShowQuickCatModal] = useState(false);
+    const [quickCatData, setQuickCatData] = useState({ name: '', description: '' });
+    const [quickCatLoading, setQuickCatLoading] = useState(false);
+
     const fetchData = async () => {
         try {
             const [itemsRes, catsRes, unitsRes] = await Promise.all([
@@ -37,6 +42,27 @@ const Inventory = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const handleQuickAddCategory = async (e) => {
+        e.preventDefault();
+        if (!quickCatData.name) return;
+        setQuickCatLoading(true);
+        try {
+            const res = await api.post('/inventory-categories', quickCatData);
+            // Refresh categories
+            const catsRes = await api.get('/inventory-categories');
+            setCategories(catsRes.data);
+            // Select the new category
+            setFormData(prev => ({ ...prev, categoryId: res.data.id }));
+            setShowQuickCatModal(false);
+            setQuickCatData({ name: '', description: '' });
+        } catch (err) {
+            console.error('Failed to quick add category:', err);
+            alert('Failed to add category.');
+        } finally {
+            setQuickCatLoading(false);
+        }
+    };
 
     const handleOpenModal = (item = null) => {
         if (item) {
@@ -91,11 +117,7 @@ const Inventory = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Inventory Management</h1>
-                    <p className="text-text-slate text-base">Track stock levels, unit costs, and supply chain records.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Item</button>
             </div>
 
@@ -167,7 +189,16 @@ const Inventory = () => {
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Toilet Paper" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Category</label>
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label className="mb-0">Category</label>
+                                        <button 
+                                            type="button" 
+                                            className="text-primary text-[11px] font-bold hover:underline"
+                                            onClick={() => setShowQuickCatModal(true)}
+                                        >
+                                            + Add Category
+                                        </button>
+                                    </div>
                                     <select required value={formData.categoryId} onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
                                         {categories.map(cat => (
                                             <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -198,6 +229,37 @@ const Inventory = () => {
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
                                 <button type="submit" className="btn-primary !px-10">Update Inventory</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Quick Category Modal */}
+            {showQuickCatModal && (
+                <div className="modal-overlay z-[1000]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
+                        <div className="modal-header">
+                            <h2 className="text-lg font-bold">Quick Add Category</h2>
+                            <button className="close-modal-btn" onClick={() => setShowQuickCatModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleQuickAddCategory} className="p-4">
+                            <div className="form-group full-width">
+                                <label>Category Name</label>
+                                <input 
+                                    type="text" 
+                                    required 
+                                    autoFocus
+                                    value={quickCatData.name} 
+                                    onChange={(e) => setQuickCatData({...quickCatData, name: e.target.value})} 
+                                    placeholder="e.g. Toiletries" 
+                                />
+                            </div>
+                            <div className="modal-footer !px-0 mt-6">
+                                <button type="button" onClick={() => setShowQuickCatModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary" disabled={quickCatLoading}>
+                                    {quickCatLoading ? 'Adding...' : 'Add Category'}
+                                </button>
                             </div>
                         </form>
                     </div>

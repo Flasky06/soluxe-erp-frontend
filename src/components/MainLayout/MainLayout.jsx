@@ -50,6 +50,13 @@ const MainLayout = ({ children }) => {
 
     const pageTitle = pageTitles[location.pathname] || 'Soluxe Hotel CRM';
 
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (panelRef.current && !panelRef.current.contains(e.target)) {
@@ -83,7 +90,17 @@ const MainLayout = ({ children }) => {
                     </div>
 
                     {/* Right-side actions */}
-                    <div className="flex items-center gap-3" ref={panelRef}>
+                    <div className="flex items-center gap-6" ref={panelRef}>
+                        
+                        {/* Date & Time Display */}
+                        <div className="hidden md:flex flex-col items-end border-r border-slate-100 pr-6">
+                            <span className="text-[13px] font-bold text-slate-700 tracking-tight">
+                                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                {currentTime.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+                            </span>
+                        </div>
 
                         {/* Notification Bell */}
                         <div className="relative">
@@ -167,7 +184,9 @@ const MainLayout = ({ children }) => {
 
                 {/* ── Page Content ── */}
                 <div className="flex-1 p-8">
-                    {children}
+                    <div className="max-w-[1400px] mx-auto">
+                        {children}
+                    </div>
                 </div>
             </main>
         </div>

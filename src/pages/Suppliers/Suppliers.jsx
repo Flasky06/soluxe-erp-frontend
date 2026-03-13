@@ -14,6 +14,8 @@ const Suppliers = () => {
         address: '',
         category: 'GENERAL'
     });
+    const [serverErrors, setServerErrors] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
 
     const fetchSuppliers = async () => {
         try {
@@ -52,11 +54,14 @@ const Suppliers = () => {
                 category: 'GENERAL'
             });
         }
+        setServerErrors({});
         setShowModal(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerErrors({});
+        setIsSaving(true);
         try {
             if (editingSupplier) {
                 await api.put(`/suppliers/${editingSupplier.id}`, formData);
@@ -67,7 +72,13 @@ const Suppliers = () => {
             fetchSuppliers();
         } catch (err) {
             console.error('Failed to save supplier:', err);
-            alert('Failed to save supplier.');
+            if (err.response && (err.response.status === 400 || err.response.status === 409)) {
+                setServerErrors(err.response.data);
+            } else {
+                alert('Failed to save supplier. Please verify your information.');
+            }
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -85,11 +96,7 @@ const Suppliers = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Supplier Directory</h1>
-                    <p className="text-text-slate text-base">Manage vendors and inventory supply partners.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Supplier</button>
             </div>
 
@@ -136,17 +143,20 @@ const Suppliers = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[80%] !max-w-[1000px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">{editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Register administrative and contact details for the vendor.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">{editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
+                        {serverErrors.error && (
+                            <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                                {serverErrors.error}
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Company Name</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Fresh Foods Ltd" />
+                                    {serverErrors.name && <p className="text-red-500 text-xs mt-1">{serverErrors.name}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Contact Person</label>
@@ -155,10 +165,12 @@ const Suppliers = () => {
                                 <div className="form-group">
                                     <label>Phone Number</label>
                                     <input type="text" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="+254..." />
+                                    {serverErrors.phone && <p className="text-red-500 text-xs mt-1">{serverErrors.phone}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Email Address</label>
-                                    <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="orders@vendor.com" />
+                                    <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="orders@vendor.com" />
+                                    {serverErrors.email && <p className="text-red-500 text-xs mt-1">{serverErrors.email}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Supply Category</label>
@@ -179,7 +191,9 @@ const Suppliers = () => {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">{editingSupplier ? 'Save Updates' : 'Add Supplier'}</button>
+                                <button type="submit" className="btn-primary !px-10" disabled={isSaving}>
+                                    {isSaving ? 'Processing...' : editingSupplier ? 'Save Updates' : 'Add Supplier'}
+                                </button>
                             </div>
                         </form>
                     </div>

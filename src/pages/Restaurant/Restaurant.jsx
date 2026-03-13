@@ -145,10 +145,6 @@ const Restaurant = () => {
     return (
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Restaurant Table Management</h1>
-                    <p className="text-text-slate text-base">Monitor real-time table occupancy and manage sessions.</p>
-                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

@@ -26,6 +26,8 @@ const Guests = () => {
         emergencyContactPhone: '',
         imageUrl: ''
     });
+    const [serverErrors, setServerErrors] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
 
     const refreshData = async () => {
         try {
@@ -119,11 +121,14 @@ const Guests = () => {
                 imageUrl: ''
             });
         }
+        setServerErrors({});
         setShowModal(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerErrors({});
+        setIsSaving(true);
         try {
             const payload = {
                 ...formData,
@@ -138,17 +143,19 @@ const Guests = () => {
             refreshData();
         } catch (err) {
             console.error('Failed to save guest:', err);
-            alert('Failed to save guest.');
+            if (err.response && (err.response.status === 400 || err.response.status === 409)) {
+                setServerErrors(err.response.data);
+            } else {
+                alert('Failed to save guest. Please check your inputs.');
+            }
+        } finally {
+            setIsSaving(false);
         }
     };
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Guest Management</h1>
-                    <p className="text-text-slate text-base">Register and manage guest profiles and identities.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Register Guest</button>
             </div>
 
@@ -218,12 +225,14 @@ const Guests = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[80%] !max-w-[1000px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-text-dark leading-tight">{editingGuest ? 'Edit Guest Profile' : 'Register New Guest'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Please fill in all identity information accurately.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-text-dark leading-tight">{editingGuest ? 'Edit Guest Profile' : 'Register New Guest'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
+                        {serverErrors.error && (
+                            <div className="mx-8 mt-2 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                                {serverErrors.error}
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 {/* Profile Image Upload Row */}
@@ -255,10 +264,12 @@ const Guests = () => {
                                 <div className="form-group leading-tight">
                                     <label>Full Name</label>
                                     <input type="text" required value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} placeholder="John Doe" />
+                                    {serverErrors.fullName && <p className="text-red-500 text-[10px] mt-1">{serverErrors.fullName}</p>}
                                 </div>
                                 <div className="form-group leading-tight">
                                     <label>Email Address</label>
                                     <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" />
+                                    {serverErrors.email && <p className="text-red-500 text-[10px] mt-1">{serverErrors.email}</p>}
                                 </div>
                                 <div className="form-group leading-tight">
                                     <label>Company Name</label>
@@ -267,6 +278,7 @@ const Guests = () => {
                                 <div className="form-group leading-tight">
                                     <label>Phone Number</label>
                                     <input type="text" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="+1 234 567 890" />
+                                    {serverErrors.phone && <p className="text-red-500 text-[10px] mt-1">{serverErrors.phone}</p>}
                                 </div>
                                 <div className="form-group leading-tight">
                                     <label>Nationality</label>
@@ -294,7 +306,8 @@ const Guests = () => {
                                 </div>
                                 <div className="form-group leading-tight">
                                     <label>Passport/ID No</label>
-                                    <input type="text" value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="ID Number" />
+                                    <input type="text" required value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="ID Number" />
+                                    {serverErrors.idNumber && <p className="text-red-500 text-[10px] mt-1">{serverErrors.idNumber}</p>}
                                 </div>
                                 <div className="form-group leading-tight">
                                     <label>Vehicle Registration</label>
@@ -325,7 +338,9 @@ const Guests = () => {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">Save Guest Profile</button>
+                                <button type="submit" className="btn-primary !px-10" disabled={isSaving}>
+                                    {isSaving ? 'Registering...' : editingGuest ? 'Update Guest' : 'Save Guest Profile'}
+                                </button>
                             </div>
                         </form>
                     </div>

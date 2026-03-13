@@ -95,7 +95,7 @@ const Settings = () => {
                 phoneNumber: user.phoneNumber || '',
                 role: user.role,
                 password: '', 
-                isActive: user.isActive
+                isActive: user.isActive ?? user.active
             });
         } else {
             setEditingUser(null);
@@ -177,12 +177,6 @@ const Settings = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">System Settings</h1>
-                    <p className="text-text-slate text-base">Configure property identity, users, and global policies.</p>
-                </div>
-            </div>
 
             <div className="flex gap-2 mb-8 border-b border-slate-200">
                 <button 
@@ -255,8 +249,8 @@ const Settings = () => {
                                                 </span>
                                             </td>
                                             <td>
-                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight ${user.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                                                    {user.isActive ? 'Active' : 'Disabled'}
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight ${(user.isActive ?? user.active) ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
+                                                    {(user.isActive ?? user.active) ? 'Active' : 'Disabled'}
                                                 </span>
                                             </td>
                                             <td>
@@ -436,10 +430,7 @@ const Settings = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[85%] !max-w-[800px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">{editingUser ? 'Edit User Profile' : 'Create New User Account'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Define system access roles and credentials.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">{editingUser ? 'Edit User Profile' : 'Create New User Account'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>

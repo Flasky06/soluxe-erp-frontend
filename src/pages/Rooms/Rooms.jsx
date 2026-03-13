@@ -92,11 +92,7 @@ const Rooms = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Room Management</h1>
-                    <p className="text-text-slate text-base">Manage your hotel inventory and housekeeping status.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Room</button>
             </div>
 

@@ -139,11 +139,7 @@ const VenueBookings = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Venue Bookings</h1>
-                    <p className="text-text-slate text-base">Manage event bookings for all hotel venues and spaces.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <div className="flex items-center gap-3">
                     <input
                         type="text"

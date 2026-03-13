@@ -136,11 +136,7 @@ const CheckIn = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Arrivals & Check-in</h1>
-                    <p className="text-text-slate text-base">Select a reservation to check-in or start a new walk-in.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button 
                     className="btn-primary flex items-center gap-2"
                     onClick={() => {
@@ -204,10 +200,7 @@ const CheckIn = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-text-dark">Walk-in Check-in</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Direct room assignment for guests without prior booking.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-text-dark">Walk-in Check-in</h2>
                             <button className="close-modal-btn" onClick={() => setShowWalkInModal(false)}>&times;</button>
                         </div>
                         

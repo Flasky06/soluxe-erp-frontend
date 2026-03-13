@@ -221,11 +221,7 @@ const Reservations = () => {
     return (
         <div className="flex flex-col gap-6">
             {/* Header & New Action */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-[32px] font-bold text-text-dark tracking-tight">Reservations</h1>
-                    <p className="text-text-slate text-base mt-1">Manage guest arrivals, stays, and table bookings.</p>
-                </div>
+            <div className="flex justify-end items-center">
                 <button className="btn-primary flex items-center gap-2 h-11" onClick={() => handleOpenBookingModal()}>
                     <span>+ New Reservation</span>
                 </button>

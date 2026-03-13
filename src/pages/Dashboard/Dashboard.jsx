@@ -48,10 +48,6 @@ const Dashboard = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="mb-8">
-                <h1 className="text-[28px] font-bold text-text-dark">Dashboard Overview</h1>
-                <p className="text-text-slate text-base">Monitor your hotel's performance in real-time.</p>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {stats.map((stat) => (

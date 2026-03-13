@@ -160,11 +160,7 @@ const Folio = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Billing & Folio</h1>
-                    <p className="text-text-slate text-base">Manage guest financial records and payments.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-secondary flex items-center gap-2" onClick={() => setShowMethodModal(true)}>
                     <CreditCard size={16} /> Manage Payment Methods
                 </button>
@@ -268,10 +264,7 @@ const Folio = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">Post Charge to #{selectedFolioId?.toString().padStart(5, '0')}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Record a new expense against this folio.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">Post Charge to #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handlePostCharge}>
@@ -311,10 +304,7 @@ const Folio = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[85%] !max-w-[600px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">Record Payment for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Settle the outstanding balance for this guest.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">Record Payment for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowPaymentModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleRecordPayment}>
@@ -351,10 +341,7 @@ const Folio = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">Manage Payment Methods</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Configure available payment gateways.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">Manage Payment Methods</h2>
                             <button className="close-modal-btn" onClick={() => setShowMethodModal(false)}>&times;</button>
                         </div>
                         
@@ -400,10 +387,7 @@ const Folio = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[95%] !max-w-[700px] print:!max-w-none print:shadow-none print:p-0">
                         <div className="modal-header print:hidden">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">Receipts for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Official payment records and transaction proofs.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">Receipts for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
                             <button className="close-modal-btn" onClick={() => setShowReceiptModal(false)}>&times;</button>
                         </div>
 

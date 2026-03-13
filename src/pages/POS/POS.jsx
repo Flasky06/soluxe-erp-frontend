@@ -120,10 +120,6 @@ const POS = () => {
     return (
         <div className="flex flex-col h-[calc(100vh-100px)]">
             <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Point of Sale</h1>
-                    <p className="text-text-slate text-base">Quick service ordering and checkout.</p>
-                </div>
             </div>
 
             <div className="flex flex-1 gap-6 min-h-0">

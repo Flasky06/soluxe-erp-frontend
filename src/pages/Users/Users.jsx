@@ -15,6 +15,7 @@ const Users = () => {
         role: 'RECEPTIONIST',
         active: true
     });
+    const [serverErrors, setServerErrors] = useState({});
 
     const roles = [
         'HOTEL_ADMIN', 'MANAGER', 'ACCOUNTANT', 'RECEPTIONIST', 
@@ -47,7 +48,7 @@ const Users = () => {
                 phoneNumber: user.phoneNumber || '',
                 password: '', // Don't show password hash
                 role: user.role,
-                active: user.active
+                isActive: user.isActive ?? user.active
             });
         } else {
             setEditingUser(null);
@@ -61,11 +62,13 @@ const Users = () => {
                 active: true
             });
         }
+        setServerErrors({});
         setShowModal(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerErrors({});
         try {
             if (editingUser) {
                 await api.put(`/users/${editingUser.id}`, formData);
@@ -76,7 +79,11 @@ const Users = () => {
             fetchUsers();
         } catch (err) {
             console.error('Failed to save user:', err);
-            alert('Failed to save user details.');
+            if (err.response && (err.response.status === 400 || err.response.status === 409)) {
+                setServerErrors(err.response.data);
+            } else {
+                alert('An unexpected error occurred. Please try again.');
+            }
         }
     };
 
@@ -104,11 +111,7 @@ const Users = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">User Management</h1>
-                    <p className="text-text-slate text-base">Manage application access, security credentials, and system roles.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add New User</button>
             </div>
 
@@ -147,8 +150,8 @@ const Users = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${u.active ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                                            {u.active ? 'Authenticated' : 'Disabled'}
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${(u.isActive ?? u.active) ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                            {(u.isActive ?? u.active) ? 'Authenticated' : 'Disabled'}
                                         </span>
                                     </td>
                                     <td>
@@ -168,17 +171,20 @@ const Users = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[80%] !max-w-[800px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">{editingUser ? 'Update User Security Profile' : 'Register New System User'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Define access permissions and authentication credentials.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">{editingUser ? 'Update User Security Profile' : 'Register New System User'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
+                        {serverErrors.error && (
+                            <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                                {serverErrors.error}
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Username (Login ID)</label>
-                                    <input type="text" required value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} placeholder="e.g. admin_soluxe" disabled={editingUser} />
+                                    <input type="text" required minLength={3} maxLength={50} value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} placeholder="e.g. admin_soluxe" disabled={editingUser} />
+                                    {serverErrors.username && <p className="text-red-500 text-xs mt-1">{serverErrors.username}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>System Role</label>
@@ -187,14 +193,17 @@ const Users = () => {
                                             <option key={r} value={r}>{r.replace(/_/g, ' ')}</option>
                                         ))}
                                     </select>
+                                    {serverErrors.role && <p className="text-red-500 text-xs mt-1">{serverErrors.role}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Full Name</label>
                                     <input type="text" required value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} placeholder="Jane Doe" />
+                                    {serverErrors.fullName && <p className="text-red-500 text-xs mt-1">{serverErrors.fullName}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Email Address</label>
                                     <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="jane@soluxehotel.com" />
+                                    {serverErrors.email && <p className="text-red-500 text-xs mt-1">{serverErrors.email}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Phone Number</label>
@@ -204,9 +213,17 @@ const Users = () => {
                                     <label>{editingUser ? 'New Password (Optional)' : 'Initial Password'}</label>
                                     <input type="password" required={!editingUser} value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} placeholder="••••••••" />
                                 </div>
-                                <div className="flex items-center gap-2.5 mt-6 col-span-2">
-                                    <input type="checkbox" id="active" checked={formData.active} onChange={(e) => setFormData({...formData, active: e.target.checked})} className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary/20" />
-                                    <label htmlFor="active" className="mb-0 text-sm font-semibold text-slate-700 uppercase tracking-wide">Account Active & Enabled</label>
+                                <div className="md:col-span-2">
+                                    <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                                        <input 
+                                            type="checkbox" 
+                                            id="isActive"
+                                            checked={formData.isActive} 
+                                            onChange={(e) => setFormData({...formData, isActive: e.target.checked})} 
+                                            className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary/20" 
+                                        />
+                                        <label htmlFor="isActive" className="mb-0 text-sm font-semibold text-slate-700 uppercase tracking-wide">Account Active & Enabled</label>
+                                    </div>
                                 </div>
                             </div>
                             <div className="modal-footer">

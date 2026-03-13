@@ -21,6 +21,8 @@ const Employees = () => {
         idTypeId: '',
         idNumber: ''
     });
+    const [serverErrors, setServerErrors] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -83,11 +85,14 @@ const Employees = () => {
                 idNumber: ''
             });
         }
+        setServerErrors({});
         setShowModal(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerErrors({});
+        setIsSaving(true);
         try {
             const payload = {
                 ...formData,
@@ -104,7 +109,13 @@ const Employees = () => {
             fetchData();
         } catch (err) {
             console.error('Failed to save employee:', err);
-            alert('Failed to save employee.');
+            if (err.response && (err.response.status === 400 || err.response.status === 409)) {
+                setServerErrors(err.response.data);
+            } else {
+                alert('Failed to save employee record. Please check your connection.');
+            }
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -115,11 +126,7 @@ const Employees = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Employee Directory</h1>
-                    <p className="text-text-slate text-base">Manage hotel staff, assignments, and professional records.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Employee</button>
             </div>
 
@@ -188,22 +195,30 @@ const Employees = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[85%] !max-w-[1200px]">
                         <div className="modal-header">
-                            <h2>{editingEmployee ? 'Edit Employee Details' : 'Register New Staff Member'}</h2>
+                            <h2 className="text-xl font-bold text-primary">{editingEmployee ? 'Edit Employee Details' : 'Register New Staff Member'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
+                        {serverErrors.error && (
+                            <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                                {serverErrors.error}
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Full Name</label>
                                     <input type="text" required value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} placeholder="Jane Smith" />
+                                    {serverErrors.fullName && <p className="text-red-500 text-xs mt-1">{serverErrors.fullName}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Email Address</label>
                                     <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="jane.s@hotel.com" />
+                                    {serverErrors.email && <p className="text-red-500 text-xs mt-1">{serverErrors.email}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Phone Number</label>
                                     <input type="text" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="+1 555 1234" />
+                                    {serverErrors.phone && <p className="text-red-500 text-xs mt-1">{serverErrors.phone}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Department</label>
@@ -217,6 +232,7 @@ const Employees = () => {
                                 <div className="form-group">
                                     <label>Designation</label>
                                     <input type="text" required value={formData.designation} onChange={(e) => setFormData({...formData, designation: e.target.value})} placeholder="e.g. Senior Receptionist" />
+                                    {serverErrors.designation && <p className="text-red-500 text-xs mt-1">{serverErrors.designation}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Basic Salary (KSh)</label>
@@ -241,6 +257,7 @@ const Employees = () => {
                                 <div className="form-group">
                                     <label>Passport / ID Number</label>
                                     <input type="text" required value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="A12345678" />
+                                    {serverErrors.idNumber && <p className="text-red-500 text-xs mt-1">{serverErrors.idNumber}</p>}
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Languages Spoken (comma separated)</label>
@@ -249,7 +266,9 @@ const Employees = () => {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">Save Personnel Record</button>
+                                <button type="submit" className="btn-primary !px-10" disabled={isSaving}>
+                                    {isSaving ? 'Saving...' : editingEmployee ? 'Save Changes' : 'Add Employee'}
+                                </button>
                             </div>
                         </form>
                     </div>

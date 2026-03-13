@@ -38,7 +38,7 @@ const Tables = () => {
                 tableName: table.tableName,
                 capacity: table.capacity,
                 location: table.location,
-                isVip: table.isVip,
+                isVip: table.isVip ?? table.vip,
                 notes: table.notes || '',
                 status: table.status
             });
@@ -93,7 +93,6 @@ const Tables = () => {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-[28px] font-bold text-text-dark">Restaurant Table Management</h1>
-                    <p className="text-text-slate text-base">Configure and manage restaurant tables and layout.</p>
                 </div>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Table</button>
             </div>
@@ -121,7 +120,7 @@ const Tables = () => {
                                         <td>{table.capacity} Pax</td>
                                         <td>{table.location.replace('_', ' ')}</td>
                                         <td>
-                                            {table.isVip ? (
+                                            {(table.isVip ?? table.vip) ? (
                                                 <span className="text-amber-600 font-bold text-[10px] uppercase tracking-wider">VIP Table</span>
                                             ) : (
                                                 <span className="text-text-slate text-[10px] uppercase tracking-wider">Standard</span>
@@ -157,10 +156,7 @@ const Tables = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[80%] !max-w-[1000px]">
                         <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">{editingTable ? 'Edit Table' : 'Add New Table'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Configure table properties and service details.</p>
-                            </div>
+                            <h2 className="text-xl font-bold text-primary">{editingTable ? 'Edit Table' : 'Add New Table'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>

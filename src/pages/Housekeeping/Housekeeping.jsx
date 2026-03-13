@@ -41,11 +41,7 @@ const Housekeeping = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Housekeeping Dashboard</h1>
-                    <p className="text-text-slate text-base">Track and manage room cleaning and maintenance.</p>
-                </div>
+            <div className="flex justify-end items-center mb-8">
                 <div className="flex gap-4">
                     <div className="bg-amber-50 border border-amber-200 px-6 py-3 rounded-2xl flex flex-col shadow-sm">
                         <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">Attention Needed</span>

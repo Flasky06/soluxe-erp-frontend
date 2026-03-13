@@ -96,7 +96,6 @@ const RoomTypes = () => {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-[28px] font-bold text-text-dark">Room Types</h1>
-                    <p className="text-text-slate text-base">Manage room categories and default pricing plans.</p>
                 </div>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Room Type</button>
             </div>
