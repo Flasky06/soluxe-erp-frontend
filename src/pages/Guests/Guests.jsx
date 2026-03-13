@@ -6,6 +6,7 @@ const Guests = () => {
     const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
+    const [showIdTypeModal, setShowIdTypeModal] = useState(false);
     const [editingGuest, setEditingGuest] = useState(null);
     const [idTypes, setIdTypes] = useState([]);
     const [uploading, setUploading] = useState(false);
@@ -48,6 +49,27 @@ const Guests = () => {
             alert('Failed to load guest data.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleCreateIdType = async (e) => {
+        e.preventDefault();
+        try {
+            const name = e.target.name.value;
+            const description = e.target.description.value;
+            const res = await api.post('/id-types', { name, description });
+            
+            // Refresh idTypes list
+            const idTypesRes = await api.get('/id-types');
+            setIdTypes(idTypesRes.data);
+            
+            // Select the new type in formData
+            setFormData(prev => ({ ...prev, idTypeId: res.data.id }));
+            
+            setShowIdTypeModal(false);
+        } catch (err) {
+            console.error('Failed to create ID Type:', err);
+            alert('Failed to create ID type');
         }
     };
 
@@ -155,7 +177,13 @@ const Guests = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center mb-8">
+            <div className="flex justify-end items-center gap-4 mb-8">
+                <button 
+                    className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
+                    onClick={() => setShowIdTypeModal(true)}
+                >
+                    Manage ID Types
+                </button>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Register Guest</button>
             </div>
 
@@ -341,6 +369,31 @@ const Guests = () => {
                                 <button type="submit" className="btn-primary !px-10" disabled={isSaving}>
                                     {isSaving ? 'Registering...' : editingGuest ? 'Update Guest' : 'Save Guest Profile'}
                                 </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {/* ID Type Modal */}
+            {showIdTypeModal && (
+                <div className="modal-overlay z-[1001]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
+                        <div className="modal-header">
+                            <h2 className="text-xl font-bold text-primary">Add ID Type</h2>
+                            <button className="close-modal-btn" onClick={() => setShowIdTypeModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleCreateIdType} className="p-4">
+                            <div className="form-group">
+                                <label>Type Name</label>
+                                <input name="name" type="text" required placeholder="e.g. Driver's License" />
+                            </div>
+                            <div className="form-group">
+                                <label>Description</label>
+                                <input name="description" type="text" placeholder="e.g. State issued license" />
+                            </div>
+                            <div className="modal-footer !px-0 mt-6">
+                                <button type="button" onClick={() => setShowIdTypeModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary">Create Type</button>
                             </div>
                         </form>
                     </div>

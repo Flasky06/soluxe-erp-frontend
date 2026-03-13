@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 
 const CheckIn = () => {
     const { user } = useAuthStore();
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
 
     // Modal states
     const [showWalkInModal, setShowWalkInModal] = useState(false);
     const [showReservationModal, setShowReservationModal] = useState(false);
+    const [showQuickGuestModal, setShowQuickGuestModal] = useState(false);
 
     // Reservation check-in state
     const [reservations, setReservations] = useState([]);
@@ -134,6 +133,12 @@ const CheckIn = () => {
         }
     };
 
+    const handleQuickGuestSuccess = (newGuest) => {
+        setGuests(prev => [...prev, newGuest]);
+        setWalkInData(prev => ({ ...prev, guestId: newGuest.id }));
+        setShowQuickGuestModal(false);
+    };
+
     return (
         <div className="flex flex-col">
             <div className="flex justify-end items-center mb-8">
@@ -230,7 +235,7 @@ const CheckIn = () => {
                                         <button
                                             type="button"
                                             className="text-maroon hover:underline text-[11px] font-bold"
-                                            onClick={() => navigate('/guests')}
+                                            onClick={() => setShowQuickGuestModal(true)}
                                         >
                                             + REGISTER NEW GUEST
                                         </button>
@@ -324,7 +329,79 @@ const CheckIn = () => {
                     </div>
                 </div>
             )}
+            {/* Quick Guest Registration Modal */}
+            {showQuickGuestModal && (
+                <div className="modal-overlay z-[2000]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[800px]">
+                        <div className="modal-header">
+                            <h2 className="text-xl font-bold text-primary">Quick Register Guest</h2>
+                            <button className="close-modal-btn" onClick={() => setShowQuickGuestModal(false)}>&times;</button>
+                        </div>
+                        <QuickGuestSmallForm onSuccess={handleQuickGuestSuccess} onCancel={() => setShowQuickGuestModal(false)} />
+                    </div>
+                </div>
+            )}
         </div>
+    );
+};
+
+const QuickGuestSmallForm = ({ onSuccess, onCancel }) => {
+    const [formData, setFormData] = useState({ fullName: '', phone: '', email: '', idTypeId: 1, idNumber: '' });
+    const [idTypes, setIdTypes] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        api.get('/id-types').then(res => {
+            setIdTypes(res.data);
+            if (res.data.length > 0) setFormData(f => ({ ...f, idTypeId: res.data[0].id }));
+        });
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await api.post('/guests', formData);
+            onSuccess(res.data);
+        } catch (err) {
+            console.error(err);
+            alert('Failed to register guest');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="p-6">
+            <div className="form-grid">
+                <div className="form-group full-width">
+                    <label>Full Name</label>
+                    <input type="text" required value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
+                </div>
+                <div className="form-group">
+                    <label>Phone</label>
+                    <input type="text" required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                </div>
+                <div className="form-group">
+                    <label>Email</label>
+                    <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                </div>
+                <div className="form-group">
+                    <label>ID Type</label>
+                    <select value={formData.idTypeId} onChange={e => setFormData({...formData, idTypeId: e.target.value})}>
+                        {idTypes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label>ID Number</label>
+                    <input type="text" required value={formData.idNumber} onChange={e => setFormData({...formData, idNumber: e.target.value})} />
+                </div>
+            </div>
+            <div className="modal-footer !px-0 mt-6">
+                <button type="button" onClick={onCancel} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Registering...' : 'Complete Registration'}</button>
+            </div>
+        </form>
     );
 };
 

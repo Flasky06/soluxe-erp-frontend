@@ -18,6 +18,7 @@ const Reservations = () => {
     const [statusFilter, setStatusFilter] = useState('ALL');
 
     const [showBookingModal, setShowBookingModal] = useState(false);
+    const [showQuickGuestModal, setShowQuickGuestModal] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
 
     const [formData, setFormData] = useState({
@@ -417,7 +418,16 @@ const Reservations = () => {
                         <form onSubmit={handleSubmitBooking}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Select Guest</label>
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label className="mb-0">Select Guest</label>
+                                        <button 
+                                            type="button" 
+                                            className="text-primary text-[11px] font-bold hover:underline"
+                                            onClick={() => setShowQuickGuestModal(true)}
+                                        >
+                                            + New Guest
+                                        </button>
+                                    </div>
                                     <select
                                         required
                                         value={formData.guestId}
@@ -518,7 +528,86 @@ const Reservations = () => {
                     </div>
                 </div>
             )}
+            {/* Quick Guest Registration Modal */}
+            {showQuickGuestModal && (
+                <div className="modal-overlay z-[2000]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[800px]">
+                        <div className="modal-header">
+                            <h2 className="text-xl font-bold text-primary">Quick Register Guest</h2>
+                            <button className="close-modal-btn" onClick={() => setShowQuickGuestModal(false)}>&times;</button>
+                        </div>
+                        <QuickGuestSmallForm 
+                            onSuccess={(newGuest) => {
+                                setGuests(prev => [...prev, newGuest]);
+                                setFormData(prev => ({ ...prev, guestId: newGuest.id }));
+                                setShowQuickGuestModal(false);
+                            }} 
+                            onCancel={() => setShowQuickGuestModal(false)} 
+                        />
+                    </div>
+                </div>
+            )}
         </div>
+    );
+};
+
+const QuickGuestSmallForm = ({ onSuccess, onCancel }) => {
+    const [formData, setFormData] = useState({ fullName: '', phone: '', email: '', idTypeId: 1, idNumber: '' });
+    const [idTypes, setIdTypes] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        api.get('/id-types').then(res => {
+            setIdTypes(res.data);
+            if (res.data.length > 0) setFormData(f => ({ ...f, idTypeId: res.data[0].id }));
+        });
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await api.post('/guests', formData);
+            onSuccess(res.data);
+        } catch (err) {
+            console.error(err);
+            alert('Failed to register guest');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="p-6">
+            <div className="form-grid">
+                <div className="form-group full-width">
+                    <label>Full Name</label>
+                    <input type="text" required value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
+                </div>
+                <div className="form-group">
+                    <label>Phone</label>
+                    <input type="text" required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                </div>
+                <div className="form-group">
+                    <label>Email</label>
+                    <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                </div>
+                <div className="form-group">
+                    <label>ID Type</label>
+                    <select value={formData.idTypeId} onChange={e => setFormData({...formData, idTypeId: e.target.value})}>
+                        {idTypes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    </select>
+                </div>
+                <div className="form-group">
+                    <label>ID Number</label>
+                    <input type="text" required value={formData.idNumber} onChange={e => setFormData({...formData, idNumber: e.target.value})} />
+                </div>
+            </div>
+            <div className="modal-footer !px-0 mt-6">
+                <button type="button" onClick={onCancel} className="btn-secondary">Cancel</button>
+                <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Registering...' : 'Complete Registration'}</button>
+            </div>
+        </form>
     );
 };
 

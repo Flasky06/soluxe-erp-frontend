@@ -22,6 +22,9 @@ const Inventory = () => {
     const [quickCatData, setQuickCatData] = useState({ name: '', description: '' });
     const [quickCatLoading, setQuickCatLoading] = useState(false);
 
+    // Quick Unit Add
+    const [showUnitModal, setShowUnitModal] = useState(false);
+
     const fetchData = async () => {
         try {
             const [itemsRes, catsRes, unitsRes] = await Promise.all([
@@ -112,6 +115,27 @@ const Inventory = () => {
             alert('Failed to save inventory item.');
         }
     };
+
+    const handleCreateUnit = async (e) => {
+        e.preventDefault();
+        try {
+            const name = e.target.name.value;
+            const description = e.target.description.value;
+            const res = await api.post('/inventory-units', { name, description });
+            
+            // Refresh units list
+            const unitsRes = await api.get('/inventory-units');
+            setUnits(unitsRes.data);
+            
+            // Select the new unit in formData
+            setFormData(prev => ({ ...prev, unitId: res.data.id }));
+            
+            setShowUnitModal(false);
+        } catch (err) {
+            console.error('Failed to create Unit:', err);
+            alert('Failed to create inventory unit');
+        }
+    };
     const getCategoryName = (id) => categories.find(c => c.id === id)?.name || 'Uncategorized';
     const getUnitName = (id) => units.find(u => u.id === id)?.name || 'N/A';
 
@@ -123,6 +147,12 @@ const Inventory = () => {
                     onClick={() => setShowQuickCatModal(true)}
                 >
                     Manage Categories
+                </button>
+                <button 
+                    className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
+                    onClick={() => setShowUnitModal(true)}
+                >
+                    Manage Units
                 </button>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Item</button>
             </div>
@@ -259,6 +289,31 @@ const Inventory = () => {
                                 <button type="submit" className="btn-primary" disabled={quickCatLoading}>
                                     {quickCatLoading ? 'Adding...' : 'Add Category'}
                                 </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {/* Quick Unit Modal */}
+            {showUnitModal && (
+                <div className="modal-overlay z-[1001]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
+                        <div className="modal-header">
+                            <h2 className="text-xl font-bold text-primary">Add Inventory Unit</h2>
+                            <button className="close-modal-btn" onClick={() => setShowUnitModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleCreateUnit} className="p-4">
+                            <div className="form-group">
+                                <label>Unit Name</label>
+                                <input name="name" type="text" required placeholder="e.g. Kg, Pcs, Box" />
+                            </div>
+                            <div className="form-group">
+                                <label>Description</label>
+                                <input name="description" type="text" placeholder="e.g. Kilograms" />
+                            </div>
+                            <div className="modal-footer !px-0 mt-6">
+                                <button type="button" onClick={() => setShowUnitModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary">Create Unit</button>
                             </div>
                         </form>
                     </div>
