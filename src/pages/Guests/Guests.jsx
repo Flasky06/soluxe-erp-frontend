@@ -159,7 +159,7 @@ const Guests = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Register Guest</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="table-card overflow-x-auto">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse">Loading guests...</div>
                 ) : (

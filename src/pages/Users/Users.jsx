@@ -115,7 +115,7 @@ const Users = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add New User</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="table-card overflow-x-auto">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse font-medium italic">Synchronizing security records...</div>
                 ) : (

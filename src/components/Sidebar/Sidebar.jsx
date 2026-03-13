@@ -1,62 +1,91 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import { 
+    LayoutDashboard, 
+    Wrench, 
+    CalendarCheck, 
+    LogIn, 
+    LogOut, 
+    Users, 
+    Bed, 
+    MapPin, 
+    CalendarPlus, 
+    Sparkles, 
+    Utensils, 
+    CreditCard, 
+    ChefHat, 
+    FileText, 
+    Settings, 
+    Layers, 
+    Box, 
+    Truck, 
+    UsersRound, 
+    Building2, 
+    Settings2 
+} from 'lucide-react';
 
 const menuGroups = [
     {
         title: 'Overview',
+        icon: LayoutDashboard,
         items: [
-            { label: 'Dashboard', path: '/' },
-            { label: 'Maintenance', path: '/maintenance', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE', 'ROLE_RECEPTIONIST'] },
+            { label: 'Dashboard', path: '/', icon: LayoutDashboard },
+            { label: 'Maintenance', path: '/maintenance', icon: Wrench, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE', 'ROLE_RECEPTIONIST'] },
         ]
     },
     {
         title: 'Front Desk',
+        icon: CalendarCheck,
         items: [
-            { label: 'Reservations', path: '/reservations', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Check-in', path: '/check-in', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Check-out', path: '/check-out', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Guests', path: '/guests', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Rooms', path: '/rooms', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Venues', path: '/venues', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Venue Bookings', path: '/venue-bookings', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Housekeeping', path: '/housekeeping', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST'] },
+            { label: 'Reservations', path: '/reservations', icon: CalendarCheck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Check-in', path: '/check-in', icon: LogIn, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Check-out', path: '/check-out', icon: LogOut, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Guests', path: '/guests', icon: Users, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Rooms', path: '/rooms', icon: Bed, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Venues', path: '/venues', icon: MapPin, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Venue Bookings', path: '/venue-bookings', icon: CalendarPlus, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Housekeeping', path: '/housekeeping', icon: Sparkles, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST'] },
         ]
     },
     {
         title: 'Kitchen & Dining',
+        icon: Utensils,
         items: [
-            { label: 'Restaurant POS', path: '/restaurant', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER'] },
-            { label: 'Quick POS', path: '/pos', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Kitchen Orders', path: '/kitchen', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF'] },
-            { label: 'Menu Items', path: '/menu-items', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
-            { label: 'Menu Categories', path: '/menu-categories', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
-            { label: 'Tables', path: '/tables', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
+            { label: 'Restaurant POS', path: '/restaurant', icon: Utensils, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER'] },
+            { label: 'Quick POS', path: '/pos', icon: CreditCard, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Kitchen Orders', path: '/kitchen', icon: ChefHat, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF'] },
+            { label: 'Menu Items', path: '/menu-items', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
+            { label: 'Menu Categories', path: '/menu-categories', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
+            { label: 'Tables', path: '/tables', icon: Utensils, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
         ]
     },
     {
         title: 'Financials',
+        icon: FileText,
         items: [
-            { label: 'Folio & Billing', path: '/folio', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT'] },
-            { label: 'Reports', path: '/reports', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Folio & Billing', path: '/folio', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT'] },
+            { label: 'Reports', path: '/reports', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
         ]
     },
     {
         title: 'Inventory',
+        icon: Box,
         items: [
-            { label: 'Stock Management', path: '/inventory', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-            { label: 'Inventory Categories', path: '/inventory-categories', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-            { label: 'Suppliers', path: '/suppliers', allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Stock Management', path: '/inventory', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Inventory Categories', path: '/inventory-categories', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Suppliers', path: '/suppliers', icon: Truck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
         ]
     },
     {
         title: 'System Admin',
+        icon: Settings,
         items: [
-            { label: 'User Management', path: '/users', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Employees', path: '/employees', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Departments', path: '/departments', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Room Types', path: '/room-types', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Settings', path: '/settings', allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'User Management', path: '/users', icon: UsersRound, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Employees', path: '/employees', icon: UsersRound, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Departments', path: '/departments', icon: Building2, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Room Types', path: '/room-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Settings', path: '/settings', icon: Settings2, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
         ]
     }
 ];
@@ -121,18 +150,22 @@ const Sidebar = () => {
                             className="flex justify-between items-center px-6 py-3 cursor-pointer text-white/40 text-[11px] uppercase tracking-wider font-bold transition-all duration-300 hover:text-white/80" 
                             onClick={() => toggleGroup(group.title)}
                         >
-                            <span>{group.title}</span>
+                            <div className="flex items-center gap-3">
+                                {group.icon && <group.icon size={14} className="opacity-70" />}
+                                <span>{group.title}</span>
+                            </div>
                             <span className={`text-[10px] transition-transform duration-300 ${openGroup === group.title ? 'rotate-0' : '-rotate-90'}`}>▼</span>
                         </div>
-                        <div className={`overflow-hidden transition-all duration-300 bg-black/10 ${openGroup === group.title ? 'max-h-[500px]' : 'max-h-0'}`}>
+                        <div className={`overflow-hidden transition-all duration-300 bg-black/10 ${openGroup === group.title ? 'max-h-[800px]' : 'max-h-0'}`}>
                             {group.items.map((item) => (
                                 <NavLink 
                                     key={item.label} 
                                     to={item.path} 
                                     className={({ isActive }) => 
-                                        `flex items-center px-6 py-3 pl-8 no-underline text-white/70 font-medium text-sm transition-all duration-300 border-l-4 border-transparent hover:text-yellow hover:bg-yellow/5 ${isActive ? 'text-yellow bg-yellow/10 border-l-yellow font-bold' : ''}`
+                                        `flex items-center gap-3 px-6 py-3 pl-8 no-underline text-white/70 font-medium text-sm transition-all duration-300 border-l-4 border-transparent hover:text-yellow hover:bg-yellow/5 ${isActive ? 'text-yellow bg-yellow/10 border-l-yellow font-bold' : ''}`
                                     }
                                 >
+                                    {item.icon && <item.icon size={16} />}
                                     <span>{item.label}</span>
                                 </NavLink>
                             ))}
@@ -163,10 +196,11 @@ const Sidebar = () => {
                     </div>
                 </div>
                 <button 
-                    className="mt-5 w-full p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-[13px] font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all duration-300 hover:bg-red-500 hover:text-white hover:border-red-500" 
+                    className="mt-5 w-full p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-[13px] font-semibold cursor-pointer flex items-center justify-center gap-2 transition-all duration-300 hover:bg-maroon hover:text-white hover:border-maroon" 
                     onClick={handleLogout} 
                     title="Sign Out"
                 >
+                    <LogOut size={16} />
                     <span>Logout</span>
                 </button>
             </div>

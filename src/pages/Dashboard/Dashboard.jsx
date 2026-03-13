@@ -54,7 +54,7 @@ const Dashboard = () => {
                     <div key={stat.label} className="premium-card flex flex-col gap-2">
                         <div className="flex-1">
                             <span className="text-[13px] font-semibold text-text-slate uppercase tracking-wider">{stat.label}</span>
-                            <div className="flex items-baseline justify-between mt-1">
+                            <div className="flex items-baseline justify-between">
                                 <span className="text-2xl font-bold text-text-dark">{stat.value}</span>
                                 {stat.trend && (
                                     <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-full ${stat.trend.startsWith('+') ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}>
@@ -74,7 +74,7 @@ const Dashboard = () => {
                         {recentArrivals.length > 0 ? (
                             <ul className="list-none p-0 m-0">
                                 {recentArrivals.map(arr => (
-                                    <li key={arr.id} className="flex justify-between py-3 border-b border-gray-100 last:border-b-0">
+                                    <li key={arr.id} className="flex justify-between py-3 border-b border-slate-100 last:border-b-0">
                                         <span className="font-semibold text-text-dark">{arr.guestName || 'Walk-in Guest'}</span>
                                         <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-wide">Room {arr.roomNumber || 'Unassigned'}</span>
                                     </li>
@@ -87,7 +87,7 @@ const Dashboard = () => {
                 </div>
                 <div className="premium-card">
                     <h3 className="mb-5 text-lg font-bold text-maroon">Revenue Insights</h3>
-                    <div className="flex flex-col gap-4 mt-2">
+                    <div className="flex flex-col gap-4">
                         {revenue ? (
                             <>
                                 <div className="flex justify-between items-center text-text-dark">

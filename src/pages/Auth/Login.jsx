@@ -54,7 +54,7 @@ const Login = () => {
             </div>
             
             <div className="w-full lg:w-[550px] flex items-center justify-center p-10 bg-white">
-                <div className="w-full max-w-[400px] premium-card">
+                <div className="w-full max-w-[400px] premium-card !p-8 sm:!p-10">
                     <div className="text-center mb-8">
                         <span className="text-[40px] block mb-4">🥡</span>
                         <h2 className="text-[28px] font-bold mb-2 text-text-dark">Soluxe Hotel ERP</h2>

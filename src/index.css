@@ -27,7 +27,11 @@
 
 /* ─── Core Card ─────────────────────────────────────────────────────────────── */
 @utility premium-card {
-  @apply bg-white border border-slate-200 rounded-lg;
+  @apply bg-white border border-slate-200 rounded-lg p-6;
+}
+
+@utility table-card {
+  @apply bg-white border border-slate-200 rounded-lg p-0 overflow-hidden;
 }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────────── */
