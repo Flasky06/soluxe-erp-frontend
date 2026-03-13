@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { Search } from 'lucide-react';
 
 const Inventory = () => {
     const [items, setItems] = useState([]);
@@ -139,22 +140,41 @@ const Inventory = () => {
     const getCategoryName = (id) => categories.find(c => c.id === id)?.name || 'Uncategorized';
     const getUnitName = (id) => units.find(u => u.id === id)?.name || 'N/A';
 
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredItems = items.filter(item => 
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getCategoryName(item.categoryId).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center gap-4 mb-8">
-                <button 
-                    className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
-                    onClick={() => setShowQuickCatModal(true)}
-                >
-                    Manage Categories
-                </button>
-                <button 
-                    className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
-                    onClick={() => setShowUnitModal(true)}
-                >
-                    Manage Units
-                </button>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Item</button>
+            <div className="table-tools">
+                <div className="table-search">
+                    <Search size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search items by name or category..." 
+                        className="search-input w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center gap-4">
+                    <button 
+                        className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
+                        onClick={() => setShowQuickCatModal(true)}
+                    >
+                        Manage Categories
+                    </button>
+                    <button 
+                        className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
+                        onClick={() => setShowUnitModal(true)}
+                    >
+                        Manage Units
+                    </button>
+                    <button className="btn-primary" onClick={() => handleOpenModal()}>Add Item</button>
+                </div>
             </div>
 
             <div className="flex flex-col gap-6">
@@ -180,15 +200,15 @@ const Inventory = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {items.map((item) => (
+                                {filteredItems.length > 0 ? filteredItems.map((item) => (
                                     <tr key={item.id}>
                                         <td>
-                                            <span className="font-bold text-text-dark">{item.name}</span>
+                                            <span className="font-bold text-text-dark">{item.name || '-'}</span>
                                         </td>
                                         <td>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-base font-bold text-text-dark">
-                                                    {item.currentStock}
+                                                    {item.currentStock ?? '-'}
                                                 </span>
                                             </div>
                                         </td>
@@ -196,7 +216,7 @@ const Inventory = () => {
                                             <span className="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-bold uppercase w-fit leading-none">{getCategoryName(item.categoryId)}</span>
                                         </td>
                                         <td>
-                                            <span className="text-sm text-text-slate">{getUnitName(item.unitId)}</span>
+                                            <span className="text-sm text-text-slate">{getUnitName(item.unitId) || '-'}</span>
                                         </td>
                                         <td>
                                             <div className="table-actions">
@@ -204,7 +224,13 @@ const Inventory = () => {
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
+                                )) : (
+                                    <tr>
+                                        <td colSpan="5" className="text-center py-12 text-slate-400 font-medium italic">
+                                            No inventory items found matching "{searchTerm}"
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     )}

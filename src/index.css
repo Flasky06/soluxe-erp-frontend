@@ -138,6 +138,23 @@
   .status-badge.cancelled,
   .status-badge.danger      { @apply bg-red-50 text-red-700 border border-red-200; }
 
+  /* ─── Table Tools & Search ─────────────────────────────────────────────────── */
+  .table-tools {
+    @apply flex justify-between items-center gap-4 mb-6;
+  }
+
+  .table-search {
+    @apply relative flex items-center max-w-sm w-full;
+  }
+
+  .table-search svg {
+    @apply absolute left-3.5 text-slate-400;
+  }
+
+  .table-search input {
+    @apply pl-10;
+  }
+
   /* ─── Management Table ─────────────────────────────────────────────────────── */
   .management-table {
     @apply w-full border-collapse text-left;

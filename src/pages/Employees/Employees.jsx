@@ -148,13 +148,34 @@ const Employees = () => {
         return dept ? dept.name : 'Unknown';
     };
 
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredEmployees = employees.filter(emp => 
+        emp.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        emp.designation?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getDepartmentName(emp.departmentId).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center gap-4 mb-8">
-                <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" onClick={() => setShowDeptModal(true)}>
-                    Manage Departments
-                </button>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Employee</button>
+            <div className="table-tools">
+                <div className="table-search">
+                    <Search size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search staff by name, email, role or department..." 
+                        className="search-input w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center gap-4">
+                    <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" onClick={() => setShowDeptModal(true)}>
+                        Manage Departments
+                    </button>
+                    <button className="btn-primary" onClick={() => handleOpenModal()}>Add Employee</button>
+                </div>
             </div>
 
             <div className="table-card overflow-x-auto">
@@ -173,37 +194,37 @@ const Employees = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {employees.map((emp) => (
+                            {filteredEmployees.length > 0 ? filteredEmployees.map((emp) => (
                                 <tr key={emp.id}>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="font-bold text-text-dark">{emp.fullName}</span>
-                                            <span className="text-[12px] text-text-slate">{emp.email} • {emp.phone}</span>
+                                            <span className="font-bold text-text-dark">{emp.fullName || '-'}</span>
+                                            <span className="text-[12px] text-text-slate">{emp.email || '-'} • {emp.phone || '-'}</span>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="flex flex-col gap-1.5">
                                             <span className="inline-block px-2.5 py-0.5 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase w-fit leading-none">{getDepartmentName(emp.departmentId)}</span>
-                                            <span className="text-sm font-medium text-slate-600">{emp.designation}</span>
+                                            <span className="text-sm font-medium text-slate-600">{emp.designation || '-'}</span>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
                                             <span className="font-semibold text-slate-800">KSh {parseFloat(emp.basicSalary || 0).toLocaleString()}</span>
-                                            <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining}</span>
+                                            <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining || '-'}</span>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="text-xs font-bold text-text-slate uppercase">{emp.idTypeName}</span>
-                                            <span className="text-xs font-mono text-text-dark">{emp.idNumber}</span>
+                                            <span className="text-xs font-bold text-text-slate uppercase">{emp.idTypeName || '-'}</span>
+                                            <span className="text-xs font-mono text-text-dark">{emp.idNumber || '-'}</span>
                                         </div>
                                     </td>
                                     <td>
                                         <div className="flex flex-wrap gap-1.5">
-                                            {emp.languagesSpoken?.split(',').map(lang => (
+                                            {emp.languagesSpoken ? emp.languagesSpoken.split(',').map(lang => (
                                                 <span key={lang} className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-medium">{lang.trim()}</span>
-                                            ))}
+                                            )) : '-'}
                                         </div>
                                     </td>
                                     <td>
@@ -212,7 +233,13 @@ const Employees = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="6" className="text-center py-12 text-slate-400 font-medium italic">
+                                        No staff members found matching "{searchTerm}"
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}

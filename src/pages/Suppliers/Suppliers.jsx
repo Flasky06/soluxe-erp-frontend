@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { Search } from 'lucide-react';
 
 const Suppliers = () => {
     const [suppliers, setSuppliers] = useState([]);
@@ -94,9 +95,27 @@ const Suppliers = () => {
         }
     };
 
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredSuppliers = suppliers.filter(s => 
+        s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.contactPerson?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        s.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center mb-8">
+            <div className="table-tools">
+                <div className="table-search">
+                    <Search size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search vendors by company, contact or email..." 
+                        className="search-input w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Supplier</button>
             </div>
 
@@ -115,14 +134,14 @@ const Suppliers = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {suppliers.map((supplier) => (
+                            {filteredSuppliers.length > 0 ? filteredSuppliers.map((supplier) => (
                                 <tr key={supplier.id}>
-                                    <td className="font-bold text-text-dark">{supplier.name}</td>
-                                    <td>{supplier.contactPerson}</td>
+                                    <td className="font-bold text-text-dark">{supplier.name || '-'}</td>
+                                    <td>{supplier.contactPerson || '-'}</td>
                                     <td>
                                         <div className="flex flex-col">
-                                            <span className="text-sm">{supplier.phone}</span>
-                                            <span className="text-[12px] text-text-slate">{supplier.email}</span>
+                                            <span className="text-sm">{supplier.phone || '-'}</span>
+                                            <span className="text-[12px] text-text-slate">{supplier.email || '-'}</span>
                                         </div>
                                     </td>
                                     <td><span className="status-badge info">{supplier.category}</span></td>
@@ -133,7 +152,13 @@ const Suppliers = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="5" className="text-center py-12 text-slate-400 font-medium italic">
+                                        No suppliers found matching "{searchTerm}"
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { Search } from 'lucide-react';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
@@ -109,10 +110,28 @@ const Users = () => {
         }
     };
 
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredUsers = users.filter(u => 
+        u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center mb-8">
-                <button className="btn-primary" onClick={() => handleOpenModal()}>Add New User</button>
+            <div className="table-tools">
+                <div className="table-search">
+                    <Search size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search security profiles by name, email or login id..." 
+                        className="search-input w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <button className="btn-primary flex-shrink-0" onClick={() => handleOpenModal()}>Add New User</button>
             </div>
 
             <div className="table-card overflow-x-auto">
@@ -130,7 +149,7 @@ const Users = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map((u) => (
+                            {filteredUsers.length > 0 ? filteredUsers.map((u) => (
                                 <tr key={u.id}>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
@@ -161,7 +180,13 @@ const Users = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="5" className="text-center py-12 text-slate-400 font-medium italic">
+                                        No security profiles found matching "{searchTerm}"
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}

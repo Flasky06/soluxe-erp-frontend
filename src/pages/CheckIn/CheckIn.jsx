@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
+import GuestForm from '../../components/GuestForm/GuestForm';
 
 const CheckIn = () => {
     const { user } = useAuthStore();
@@ -337,71 +338,14 @@ const CheckIn = () => {
                             <h2 className="text-xl font-bold text-primary">Quick Register Guest</h2>
                             <button className="close-modal-btn" onClick={() => setShowQuickGuestModal(false)}>&times;</button>
                         </div>
-                        <QuickGuestSmallForm onSuccess={handleQuickGuestSuccess} onCancel={() => setShowQuickGuestModal(false)} />
+                        <GuestForm 
+                            onSuccess={handleQuickGuestSuccess} 
+                            onCancel={() => setShowQuickGuestModal(false)} 
+                        />
                     </div>
                 </div>
             )}
         </div>
-    );
-};
-
-const QuickGuestSmallForm = ({ onSuccess, onCancel }) => {
-    const [formData, setFormData] = useState({ fullName: '', phone: '', email: '', idTypeId: 1, idNumber: '' });
-    const [idTypes, setIdTypes] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        api.get('/id-types').then(res => {
-            setIdTypes(res.data);
-            if (res.data.length > 0) setFormData(f => ({ ...f, idTypeId: res.data[0].id }));
-        });
-    }, []);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const res = await api.post('/guests', formData);
-            onSuccess(res.data);
-        } catch (err) {
-            console.error(err);
-            alert('Failed to register guest');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className="p-6">
-            <div className="form-grid">
-                <div className="form-group full-width">
-                    <label>Full Name</label>
-                    <input type="text" required value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
-                </div>
-                <div className="form-group">
-                    <label>Phone</label>
-                    <input type="text" required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
-                </div>
-                <div className="form-group">
-                    <label>Email</label>
-                    <input type="email" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-                </div>
-                <div className="form-group">
-                    <label>ID Type</label>
-                    <select value={formData.idTypeId} onChange={e => setFormData({...formData, idTypeId: e.target.value})}>
-                        {idTypes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label>ID Number</label>
-                    <input type="text" required value={formData.idNumber} onChange={e => setFormData({...formData, idNumber: e.target.value})} />
-                </div>
-            </div>
-            <div className="modal-footer !px-0 mt-6">
-                <button type="button" onClick={onCancel} className="btn-secondary">Cancel</button>
-                <button type="submit" className="btn-primary" disabled={loading}>{loading ? 'Registering...' : 'Complete Registration'}</button>
-            </div>
-        </form>
     );
 };
 
