@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
-import { Search, Filter, Plus, FileText, CreditCard, CheckCircle2 } from 'lucide-react';
+import { Search, Filter, Plus, FileText, CreditCard } from 'lucide-react';
 
 const Folio = () => {
     const { user } = useAuthStore();

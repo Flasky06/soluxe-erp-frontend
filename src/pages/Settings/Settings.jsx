@@ -53,7 +53,7 @@ const Settings = () => {
         { id: 'payment-methods', name: 'Payment Methods', endpoint: '/folios/payment-methods' }
     ], []);
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             const response = await api.get('/users');
             setUsers(response.data);
@@ -62,7 +62,7 @@ const Settings = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     const fetchDefinitions = useCallback(async (typeId) => {
         setDefLoading(true);
@@ -83,7 +83,7 @@ const Settings = () => {
         } else if (activeTab === 'definitions') {
             fetchDefinitions(activeDefType);
         }
-    }, [activeTab, activeDefType, fetchDefinitions]);
+    }, [activeTab, activeDefType, fetchDefinitions, fetchUsers]);
 
     const handleOpenModal = (user = null) => {
         if (user) {
