@@ -13,18 +13,13 @@ import axios from 'axios';
 
 const Debtors = () => {
     const [financeData, setFinanceData] = useState(null);
-    const [loading, setLoading] = useState(false);
-
     const fetchFinanceData = useCallback(async () => {
-        setLoading(true);
         try {
             const today = new Date().toISOString().split('T')[0];
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/reports/revenue-report?startDate=${today}&endDate=${today}`);
             setFinanceData(res.data);
         } catch (err) {
             console.error("Error fetching debtor data:", err);
-        } finally {
-            setLoading(false);
         }
     }, []);
 

@@ -78,8 +78,7 @@ const Restaurant = () => {
                 paxCount: parseInt(sessionFormData.paxCount) || 1,
                 stayId: sessionFormData.stayId ? parseInt(sessionFormData.stayId) : null,
                 tableId: selectedTable.id,
-                status: 'OPEN',
-                openedAt: new Date().toISOString()
+                status: 'OPEN'
             };
             await api.post('/dining-sessions', payload);
             setShowSessionModal(false);
@@ -105,8 +104,7 @@ const Restaurant = () => {
                 quantity: 1,
                 unitPrice: menuItem.price,
                 totalAmount: menuItem.price,
-                status: 'PENDING',
-                orderedAt: new Date().toISOString()
+                status: 'PENDING'
             });
             fetchSessionOrders(activeSession.id);
         } catch (err) {

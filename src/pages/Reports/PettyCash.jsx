@@ -12,7 +12,6 @@ import axios from 'axios';
 
 const PettyCash = () => {
     const [pettyCashEntries, setPettyCashEntries] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
         amount: '',
@@ -25,15 +24,12 @@ const PettyCash = () => {
     const categories = ['Office Supplies', 'Transport', 'Tips', 'Staff Meals', 'Miscellaneous'];
 
     const fetchPettyCash = useCallback(async () => {
-        setLoading(true);
         try {
             // Note: Endpoints will be implemented in backend if not already exist
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/finance/petty-cash`);
             setPettyCashEntries(res.data);
         } catch (err) {
             console.error("Error fetching petty cash:", err);
-        } finally {
-            setLoading(false);
         }
     }, []);
 

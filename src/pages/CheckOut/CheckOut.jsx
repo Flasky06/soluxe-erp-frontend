@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Search, FileText, CheckCircle, Printer, X, Wallet } from 'lucide-react';
 const CheckOut = () => {
-    const navigate = useNavigate();
     const { user } = useAuthStore();
     const [stays, setStays] = useState([]);
     const [guests, setGuests] = useState([]);

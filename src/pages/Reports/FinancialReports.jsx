@@ -18,18 +18,14 @@ import axios from 'axios';
 const FinancialReports = () => {
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
-    const [loading, setLoading] = useState(false);
     const [financeData, setFinanceData] = useState(null);
 
     const fetchFinanceData = useCallback(async () => {
-        setLoading(true);
         try {
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/reports/revenue-report?startDate=${startDate}&endDate=${endDate}`);
             setFinanceData(res.data);
         } catch (err) {
             console.error("Error fetching finance reports:", err);
-        } finally {
-            setLoading(false);
         }
     }, [startDate, endDate]);
 
@@ -362,17 +358,20 @@ const FinancialReports = () => {
     );
 };
 
-const StatCard = ({ label, value, desc, icon: Icon, color, bg }) => (
-    <div className="premium-card p-6 flex items-start gap-4">
-        <div className={`p-3 rounded-xl ${bg} ${color}`}>
-            <Icon size={24} />
+const StatCard = ({ label, value, desc, icon: _Icon, color, bg }) => {
+    const Icon = _Icon;
+    return (
+        <div className="premium-card p-6 flex items-start gap-4">
+            <div className={`p-3 rounded-xl ${bg} ${color}`}>
+                <Icon size={24} />
+            </div>
+            <div>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
+                <div className={`text-2xl font-black mt-1 ${color}`}>{value}</div>
+                <p className="text-[12px] text-slate-500 mt-1 font-medium">{desc}</p>
+            </div>
         </div>
-        <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
-            <div className={`text-2xl font-black mt-1 ${color}`}>{value}</div>
-            <p className="text-[12px] text-slate-500 mt-1 font-medium">{desc}</p>
-        </div>
-    </div>
-);
+    );
+};
 
 export default FinancialReports;

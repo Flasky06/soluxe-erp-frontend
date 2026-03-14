@@ -75,8 +75,7 @@ const POS = () => {
                 billingType: checkoutMode,
                 stayId: checkoutMode === 'CHARGE_TO_ROOM' ? parseInt(selectedStayId) : null,
                 tableId: null, // Critical: Table-less for POS
-                status: 'OPEN',
-                openedAt: new Date().toISOString()
+                status: 'OPEN'
             };
             
             const sessionRes = await api.post('/dining-sessions', sessionPayload);
@@ -89,8 +88,7 @@ const POS = () => {
                 quantity: item.quantity,
                 unitPrice: item.menuItem.price,
                 totalAmount: item.menuItem.price * item.quantity,
-                status: 'SERVED', // Fast service assumes served immediately
-                orderedAt: new Date().toISOString()
+                status: 'SERVED' // Fast service assumes served immediately
             }));
 
             await Promise.all(orderPromises);

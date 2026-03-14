@@ -13,7 +13,6 @@ import axios from 'axios';
 
 const CashMovements = () => {
     const [movements, setMovements] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
         amount: '',
@@ -23,14 +22,11 @@ const CashMovements = () => {
     });
 
     const fetchMovements = useCallback(async () => {
-        setLoading(true);
         try {
             const res = await axios.get(`${import.meta.env.VITE_API_URL}/finance/cash-movements`);
             setMovements(res.data);
         } catch (err) {
             console.error("Error fetching movements:", err);
-        } finally {
-            setLoading(false);
         }
     }, []);
 
@@ -199,16 +195,19 @@ const CashMovements = () => {
     );
 };
 
-const EquityCard = ({ label, value, icon: Icon, color, bg }) => (
-    <div className="premium-card p-6 flex items-start gap-4">
-        <div className={`p-3 rounded-xl ${bg} ${color}`}>
-            <Icon size={24} />
+const EquityCard = ({ label, value, icon: _Icon, color, bg }) => {
+    const Icon = _Icon;
+    return (
+        <div className="premium-card p-6 flex items-start gap-4">
+            <div className={`p-3 rounded-xl ${bg} ${color}`}>
+                <Icon size={24} />
+            </div>
+            <div>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
+                <div className={`text-2xl font-black mt-1 ${color}`}>KSh {value.toLocaleString()}</div>
+            </div>
         </div>
-        <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
-            <div className={`text-2xl font-black mt-1 ${color}`}>KSh {value.toLocaleString()}</div>
-        </div>
-    </div>
-);
+    );
+};
 
 export default CashMovements;

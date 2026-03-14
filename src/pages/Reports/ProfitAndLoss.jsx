@@ -148,16 +148,19 @@ const ProfitAndLoss = () => {
     );
 };
 
-const SummaryCard = ({ label, value, icon: Icon, color, bg }) => (
-    <div className="premium-card p-6 flex items-center justify-between">
-        <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{label}</span>
-            <div className={`text-2xl font-black mt-1 ${color}`}>KSh {parseFloat(value || 0).toLocaleString()}</div>
+const SummaryCard = ({ label, value, icon: _Icon, color, bg }) => {
+    const Icon = _Icon;
+    return (
+        <div className="premium-card p-6 flex items-center justify-between">
+            <div>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{label}</span>
+                <div className={`text-2xl font-black mt-1 ${color}`}>KSh {parseFloat(value || 0).toLocaleString()}</div>
+            </div>
+            <div className={`p-3 rounded-2xl ${bg} ${color}`}>
+                <Icon size={24} />
+            </div>
         </div>
-        <div className={`p-3 rounded-2xl ${bg} ${color}`}>
-            <Icon size={24} />
-        </div>
-    </div>
-);
+    );
+};
 
 export default ProfitAndLoss;

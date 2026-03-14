@@ -31,7 +31,8 @@ import {
     HandCoins,
     Users2,
     FileSpreadsheet,
-    Scale
+    Scale,
+    ShieldCheck
 } from 'lucide-react';
 
 const menuGroups = [
