@@ -28,7 +28,12 @@ const CheckIn = () => {
         roomId: '',
         adults: 1,
         children: 0,
-        dateOut: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
+        dateOut: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
+        arrivingFrom: '',
+        nextDestination: '',
+        arrivalFlightNo: '',
+        departureFlightNo: '',
+        notes: ''
     });
     const [walkInLoading, setWalkInLoading] = useState(false);
     const [walkInSuccess, setWalkInSuccess] = useState(null);
@@ -120,6 +125,11 @@ const CheckIn = () => {
                 adults: parseInt(walkInData.adults) || 1,
                 children: parseInt(walkInData.children) || 0,
                 dateOut: `${walkInData.dateOut}T11:00:00`,
+                arrivingFrom: walkInData.arrivingFrom,
+                nextDestination: walkInData.nextDestination,
+                arrivalFlightNo: walkInData.arrivalFlightNo,
+                departureFlightNo: walkInData.departureFlightNo,
+                notes: walkInData.notes,
                 userId: user?.id || 1,
             });
             setWalkInSuccess(`Walk-in successful. Stay #${res.data.id} is now ACTIVE.`);
@@ -128,7 +138,12 @@ const CheckIn = () => {
                 roomId: '', 
                 adults: 1, 
                 children: 0,
-                dateOut: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
+                dateOut: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0],
+                arrivingFrom: '',
+                nextDestination: '',
+                arrivalFlightNo: '',
+                departureFlightNo: '',
+                notes: ''
             });
             setTimeout(() => {
                 setShowWalkInModal(false);
@@ -297,6 +312,32 @@ const CheckIn = () => {
                                     <p className="text-[10px] text-text-slate mt-1 italic leading-tight">
                                         The total room charge will be calculated and posted to the folio automatically based on this date.
                                     </p>
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Arriving From</label>
+                                    <input type="text" value={walkInData.arrivingFrom} onChange={e => setWalkInData({ ...walkInData, arrivingFrom: e.target.value })} placeholder="City or Country" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Next Destination</label>
+                                    <input type="text" value={walkInData.nextDestination} onChange={e => setWalkInData({ ...walkInData, nextDestination: e.target.value })} placeholder="Target Destination" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Arrival Flight #</label>
+                                    <input type="text" value={walkInData.arrivalFlightNo} onChange={e => setWalkInData({ ...walkInData, arrivalFlightNo: e.target.value })} placeholder="e.g. KQ101" />
+                                </div>
+                                <div className="form-group">
+                                    <label>Departure Flight #</label>
+                                    <input type="text" value={walkInData.departureFlightNo} onChange={e => setWalkInData({ ...walkInData, departureFlightNo: e.target.value })} placeholder="e.g. KQ102" />
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Stay Notes</label>
+                                    <textarea 
+                                        className="w-full min-h-[60px]" 
+                                        value={walkInData.notes} 
+                                        onChange={e => setWalkInData({ ...walkInData, notes: e.target.value })} 
+                                        placeholder="Special requests, billing instructions, etc."
+                                    />
                                 </div>
                             </div>
 

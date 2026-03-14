@@ -23,7 +23,10 @@ import {
     UsersRound, 
     Building2, 
     Settings2,
-    Wallet
+    Wallet,
+    CalendarDays,
+    Clock9,
+    ShoppingCart
 } from 'lucide-react';
 
 const menuGroups = [
@@ -81,6 +84,15 @@ const menuGroups = [
             { label: 'Stock Categories', path: '/inventory-categories', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
             { label: 'Stock Units', path: '/inventory-units', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
             { label: 'Suppliers', path: '/suppliers', icon: Truck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Purchase Orders', path: '/purchase-orders', icon: ShoppingCart, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+        ]
+    },
+    {
+        title: 'Human Resources',
+        icon: UsersRound,
+        items: [
+            { label: 'Attendance', path: '/attendance', icon: Clock9 },
+            { label: 'Leave Requests', path: '/leave-requests', icon: CalendarDays },
         ]
     },
     {

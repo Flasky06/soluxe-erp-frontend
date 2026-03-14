@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
 
@@ -22,7 +22,7 @@ const Expenses = () => {
         'CASH', 'BANK_TRANSFER', 'MPESA', 'CREDIT_CARD', 'CHEQUE'
     ];
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             const [expRes, typesRes] = await Promise.all([
                 api.get('/expenses'),
@@ -40,11 +40,11 @@ const Expenses = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [formData.expenseType.id]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleOpenModal = (expense = null) => {
         if (expense) {

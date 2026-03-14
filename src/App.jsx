@@ -35,6 +35,9 @@ import PaymentMethods from './pages/PaymentMethods/PaymentMethods';
 import InventoryUnits from './pages/InventoryUnits/InventoryUnits';
 import LeaveTypes from './pages/LeaveTypes/LeaveTypes';
 import MaintenanceIssueTypes from './pages/MaintenanceIssueTypes/MaintenanceIssueTypes';
+import Attendance from './pages/Attendance/Attendance';
+import LeaveRequests from './pages/LeaveRequests/LeaveRequests';
+import PurchaseOrders from './pages/PurchaseOrders/PurchaseOrders';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
 
@@ -107,6 +110,12 @@ function App() {
                     <Route path="/inventory-categories" element={<InventoryCategories />} />
                     <Route path="/inventory-units" element={<InventoryUnits />} />
                     <Route path="/suppliers" element={<Suppliers />} />
+                    <Route path="/purchase-orders" element={<PurchaseOrders />} />
+                </Route>
+
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/attendance" element={<Attendance />} />
+                    <Route path="/leave-requests" element={<LeaveRequests />} />
                 </Route>
 
                 {/* System */}

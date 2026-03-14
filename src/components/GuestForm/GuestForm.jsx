@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { User, Camera, X, Check } from 'lucide-react';
 import api from '../../services/api';
 
@@ -11,6 +11,45 @@ const GuestForm = ({ initialData, onSuccess, onCancel, isSaving: externalIsSavin
     const [uploading, setUploading] = useState(false);
     const [serverErrors, setServerErrors] = useState({});
     const [isSaving, setIsSaving] = useState(false);
+    const [documents, setDocuments] = useState([]);
+    const [docLoading, setDocLoading] = useState(false);
+    
+    const fetchDocuments = useCallback(async () => {
+        try {
+            const res = await api.get(`/guests/${formData.id}/documents`);
+            setDocuments(res.data);
+        } catch (err) {
+            console.error('Failed to fetch documents:', err);
+        }
+    }, [formData.id]);
+
+    useEffect(() => {
+        if (formData.id) {
+            fetchDocuments();
+        }
+    }, [formData.id, fetchDocuments]);
+
+    const handleDocUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const uploadData = new FormData();
+        uploadData.append('file', file);
+        uploadData.append('type', 'ID'); // Defaulting to ID for now
+        
+        setDocLoading(true);
+        try {
+            await api.post(`/guests/${formData.id}/documents`, uploadData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            fetchDocuments();
+        } catch (err) {
+            console.error('Doc upload failed:', err);
+            alert('Failed to upload document.');
+        } finally {
+            setDocLoading(false);
+        }
+    };
     
     // Camera state
     const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -235,6 +274,35 @@ const GuestForm = ({ initialData, onSuccess, onCancel, isSaving: externalIsSavin
                     <label>Address</label>
                     <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Full physical address..." className="min-h-[60px]" rows="2" />
                 </div>
+
+                {/* Documents Section */}
+                {formData.id && (
+                    <div className="col-span-full mt-6 pt-6 border-t border-slate-100">
+                        <div className="flex justify-between items-center mb-4">
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Guest Documents (ID/Passport)</label>
+                            <label className="btn-secondary !py-1 !px-3 text-[10px] cursor-pointer inline-flex items-center gap-2">
+                                + Upload New
+                                <input type="file" className="hidden" onChange={handleDocUpload} disabled={docLoading} />
+                            </label>
+                        </div>
+                        
+                        {docLoading ? (
+                            <div className="text-center py-4 text-xs text-slate-400 italic">Uploading...</div>
+                        ) : documents.length > 0 ? (
+                            <div className="flex flex-wrap gap-3">
+                                {documents.map(doc => (
+                                    <div key={doc.id} className="flex flex-col gap-1 p-3 bg-slate-50 border border-slate-200 rounded-xl min-w-[140px]">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">{doc.documentType}</span>
+                                        <span className="text-xs font-bold text-slate-700 truncate max-w-[120px]">{doc.fileName}</span>
+                                        <a href={doc.filePath} target="_blank" rel="noreferrer" className="text-[10px] font-bold text-primary mt-1 hover:underline">View Document</a>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-xs text-slate-400 italic">No documents uploaded for this guest.</p>
+                        )}
+                    </div>
+                )}
             </div>
             <div className="modal-footer">
                 <button type="button" onClick={onCancel} className="btn-secondary !px-10">Cancel</button>

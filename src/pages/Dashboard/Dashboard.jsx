@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 const Dashboard = () => {
-    const [stats, setStats] = useState([
-        { label: 'Today Arrivals', value: '...', trend: '', key: 'totalArrivalsToday' },
-        { label: 'Today Departures', value: '...', trend: '', key: 'totalDeparturesToday' },
-        { label: 'Total Occupancy', value: '...', trend: '', key: 'occupancyRate' },
-        { label: 'Active Stays', value: '...', trend: '', key: 'activeStays' },
-    ]);
+    const [stats, setStats] = useState({
+        totalArrivalsToday: 0,
+        totalDeparturesToday: 0,
+        activeStays: 0,
+        occupancyRate: 0,
+        dailyRevenue: 0,
+        averageDailyRate: 0,
+        revenuePerAvailableRoom: 0,
+        pendingHousekeeping: 0,
+        lowStockItems: 0,
+        pendingLeaveRequests: 0,
+        pendingPurchaseOrders: 0
+    });
     const [recentArrivals, setRecentArrivals] = useState([]);
-    const [revenue, setRevenue] = useState(null);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 const response = await api.get('/dashboard/summary');
-                const data = response.data;
-                setStats(prev => prev.map(s => ({
-                    ...s,
-                    value: s.key === 'occupancyRate' ? `${data[s.key]}%` : data[s.key].toString()
-                })));
+                setStats(response.data);
             } catch (err) {
                 console.error('Failed to fetch stats:', err);
             }
@@ -26,17 +28,13 @@ const Dashboard = () => {
 
         const fetchDashboardData = async () => {
             try {
-                const [arrivalsRes, revenueRes] = await Promise.all([
-                    api.get('/reservations'),
-                    api.get('/reports/daily-revenue')
-                ]);
+                const arrivalsRes = await api.get('/reservations');
                 
                 const today = new Date().toISOString().split('T')[0];
                 const todaysArrivals = arrivalsRes.data.filter(
                     res => res.dateIn && res.dateIn.startsWith(today)
                 );
                 setRecentArrivals(todaysArrivals.slice(0, 5));
-                setRevenue(revenueRes.data);
             } catch (err) {
                 console.error("Failed to fetch dashboard data", err);
             }
@@ -47,65 +45,162 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <div className="flex flex-col">
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {stats.map((stat) => (
-                    <div key={stat.label} className="premium-card flex flex-col gap-2">
-                        <div className="flex-1">
-                            <span className="text-[13px] font-semibold text-text-slate uppercase tracking-wider">{stat.label}</span>
-                            <div className="flex items-baseline justify-between">
-                                <span className="text-2xl font-bold text-text-dark">{stat.value}</span>
-                                {stat.trend && (
-                                    <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-full ${stat.trend.startsWith('+') ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}>
-                                        {stat.trend}
-                                    </span>
-                                )}
+        <div className="flex flex-col gap-8">
+            {/* Actionable Alerts Section */}
+            {(stats.pendingHousekeeping > 0 || stats.lowStockItems > 0 || stats.pendingLeaveRequests > 0 || stats.pendingPurchaseOrders > 0) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {stats.pendingHousekeeping > 0 && (
+                        <div className="flex items-center gap-4 p-4 bg-orange-50 border border-orange-100 rounded-2xl">
+                            <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                                {stats.pendingHousekeeping}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs font-bold text-orange-800 uppercase tracking-wider">Dirty Rooms</span>
+                                <span className="text-xs text-orange-600">Needs cleaning</span>
                             </div>
                         </div>
+                    )}
+                    {stats.lowStockItems > 0 && (
+                        <div className="flex items-center gap-4 p-4 bg-red-50 border border-red-100 rounded-2xl">
+                            <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">
+                                {stats.lowStockItems}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs font-bold text-red-800 uppercase tracking-wider">Low Stock</span>
+                                <span className="text-xs text-red-600">Reorder needed</span>
+                            </div>
+                        </div>
+                    )}
+                    {stats.pendingLeaveRequests > 0 && (
+                        <div className="flex items-center gap-4 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+                            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                                {stats.pendingLeaveRequests}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">Leave Requests</span>
+                                <span className="text-xs text-blue-600">Pending approval</span>
+                            </div>
+                        </div>
+                    )}
+                    {stats.pendingPurchaseOrders > 0 && (
+                        <div className="flex items-center gap-4 p-4 bg-purple-50 border border-purple-100 rounded-2xl">
+                            <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                                {stats.pendingPurchaseOrders}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs font-bold text-purple-800 uppercase tracking-wider">Purchase Orders</span>
+                                <span className="text-xs text-purple-600">Awaiting status</span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Core Operational KPIs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="premium-card !bg-white">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Arrivals / Departures Today</span>
+                    <div className="flex items-center justify-between mt-3">
+                        <div className="flex flex-col">
+                            <span className="text-3xl font-black text-slate-800">{stats.totalArrivalsToday}</span>
+                            <span className="text-[10px] font-bold text-green-600 uppercase">In</span>
+                        </div>
+                        <div className="w-px h-10 bg-slate-100"></div>
+                        <div className="flex flex-col text-right">
+                            <span className="text-3xl font-black text-slate-800">{stats.totalDeparturesToday}</span>
+                            <span className="text-[10px] font-bold text-orange-600 uppercase">Out</span>
+                        </div>
                     </div>
-                ))}
+                </div>
+
+                <div className="premium-card !bg-white">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Store Occupancy</span>
+                    <div className="flex items-center gap-4 mt-3">
+                        <span className="text-3xl font-black text-slate-800">{stats.occupancyRate}%</span>
+                        <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-maroon transition-all duration-1000" style={{ width: `${stats.occupancyRate}%` }}></div>
+                        </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400 mt-2 block uppercase">{stats.activeStays} Active Stays</span>
+                </div>
+
+                <div className="premium-card !bg-white">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daily ADR</span>
+                    <div className="mt-3">
+                        <span className="text-3xl font-black text-slate-800">KSh {stats.averageDailyRate.toLocaleString()}</span>
+                        <div className="text-[10px] font-bold text-blue-600 uppercase mt-1">Avg Room Rate Today</div>
+                    </div>
+                </div>
+
+                <div className="premium-card !bg-white">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daily RevPAR</span>
+                    <div className="mt-3">
+                        <span className="text-3xl font-black text-slate-800">KSh {stats.revenuePerAvailableRoom.toLocaleString()}</span>
+                        <div className="text-[10px] font-bold text-indigo-600 uppercase mt-1">Per Available Room</div>
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <div className="xl:col-span-2 premium-card">
-                    <h3 className="mb-5 text-lg font-bold text-maroon">Recent Arrivals</h3>
-                    <div className="flex flex-col">
-                        {recentArrivals.length > 0 ? (
-                            <ul className="list-none p-0 m-0">
-                                {recentArrivals.map(arr => (
-                                    <li key={arr.id} className="flex justify-between py-3 border-b border-slate-100 last:border-b-0">
-                                        <span className="font-semibold text-text-dark">{arr.guestName || 'Walk-in Guest'}</span>
-                                        <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold uppercase tracking-wide">Room {arr.roomNumber || 'Unassigned'}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-text-slate italic text-center py-8">No arrivals scheduled for today.</p>
-                        )}
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-lg font-bold text-slate-800">Recent Arrivals</h3>
+                        <span className="text-xs font-bold text-slate-400 uppercase">Latest 5</span>
                     </div>
+                    {recentArrivals.length > 0 ? (
+                        <div className="flex flex-col gap-3">
+                            {recentArrivals.map(arr => (
+                                <div key={arr.id} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-xl transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-maroon/5 flex items-center justify-center text-maroon font-bold text-xs uppercase">
+                                            {arr.guestName?.substring(0, 2)}
+                                        </div>
+                                        <span className="font-bold text-slate-700">{arr.guestName || 'Walk-in Guest'}</span>
+                                    </div>
+                                    <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest">Room {arr.roomNumber || 'TBD'}</span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="py-12 text-center">
+                            <div className="text-4xl mb-2 opacity-20">🛄</div>
+                            <p className="text-slate-400 italic text-sm">No arrivals recorded for today.</p>
+                        </div>
+                    )}
                 </div>
-                <div className="premium-card">
-                    <h3 className="mb-5 text-lg font-bold text-maroon">Revenue Insights</h3>
-                    <div className="flex flex-col gap-4">
-                        {revenue ? (
-                            <>
-                                <div className="flex justify-between items-center text-text-dark">
-                                    <span className="text-text-slate">Room Revenue</span>
-                                    <strong className="text-lg font-bold text-maroon">KSh {(revenue.roomRevenue || 0).toLocaleString()}</strong>
-                                </div>
-                                <div className="flex justify-between items-center text-text-dark">
-                                    <span className="text-text-slate">F&B Revenue</span>
-                                    <strong className="text-lg font-bold text-maroon">KSh {(revenue.foodAndBeverageRevenue || 0).toLocaleString()}</strong>
-                                </div>
-                                <div className="flex justify-between items-center text-xl mt-4 pt-4 border-t-2 border-slate-100">
-                                    <span className="font-bold text-text-dark">Total Expected</span>
-                                    <strong className="text-2xl font-extrabold text-green-600 font-mono">KSh {(revenue.totalRevenue || 0).toLocaleString()}</strong>
-                                </div>
-                            </>
-                        ) : (
-                            <p className="text-text-slate italic text-center py-8">No revenue data for today.</p>
-                        )}
+
+                <div className="premium-card !bg-maroon !text-white">
+                    <div className="flex flex-col gap-6">
+                        <div className="flex flex-col">
+                            <span className="text-[11px] font-bold text-white/50 uppercase tracking-[0.2em] mb-4">Financial Snapshot</span>
+                            <span className="text-[10px] font-bold text-white/40 uppercase mb-1">Estimated Today Revenue</span>
+                            <div className="text-4xl font-black text-yellow leading-tight">
+                                KSh {stats.dailyRevenue.toLocaleString()}
+                            </div>
+                        </div>
+
+                        <div className="h-px bg-white/10 w-full"></div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold text-white/40 uppercase">Room Rev</span>
+                                <span className="text-lg font-bold">KSh {(stats.averageDailyRate * stats.activeStays).toLocaleString()}</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold text-white/40 uppercase">Other Rev</span>
+                                <span className="text-lg font-bold">KSh {(stats.dailyRevenue - (stats.averageDailyRate * stats.activeStays)).toLocaleString()}</span>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs font-bold text-white/70">Occupancy Target</span>
+                                <span className="text-xs font-black text-yellow">85%</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
+                                <div className="h-full bg-yellow" style={{ width: `${Math.min(100, (stats.occupancyRate / 85) * 100)}%` }}></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

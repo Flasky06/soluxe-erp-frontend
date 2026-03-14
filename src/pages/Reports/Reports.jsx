@@ -65,6 +65,41 @@ const Reports = () => {
 
     const today = new Date().toISOString().split('T')[0];
 
+    const downloadCSV = (data, filename) => {
+        if (!data || data.length === 0) return;
+        
+        // Handle cases where data might be an object (like revenue) instead of an array
+        let dataToProcess = Array.isArray(data) ? data : [data];
+
+        // If data is revenue object, we might want to flatten it or pick specific parts
+        if (filename.includes('revenue') && !Array.isArray(data)) {
+            dataToProcess = [{
+                netRevenue: data.netRevenue,
+                totalRevenue: data.totalRevenue,
+                ...data.revenueByChargeType // Flatten charge types if they exist
+            }];
+        }
+
+        const headers = Object.keys(dataToProcess[0]);
+        const csvContent = [
+            headers.join(','),
+            ...dataToProcess.map(row => headers.map(header => {
+                const val = row[header] === null || row[header] === undefined ? '' : row[header];
+                return `"${val.toString().replace(/"/g, '""')}"`;
+            }).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     useEffect(() => {
         const fetchAll = async () => {
             setLoading(true);
@@ -129,6 +164,20 @@ const Reports = () => {
         { id: 'inventory', label: 'Inventory' },
     ];
 
+    const getActiveDataForCSV = () => {
+        switch (activeTab) {
+            case 'revenue': return revenue ? [revenue] : []; // Revenue is an object, wrap in array for CSV
+            case 'reservations': return reservations;
+            case 'guests': return guests;
+            case 'employees': return employees;
+            case 'pos': return diningOrders; // Or combine diningOrders and dinningSessions
+            case 'venue': return venueBookings;
+            case 'maintenance': return maintenance;
+            case 'inventory': return inventory;
+            default: return [];
+        }
+    };
+
     return (
         <>
             <style>{`
@@ -144,9 +193,21 @@ const Reports = () => {
 
                 {/* ── Header ── */}
                 <div className="flex justify-between items-center mb-6 no-print">
-                    <div>
-                        <h1 className="text-[28px] font-bold text-text-dark">Reports & Analytics</h1>
-                        <p className="text-text-slate text-base">Comprehensive operational snapshot across all hotel modules.</p>
+                    <div className="flex justify-between items-center w-full">
+                        <div>
+                            <h1 className="text-2xl font-black text-text-dark tracking-tight">Management Reports</h1>
+                            <p className="text-text-slate mt-1">Daily, monthly and operational insights</p>
+                        </div>
+                        <button 
+                            className="btn-secondary !bg-white !px-6 border border-slate-200 flex items-center gap-2"
+                            onClick={() => {
+                                const activeData = getActiveDataForCSV();
+                                downloadCSV(activeData, `${activeTab}_report`);
+                            }}
+                        >
+                            <FileText size={18} />
+                            Download CSV
+                        </button>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
