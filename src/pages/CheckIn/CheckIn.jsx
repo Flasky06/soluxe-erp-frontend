@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import GuestForm from '../../components/GuestForm/GuestForm';
+import { Wallet } from 'lucide-react';
 
 const CheckIn = () => {
     const { user } = useAuthStore();
@@ -20,6 +21,17 @@ const CheckIn = () => {
     const [selectedReservation, setSelectedReservation] = useState(null);
     const [resCheckInRoomId, setResCheckInRoomId] = useState('');
     const [resCheckInLoading, setResCheckInLoading] = useState(false);
+
+    // Payment states
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [activeFolio, setActiveFolio] = useState(null);
+    const [paymentMethods, setPaymentMethods] = useState([]);
+    const [paymentData, setPaymentData] = useState({
+        amount: '',
+        paymentMethodId: '',
+        reference: '',
+        notes: ''
+    });
 
     // Walk-in state
     const [allRooms, setAllRooms] = useState([]);
@@ -42,17 +54,19 @@ const CheckIn = () => {
     const fetchAllData = async () => {
         setLoading(true);
         try {
-            const [resRes, guestsRes, typesRes, roomsRes] = await Promise.all([
+            const [resRes, guestsRes, typesRes, roomsRes, paymentMethodsRes] = await Promise.all([
                 api.get('/reservations'),
                 api.get('/guests'),
                 api.get('/room-types'),
                 api.get('/rooms'),
+                api.get('/folios/payment-methods')
             ]);
             // Only BOOKED room reservations can be checked in
             setReservations(resRes.data.filter(r => r.status === 'BOOKED' && r.roomTypeId));
             setGuests(guestsRes.data);
             setRoomTypes(typesRes.data);
             setAllRooms(roomsRes.data);
+            setPaymentMethods(paymentMethodsRes.data);
         } catch (err) {
             console.error('Failed to load check-in data:', err);
         } finally {
@@ -107,6 +121,37 @@ const CheckIn = () => {
             alert(err.response?.data?.message || 'Check-in failed. Please ensure the room is available.');
         } finally {
             setResCheckInLoading(false);
+        }
+    };
+
+    const handleOpenPaymentModal = async (res) => {
+        try {
+            const folioRes = await api.get(`/folios/reservation/${res.id}`);
+            setActiveFolio(folioRes.data);
+            setSelectedReservation(res);
+            setPaymentData({
+                amount: '',
+                paymentMethodId: paymentMethods[0]?.id || '',
+                reference: '',
+                notes: ''
+            });
+            setShowPaymentModal(true);
+        } catch (err) {
+            console.error('Failed to fetch folio:', err);
+            alert('Could not initialize payment.');
+        }
+    };
+
+    const handleRecordPayment = async (e) => {
+        e.preventDefault();
+        if (!activeFolio) return;
+        try {
+            await api.post(`/folios/${activeFolio.id}/payments?userId=${user?.id || 1}`, paymentData);
+            setShowPaymentModal(false);
+            alert('Payment recorded successfully!');
+        } catch (err) {
+            console.error('Failed to record payment:', err);
+            alert('Error recording payment.');
         }
     };
 
@@ -212,6 +257,9 @@ const CheckIn = () => {
                                     <td>{res.adults} Adults, {res.children || 0} Children</td>
                                     <td>
                                         <div className="table-actions">
+                                            <button className="btn-secondary !py-1 !px-3 flex items-center gap-1.5" onClick={() => handleOpenPaymentModal(res)}>
+                                                <Wallet size={12} /> Pay
+                                            </button>
                                             <button className="view-btn" onClick={() => handleOpenResModal(res)}>
                                                 Check In
                                             </button>
@@ -405,6 +453,55 @@ const CheckIn = () => {
                             onSuccess={handleQuickGuestSuccess} 
                             onCancel={() => setShowQuickGuestModal(false)} 
                         />
+                    </div>
+                </div>
+            )}
+            {/* Payment Modal */}
+            {showPaymentModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content !max-w-[450px]">
+                        <div className="modal-header">
+                            <h2 className="flex items-center gap-2">
+                                <Wallet className="text-maroon" /> Record Payment
+                            </h2>
+                            <button className="close-modal-btn" onClick={() => setShowPaymentModal(false)}>&times;</button>
+                        </div>
+                        <div className="p-4 bg-maroon/5 rounded-xl mb-6">
+                            <p className="text-[11px] font-bold text-maroon uppercase tracking-widest">Guest</p>
+                            <p className="text-lg font-black text-text-dark">{getGuestName(selectedReservation?.guestId)}</p>
+                            <div className="flex justify-between mt-2 pt-2 border-t border-maroon/10">
+                                <span className="text-xs font-bold text-slate-500 uppercase">Balance</span>
+                                <span className="text-sm font-black text-slate-900">KSh {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <form onSubmit={handleRecordPayment}>
+                            <div className="flex flex-col gap-4">
+                                <div className="form-group">
+                                    <label>Amount (KSh)</label>
+                                    <input 
+                                        type="number" required autoFocus
+                                        value={paymentData.amount} 
+                                        onChange={e => setPaymentData({...paymentData, amount: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Payment Method</label>
+                                    <select required value={paymentData.paymentMethodId} onChange={e => setPaymentData({...paymentData, paymentMethodId: e.target.value})}>
+                                        {paymentMethods.map(m => (
+                                            <option key={m.id} value={m.id}>{m.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Reference</label>
+                                    <input type="text" value={paymentData.reference} onChange={e => setPaymentData({...paymentData, reference: e.target.value})} placeholder="Receipt #" />
+                                </div>
+                            </div>
+                            <div className="modal-footer !mt-8">
+                                <button type="button" onClick={() => setShowPaymentModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary flex-1">Record Payment</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

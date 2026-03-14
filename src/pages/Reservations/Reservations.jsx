@@ -3,7 +3,7 @@ import api from '../../services/api';
 import { 
     Search, Filter, Bed, Utensils, Calendar, User, 
     ChevronRight, MoreVertical, CheckCircle2, 
-    LogOut, AlertCircle, Clock
+    LogOut, AlertCircle, Clock, Wallet
 } from 'lucide-react';
 import GuestForm from '../../components/GuestForm/GuestForm';
 
@@ -20,7 +20,16 @@ const Reservations = () => {
 
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [showQuickGuestModal, setShowQuickGuestModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedReservation, setSelectedReservation] = useState(null);
+    const [activeFolio, setActiveFolio] = useState(null);
+    const [paymentMethods, setPaymentMethods] = useState([]);
+    const [paymentData, setPaymentData] = useState({
+        amount: '',
+        paymentMethodId: '',
+        reference: '',
+        notes: ''
+    });
 
     const [formData, setFormData] = useState({
         guestId: '',
@@ -48,16 +57,18 @@ const Reservations = () => {
     const fetchAllData = async () => {
         setLoading(true);
         try {
-            const [resResponse, guestsResponse, typesResponse, tablesResponse] = await Promise.all([
+            const [resResponse, guestsResponse, typesResponse, tablesResponse, paymentMethodsRes] = await Promise.all([
                 api.get('/reservations'),
                 api.get('/guests'),
                 api.get('/room-types'),
-                api.get('/restaurant-tables')
+                api.get('/restaurant-tables'),
+                api.get('/folios/payment-methods')
             ]);
             setReservations(resResponse.data);
             setGuests(guestsResponse.data);
             setRoomTypes(typesResponse.data);
             setTables(tablesResponse.data);
+            setPaymentMethods(paymentMethodsRes.data);
         } catch (err) {
             console.error('Failed to fetch data:', err);
         } finally {
@@ -138,6 +149,38 @@ const Reservations = () => {
             });
         }
         setShowBookingModal(true);
+    };
+
+    const handleOpenPaymentModal = async (res) => {
+        try {
+            const folioRes = await api.get(`/folios/reservation/${res.id}`);
+            setActiveFolio(folioRes.data);
+            setSelectedReservation(res);
+            setPaymentData({
+                amount: '',
+                paymentMethodId: paymentMethods[0]?.id || '',
+                reference: '',
+                notes: ''
+            });
+            setShowPaymentModal(true);
+        } catch (err) {
+            console.error('Failed to fetch folio:', err);
+            alert('Could not initialize payment.');
+        }
+    };
+
+    const handleRecordPayment = async (e) => {
+        e.preventDefault();
+        if (!activeFolio) return;
+        try {
+            await api.post(`/folios/${activeFolio.id}/payments?userId=${1}`, paymentData);
+            setShowPaymentModal(false);
+            alert('Payment recorded successfully!');
+            fetchAllData();
+        } catch (err) {
+            console.error('Failed to record payment:', err);
+            alert('Error recording payment.');
+        }
     };
 
     const handleSubmitBooking = async (e) => {
@@ -373,6 +416,9 @@ const Reservations = () => {
                                                 <div className="flex justify-end items-center gap-2">
                                                     {res.status === 'BOOKED' ? (
                                                         <div className="table-actions">
+                                                            <button className="btn-secondary !py-1 !px-3 flex items-center gap-1.5" onClick={() => handleOpenPaymentModal(res)}>
+                                                                <Wallet size={12} /> Pay
+                                                            </button>
                                                             <button className="edit-btn" onClick={() => handleOpenBookingModal(res)}>Edit</button>
                                                             <button className="delete-btn" onClick={() => handleCancelBooking(res.id)}>Cancel</button>
                                                         </div>
@@ -546,6 +592,78 @@ const Reservations = () => {
                     </div>
                 </div>
             )}
+
+            {/* Payment Modal */}
+            {showPaymentModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content !max-w-[450px]">
+                        <div className="modal-header">
+                            <h2 className="flex items-center gap-2">
+                                <Wallet className="text-maroon" /> Record Payment
+                            </h2>
+                            <button className="close-modal-btn" onClick={() => setShowPaymentModal(false)}>&times;</button>
+                        </div>
+                        <div className="p-4 bg-maroon/5 rounded-xl mb-6">
+                            <p className="text-[11px] font-bold text-maroon uppercase tracking-widest">Reservation For</p>
+                            <p className="text-lg font-black text-text-dark">{getGuest(selectedReservation?.guestId).fullName}</p>
+                            <div className="flex justify-between mt-2 pt-2 border-t border-maroon/10">
+                                <span className="text-xs font-bold text-slate-500 uppercase">Current Balance</span>
+                                <span className="text-sm font-black text-slate-900">KSh {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <form onSubmit={handleRecordPayment}>
+                            <div className="flex flex-col gap-4">
+                                <div className="form-group">
+                                    <label>Amount to Pay (KSh)</label>
+                                    <input 
+                                        type="number" 
+                                        required 
+                                        autoFocus
+                                        value={paymentData.amount} 
+                                        onChange={(e) => setPaymentData({...paymentData, amount: e.target.value})}
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Payment Method</label>
+                                    <select 
+                                        required 
+                                        value={paymentData.paymentMethodId} 
+                                        onChange={(e) => setPaymentData({...paymentData, paymentMethodId: e.target.value})}
+                                    >
+                                        {paymentMethods.map(m => (
+                                            <option key={m.id} value={m.id}>{m.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Reference (Receipt/Transaction ID)</label>
+                                    <input 
+                                        type="text" 
+                                        value={paymentData.reference} 
+                                        onChange={(e) => setPaymentData({...paymentData, reference: e.target.value})}
+                                        placeholder="Optional reference"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Notes</label>
+                                    <textarea 
+                                        value={paymentData.notes} 
+                                        onChange={(e) => setPaymentData({...paymentData, notes: e.target.value})}
+                                        className="min-h-[60px]"
+                                        placeholder="Additional details..."
+                                    />
+                                </div>
+                            </div>
+                            <div className="modal-footer !mt-8">
+                                <button type="button" onClick={() => setShowPaymentModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary flex-1">Record Payment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

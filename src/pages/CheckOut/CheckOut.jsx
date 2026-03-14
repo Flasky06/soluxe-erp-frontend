@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
-import { Search, FileText, CheckCircle, Printer, X } from 'lucide-react';
+import { Search, FileText, CheckCircle, Printer, X, Wallet } from 'lucide-react';
 const CheckOut = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
@@ -21,13 +21,24 @@ const CheckOut = () => {
     const [payments, setPayments] = useState([]);
     const [invoiceLoading, setInvoiceLoading] = useState(false);
 
+    // Payment State
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentMethods, setPaymentMethods] = useState([]);
+    const [paymentData, setPaymentData] = useState({
+        amount: '',
+        paymentMethodId: '',
+        reference: '',
+        notes: ''
+    });
+
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [staysRes, guestsRes, roomsRes] = await Promise.all([
+            const [staysRes, guestsRes, roomsRes, paymentMethodsRes] = await Promise.all([
                 api.get('/stays'),
                 api.get('/guests'),
-                api.get('/rooms')
+                api.get('/rooms'),
+                api.get('/folios/payment-methods')
             ]);
             
             // Filter only active stays
@@ -35,6 +46,7 @@ const CheckOut = () => {
             setStays(activeStays);
             setGuests(guestsRes.data);
             setRooms(roomsRes.data);
+            setPaymentMethods(paymentMethodsRes.data);
         } catch (err) {
             console.error('Failed to fetch check-out data:', err);
         } finally {
@@ -106,6 +118,29 @@ const CheckOut = () => {
 
     const handlePrintInvoice = () => {
         window.print();
+    };
+
+    const handleOpenPaymentModal = () => {
+        setPaymentData({
+            amount: folio?.totalAmount || '',
+            paymentMethodId: paymentMethods[0]?.id || '',
+            reference: '',
+            notes: ''
+        });
+        setShowPaymentModal(true);
+    };
+
+    const handleRecordPayment = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post(`/folios/${folio.id}/payments?userId=${user?.id || 1}`, paymentData);
+            setShowPaymentModal(false);
+            // Refresh invoice data
+            handleViewInvoice(selectedStay);
+        } catch (err) {
+            console.error('Failed to record payment:', err);
+            alert('Error recording payment.');
+        }
     };
 
 
@@ -327,8 +362,8 @@ const CheckOut = () => {
                                     {folio.totalAmount > 0 ? (
                                         <div className="bg-red-50 text-red-600 px-4 py-2.5 rounded-lg border border-red-100 flex items-center gap-3">
                                             <span className="text-sm font-bold">Balance must be KSh 0 to Check-out.</span>
-                                            <button className="bg-white border border-red-200 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 px-3 py-1 rounded text-xs font-bold transition-all" onClick={() => {setShowInvoiceModal(false); navigate('/folios'); }}>
-                                                Go to Folio Billing
+                                            <button className="bg-maroon text-white hover:bg-maroon/90 px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1.5" onClick={handleOpenPaymentModal}>
+                                                <Wallet size={12} /> Record Payment
                                             </button>
                                         </div>
                                     ) : (
@@ -342,6 +377,56 @@ const CheckOut = () => {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Payment Modal */}
+            {showPaymentModal && (
+                <div className="modal-overlay z-[1100]">
+                    <div className="modal-content !max-w-[450px]">
+                        <div className="modal-header">
+                            <h2 className="flex items-center gap-2">
+                                <Wallet className="text-maroon" /> Record Checkout Payment
+                            </h2>
+                            <button className="close-modal-btn" onClick={() => setShowPaymentModal(false)}>&times;</button>
+                        </div>
+                        <div className="p-4 bg-maroon/5 rounded-xl mb-6">
+                            <p className="text-[11px] font-bold text-maroon uppercase tracking-widest">Guest</p>
+                            <p className="text-lg font-black text-text-dark">{getGuestName(selectedStay?.guestId)}</p>
+                            <div className="flex justify-between mt-2 pt-2 border-t border-maroon/10">
+                                <span className="text-xs font-bold text-slate-500 uppercase">Balance Due</span>
+                                <span className="text-sm font-black text-slate-900">KSh {parseFloat(folio?.totalAmount || 0).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <form onSubmit={handleRecordPayment}>
+                            <div className="flex flex-col gap-4">
+                                <div className="form-group">
+                                    <label>Amount (KSh)</label>
+                                    <input 
+                                        type="number" step="0.01" required autoFocus
+                                        value={paymentData.amount} 
+                                        onChange={e => setPaymentData({...paymentData, amount: e.target.value})}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Payment Method</label>
+                                    <select required value={paymentData.paymentMethodId} onChange={e => setPaymentData({...paymentData, paymentMethodId: e.target.value})}>
+                                        {paymentMethods.map(m => (
+                                            <option key={m.id} value={m.id}>{m.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Reference</label>
+                                    <input type="text" value={paymentData.reference} onChange={e => setPaymentData({...paymentData, reference: e.target.value})} placeholder="Receipt #" />
+                                </div>
+                            </div>
+                            <div className="modal-footer !mt-8">
+                                <button type="button" onClick={() => setShowPaymentModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary flex-1">Record Payment</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
