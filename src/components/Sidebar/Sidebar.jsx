@@ -26,7 +26,12 @@ import {
     Wallet,
     CalendarDays,
     Clock9,
-    ShoppingCart
+    ShoppingCart,
+    PiggyBank,
+    HandCoins,
+    Users2,
+    FileSpreadsheet,
+    Scale
 } from 'lucide-react';
 
 const menuGroups = [
@@ -73,7 +78,13 @@ const menuGroups = [
             { label: 'Charge Types', path: '/charge-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Payment Methods', path: '/payment-methods', icon: CreditCard, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Expenses', path: '/expenses', icon: Wallet, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Reports', path: '/reports', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'General Reports', path: '/reports', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Financial Audit', path: '/financial-reports', icon: ShieldCheck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Cash Movements', path: '/cash-movements', icon: PiggyBank, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Petty Cash', path: '/petty-cash', icon: HandCoins, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Debtor Alerts', path: '/debtors', icon: Users2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Profit & Loss', path: '/profit-and-loss', icon: FileSpreadsheet, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Balance Sheet', path: '/balance-sheet', icon: Scale, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
         ]
     },
     {

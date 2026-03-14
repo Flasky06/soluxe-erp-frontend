@@ -18,6 +18,12 @@ import Restaurant from './pages/Restaurant/Restaurant';
 import POS from './pages/POS/POS';
 import Settings from './pages/Settings/Settings';
 import Reports from './pages/Reports/Reports';
+import FinancialReports from './pages/Reports/FinancialReports';
+import CashMovements from './pages/Reports/CashMovements';
+import PettyCash from './pages/Reports/PettyCash';
+import Debtors from './pages/Reports/Debtors';
+import ProfitAndLoss from './pages/Reports/ProfitAndLoss';
+import BalanceSheet from './pages/Reports/BalanceSheet';
 import Expenses from './pages/Expenses/Expenses';
 import ExpenseTypes from './pages/ExpenseTypes/ExpenseTypes';
 import Tables from './pages/Tables/Tables';
@@ -94,6 +100,12 @@ function App() {
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT']} />}>
                     <Route path="/reports" element={<Reports />} />
+                    <Route path="/financial-reports" element={<FinancialReports />} />
+                    <Route path="/cash-movements" element={<CashMovements />} />
+                    <Route path="/petty-cash" element={<PettyCash />} />
+                    <Route path="/debtors" element={<Debtors />} />
+                    <Route path="/profit-and-loss" element={<ProfitAndLoss />} />
+                    <Route path="/balance-sheet" element={<BalanceSheet />} />
                     <Route path="/expenses" element={<Expenses />} />
                 </Route>
                 <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
