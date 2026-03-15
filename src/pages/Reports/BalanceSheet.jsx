@@ -10,7 +10,7 @@ import {
     ArrowDownCircle,
     CreditCard
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 const BalanceSheet = () => {
     const [asOfDate, setAsOfDate] = useState(new Date().toISOString().split('T')[0]);
@@ -20,7 +20,7 @@ const BalanceSheet = () => {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/reports/balance-sheet?asOfDate=${asOfDate}`);
+            const res = await api.get(`/reports/balance-sheet?asOfDate=${asOfDate}`);
             setData(res.data);
         } catch (err) {
             console.error("Error fetching balance sheet:", err);

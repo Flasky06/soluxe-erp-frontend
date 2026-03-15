@@ -9,14 +9,14 @@ import {
     Eye,
     ChevronRight
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 const Debtors = () => {
     const [financeData, setFinanceData] = useState(null);
     const fetchFinanceData = useCallback(async () => {
         try {
             const today = new Date().toISOString().split('T')[0];
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/reports/revenue-report?startDate=${today}&endDate=${today}`);
+            const res = await api.get(`/reports/revenue-report?startDate=${today}&endDate=${today}`);
             setFinanceData(res.data);
         } catch (err) {
             console.error("Error fetching debtor data:", err);

@@ -179,17 +179,17 @@ const Folio = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center gap-4 mb-8">
-                <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2" onClick={() => navigate('/charge-types')}>
-                    <Plus size={16} /> Manage Charge Types
+            <div className="flex justify-end items-center gap-2 mb-4">
+                <button className="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors flex items-center gap-2" onClick={() => navigate('/charge-types')}>
+                    <Plus size={14} /> Manage Charge Types
                 </button>
-                <button className="btn-secondary flex items-center gap-2" onClick={() => setShowMethodModal(true)}>
-                    <CreditCard size={16} /> Manage Payment Methods
+                <button className="btn-secondary !py-1.5 !px-3 text-xs flex items-center gap-2" onClick={() => setShowMethodModal(true)}>
+                    <CreditCard size={14} /> Manage Payment Methods
                 </button>
             </div>
 
             {/* Search & Filter Bar */}
-            <div className="premium-card px-5 py-4 mb-6 flex flex-col md:flex-row items-center gap-4">
+            <div className="premium-card px-4 py-3 mb-5 flex flex-col md:flex-row items-center gap-3">
                 <div className="relative flex-1 group w-full">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-maroon transition-colors" size={18} />
                     <input 

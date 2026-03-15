@@ -88,7 +88,8 @@ const MainLayout = ({ children }) => {
                                    shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
 
                     {/* Page breadcrumb / title */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
+                        <img src="/logo/soluxe-logo.jpeg" alt="Logo" className="w-6 h-6 rounded-md object-cover opacity-80" />
                         <span className="text-[13px] font-semibold text-slate-400">Soluxe Hotel</span>
                         <span className="text-slate-200 font-light">/</span>
                         <span className="text-[13px] font-bold text-slate-700">{pageTitle}</span>

@@ -178,7 +178,7 @@ const Settings = () => {
     return (
         <div className="flex flex-col">
 
-            <div className="flex gap-2 mb-8 border-b border-slate-200">
+            <div className="flex gap-2 mb-4 border-b border-slate-200">
                 <button 
                     className={`px-6 py-3 font-bold text-sm transition-all border-b-2 ${activeTab === 'users' ? 'text-primary border-primary bg-primary/5' : 'text-text-slate border-transparent hover:text-primary'}`} 
                     onClick={() => setActiveTab('users')}
@@ -354,7 +354,7 @@ const Settings = () => {
             )}
 
             {activeTab === 'definitions' && (
-                <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex flex-col md:flex-row gap-4">
                     {/* Def Navigation */}
                     <div className="w-full md:w-64 flex flex-col gap-1">
                         <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-4 whitespace-nowrap">Entity Categories</label>

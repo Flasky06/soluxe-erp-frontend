@@ -94,7 +94,7 @@ const menuGroups = [
         items: [
             { label: 'Stock Management', path: '/inventory', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
             { label: 'Stock Categories', path: '/inventory-categories', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-            { label: 'Stock Units', path: '/inventory-units', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
+            { label: 'Inventory Units', path: '/inventory-units', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
             { label: 'Suppliers', path: '/suppliers', icon: Truck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
             { label: 'Purchase Orders', path: '/purchase-orders', icon: ShoppingCart, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
         ]
@@ -170,7 +170,8 @@ const Sidebar = () => {
 
     return (
         <aside className="w-[var(--sidebar-width)] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100]">
-            <div className="px-6 mb-10 flex items-center gap-3">
+            <div className="px-6 mb-10 flex items-center gap-4">
+                <img src="/logo/soluxe-logo.jpeg" alt="Soluxe Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg border border-white/20" />
                 <span className="text-xl font-extrabold -tracking-tight text-white">Soluxe <span className="text-yellow">Hotel</span></span>
             </div>
             

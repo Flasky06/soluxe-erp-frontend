@@ -9,7 +9,7 @@ import {
     Calendar,
     DollarSign
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 const CashMovements = () => {
     const [movements, setMovements] = useState([]);
@@ -23,7 +23,7 @@ const CashMovements = () => {
 
     const fetchMovements = useCallback(async () => {
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/finance/cash-movements`);
+            const res = await api.get('/finance/cash-movements');
             setMovements(res.data);
         } catch (err) {
             console.error("Error fetching movements:", err);
@@ -40,7 +40,7 @@ const CashMovements = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/finance/cash-movements`, formData);
+            await api.post('/finance/cash-movements', formData);
             setShowModal(false);
             setFormData({ amount: '', type: 'DRAWING', movementDate: new Date().toISOString().split('T')[0], description: '' });
             fetchMovements();
@@ -52,7 +52,7 @@ const CashMovements = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this movement?")) return;
         try {
-            await axios.delete(`${import.meta.env.VITE_API_URL}/finance/cash-movements/${id}`);
+            await api.delete(`/finance/cash-movements/${id}`);
             fetchMovements();
         } catch (err) {
             console.error("Error deleting movement:", err);

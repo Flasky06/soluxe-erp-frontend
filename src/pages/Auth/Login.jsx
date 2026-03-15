@@ -56,7 +56,7 @@ const Login = () => {
             <div className="w-full lg:w-[550px] flex items-center justify-center p-10 bg-white">
                 <div className="w-full max-w-[400px] premium-card !p-8 sm:!p-10">
                     <div className="text-center mb-8">
-                        <span className="text-[40px] block mb-4">🥡</span>
+                        <img src="/logo/soluxe-logo.jpeg" alt="Soluxe Logo" className="w-[100px] h-[100px] mx-auto mb-6 rounded-2xl object-cover shadow-xl border-4 border-slate-50" />
                         <h2 className="text-[28px] font-bold mb-2 text-text-dark">Soluxe Hotel ERP</h2>
                         <p className="text-text-slate text-sm">Sign in to your staff account</p>
                     </div>

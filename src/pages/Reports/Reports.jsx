@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { FileText } from 'lucide-react';
 
 // ─── Section Tab Button ───────────────────────────────────────────────────────
 const TabBtn = ({ label, active, onClick }) => (
@@ -7,7 +8,7 @@ const TabBtn = ({ label, active, onClick }) => (
         onClick={onClick}
         className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border
             ${active
-                ? 'bg-maroon text-white border-maroon shadow'
+                ? 'bg-yellow text-maroon border-yellow shadow-lg shadow-yellow/20'
                 : 'bg-white text-slate-500 border-slate-200 hover:border-maroon/30 hover:text-maroon'
             }`}
     >

@@ -13,7 +13,7 @@ import {
     Building2,
     HardHat
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 const FinancialReports = () => {
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
@@ -22,7 +22,7 @@ const FinancialReports = () => {
 
     const fetchFinanceData = useCallback(async () => {
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/reports/revenue-report?startDate=${startDate}&endDate=${endDate}`);
+            const res = await api.get(`/reports/revenue-report?startDate=${startDate}&endDate=${endDate}`);
             setFinanceData(res.data);
         } catch (err) {
             console.error("Error fetching finance reports:", err);
@@ -319,7 +319,7 @@ const FinancialReports = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {financeData?.auditTray?.map((item, idx) => (
+                            {financeData?.auditTrail?.map((item, idx) => (
                                 <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="py-4 text-xs text-slate-500 whitespace-nowrap">
                                         {new Date(item.timestamp).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
@@ -346,7 +346,7 @@ const FinancialReports = () => {
                                     </td>
                                 </tr>
                             ))}
-                            {(!financeData?.auditTray || financeData.auditTray.length === 0) && (
+                            {(!financeData?.auditTrail || financeData.auditTrail.length === 0) && (
                                 <tr>
                                     <td colSpan="6" className="py-20 text-center text-slate-400 italic text-sm">
                                         No ledger entries for this period

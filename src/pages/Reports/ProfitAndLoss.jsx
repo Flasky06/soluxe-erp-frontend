@@ -9,7 +9,7 @@ import {
     BarChart3,
     ArrowRight
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 const ProfitAndLoss = () => {
     const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
@@ -20,7 +20,7 @@ const ProfitAndLoss = () => {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/reports/profit-and-loss?startDate=${startDate}&endDate=${endDate}`);
+            const res = await api.get(`/reports/profit-and-loss?startDate=${startDate}&endDate=${endDate}`);
             setData(res.data);
         } catch (err) {
             console.error("Error fetching P&L:", err);

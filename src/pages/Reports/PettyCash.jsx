@@ -8,7 +8,7 @@ import {
     Tag,
     User
 } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 const PettyCash = () => {
     const [pettyCashEntries, setPettyCashEntries] = useState([]);
@@ -26,7 +26,7 @@ const PettyCash = () => {
     const fetchPettyCash = useCallback(async () => {
         try {
             // Note: Endpoints will be implemented in backend if not already exist
-            const res = await axios.get(`${import.meta.env.VITE_API_URL}/finance/petty-cash`);
+            const res = await api.get('/finance/petty-cash');
             setPettyCashEntries(res.data);
         } catch (err) {
             console.error("Error fetching petty cash:", err);
@@ -43,7 +43,7 @@ const PettyCash = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/finance/petty-cash`, formData);
+            await api.post('/finance/petty-cash', formData);
             setShowModal(false);
             setFormData({ amount: '', expenseDate: new Date().toISOString().split('T')[0], description: '', issuedTo: '', category: 'Miscellaneous' });
             fetchPettyCash();
@@ -55,7 +55,7 @@ const PettyCash = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this entry?")) return;
         try {
-            await axios.delete(`${import.meta.env.VITE_API_URL}/finance/petty-cash/${id}`);
+            await api.delete(`/finance/petty-cash/${id}`);
             fetchPettyCash();
         } catch (err) {
             console.error("Error deleting entry:", err);

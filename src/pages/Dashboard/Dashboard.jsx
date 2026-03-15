@@ -55,8 +55,8 @@ const Dashboard = () => {
                                 {stats.pendingHousekeeping}
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xs font-bold text-orange-800 uppercase tracking-wider">Dirty Rooms</span>
-                                <span className="text-xs text-orange-600">Needs cleaning</span>
+                                <span className="text-xs font-bold text-orange-800 uppercase tracking-wider">Housekeeping</span>
+                                <span className="text-xs text-orange-600">Pending Cleaning</span>
                             </div>
                         </div>
                     )}
@@ -99,22 +99,22 @@ const Dashboard = () => {
             {/* Core Operational KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Arrivals / Departures Today</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Expected Today</span>
                     <div className="flex items-center justify-between mt-3">
                         <div className="flex flex-col">
                             <span className="text-3xl font-black text-slate-800">{stats.totalArrivalsToday}</span>
-                            <span className="text-[10px] font-bold text-green-600 uppercase">In</span>
+                            <span className="text-[10px] font-bold text-green-600 uppercase tracking-tighter">Arrivals</span>
                         </div>
                         <div className="w-px h-10 bg-slate-100"></div>
                         <div className="flex flex-col text-right">
                             <span className="text-3xl font-black text-slate-800">{stats.totalDeparturesToday}</span>
-                            <span className="text-[10px] font-bold text-orange-600 uppercase">Out</span>
+                            <span className="text-[10px] font-bold text-orange-600 uppercase tracking-tighter">Departures</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Store Occupancy</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Occupancy</span>
                     <div className="flex items-center gap-4 mt-3">
                         <span className="text-3xl font-black text-slate-800">{stats.occupancyRate}%</span>
                         <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
@@ -125,18 +125,18 @@ const Dashboard = () => {
                 </div>
 
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daily ADR</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Average Daily Rate</span>
                     <div className="mt-3">
                         <span className="text-3xl font-black text-slate-800">KSh {stats.averageDailyRate.toLocaleString()}</span>
-                        <div className="text-[10px] font-bold text-blue-600 uppercase mt-1">Avg Room Rate Today</div>
+                        <div className="text-[10px] font-bold text-blue-600 uppercase mt-1 tracking-wider">Average Daily Rate (ADR)</div>
                     </div>
                 </div>
 
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Daily RevPAR</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Revenue Per Available Room</span>
                     <div className="mt-3">
                         <span className="text-3xl font-black text-slate-800">KSh {stats.revenuePerAvailableRoom.toLocaleString()}</span>
-                        <div className="text-[10px] font-bold text-indigo-600 uppercase mt-1">Per Available Room</div>
+                        <div className="text-[10px] font-bold text-indigo-600 uppercase mt-1 tracking-wider">Revenue Per Available Room (RevPAR)</div>
                     </div>
                 </div>
             </div>
@@ -173,7 +173,7 @@ const Dashboard = () => {
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col">
                             <span className="text-[11px] font-bold text-white/50 uppercase tracking-[0.2em] mb-4">Financial Snapshot</span>
-                            <span className="text-[10px] font-bold text-white/40 uppercase mb-1">Estimated Today Revenue</span>
+                            <span className="text-[10px] font-bold text-white/40 uppercase mb-1">Total Revenue Today</span>
                             <div className="text-4xl font-black text-yellow leading-tight">
                                 KSh {stats.dailyRevenue.toLocaleString()}
                             </div>

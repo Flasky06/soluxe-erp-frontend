@@ -8,6 +8,7 @@
   --color-text-dark: #1e293b;
   --color-text-slate: #64748b;
   --color-card-gray: #f8f9fa;
+  --color-primary: #7B1113;
 
   --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -27,7 +28,7 @@
 
 /* ─── Core Card ─────────────────────────────────────────────────────────────── */
 @utility premium-card {
-  @apply bg-white border border-slate-200 rounded-lg p-6;
+  @apply bg-white border border-slate-200 rounded-lg p-5;
 }
 
 @utility table-card {
@@ -80,7 +81,7 @@
 
   /* ─── Forms ────────────────────────────────────────────────────────────────── */
   .form-grid {
-    @apply grid grid-cols-2 gap-x-5 gap-y-4 px-8 py-6;
+    @apply grid grid-cols-2 gap-x-4 gap-y-3 px-8 py-6;
   }
 
   .form-grid.triple { @apply grid-cols-3; }
@@ -140,7 +141,7 @@
 
   /* ─── Table Tools & Search ─────────────────────────────────────────────────── */
   .table-tools {
-    @apply flex justify-between items-center gap-4 mb-6;
+    @apply flex justify-between items-center gap-4 mb-4;
   }
 
   .table-search {
@@ -161,12 +162,12 @@
   }
 
   .management-table th {
-    @apply px-4 py-3 bg-slate-100 border-b border-slate-200
+    @apply px-2 py-2 bg-slate-100 border-b border-slate-200
            text-[11px] text-slate-600 uppercase tracking-[0.1em] font-bold;
   }
 
   .management-table td {
-    @apply px-4 py-4 border-b border-slate-100 text-[14px] text-slate-800 align-middle font-medium;
+    @apply px-2 py-2 border-b border-slate-100 text-[13.5px] text-slate-800 align-middle font-medium;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
