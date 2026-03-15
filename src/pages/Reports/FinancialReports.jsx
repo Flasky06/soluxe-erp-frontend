@@ -30,7 +30,10 @@ const FinancialReports = () => {
     }, [startDate, endDate]);
 
     useEffect(() => {
-        fetchFinanceData();
+        const load = async () => {
+            await fetchFinanceData();
+        };
+        load();
     }, [fetchFinanceData]);
 
     const downloadCSV = (data, filename) => {

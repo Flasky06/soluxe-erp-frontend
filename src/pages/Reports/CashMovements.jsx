@@ -31,7 +31,10 @@ const CashMovements = () => {
     }, []);
 
     useEffect(() => {
-        fetchMovements();
+        const load = async () => {
+            await fetchMovements();
+        };
+        load();
     }, [fetchMovements]);
 
     const handleSubmit = async (e) => {

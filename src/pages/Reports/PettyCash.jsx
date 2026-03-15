@@ -34,7 +34,10 @@ const PettyCash = () => {
     }, []);
 
     useEffect(() => {
-        fetchPettyCash();
+        const load = async () => {
+            await fetchPettyCash();
+        };
+        load();
     }, [fetchPettyCash]);
 
     const handleSubmit = async (e) => {

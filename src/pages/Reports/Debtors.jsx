@@ -24,7 +24,10 @@ const Debtors = () => {
     }, []);
 
     useEffect(() => {
-        fetchFinanceData();
+        const load = async () => {
+            await fetchFinanceData();
+        };
+        load();
     }, [fetchFinanceData]);
 
     return (
