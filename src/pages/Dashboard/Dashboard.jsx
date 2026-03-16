@@ -11,7 +11,6 @@ const Dashboard = () => {
         revenuePerAvailableRoom: 0,
         pendingHousekeeping: 0,
         lowStockItems: 0,
-        pendingLeaveRequests: 0,
         pendingPurchaseOrders: 0,
         cleanRooms: 0,
         dirtyRooms: 0,
@@ -44,20 +43,27 @@ const Dashboard = () => {
 
     return (
         <div className="flex flex-col gap-8">
-            {/* Actionable Alerts Section */}
-            {(stats.pendingHousekeeping > 0 || stats.lowStockItems > 0 || stats.pendingLeaveRequests > 0 || stats.pendingPurchaseOrders > 0) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {stats.pendingHousekeeping > 0 && (
-                        <div className="flex items-center gap-4 p-4 bg-orange-50 border border-orange-100 rounded-2xl">
-                            <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                                {stats.pendingHousekeeping}
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs font-bold text-orange-800 uppercase tracking-wider">Housekeeping</span>
-                                <span className="text-xs text-orange-600">Pending Cleaning</span>
-                            </div>
-                        </div>
-                    )}
+            {/* Priority Housekeeping Section */}
+            {stats.pendingHousekeeping > 0 && (
+                <div className="flex items-center gap-6 p-6 bg-white border border-orange-100 rounded-2xl shadow-sm animate-pulse">
+                    <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-black">
+                        {stats.pendingHousekeeping}
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-sm font-black text-orange-800 uppercase tracking-[0.2em]">Prioritize Housekeeping</span>
+                        <span className="text-xs text-orange-600 font-bold">There are rooms awaiting cleaning for new arrivals.</span>
+                    </div>
+                    <div className="ml-auto">
+                        <button className="px-6 py-2 bg-orange-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-600 transition-colors shadow-lg shadow-orange-200">
+                            Assign Tasks
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Other Actionable Alerts */}
+            {(stats.lowStockItems > 0 || stats.pendingLeaveRequests > 0 || stats.pendingPurchaseOrders > 0) && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {stats.lowStockItems > 0 && (
                         <div className="flex items-center gap-4 p-4 bg-red-50 border border-red-100 rounded-2xl">
                             <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">
@@ -65,7 +71,7 @@ const Dashboard = () => {
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs font-bold text-red-800 uppercase tracking-wider">Low Stock</span>
-                                <span className="text-xs text-red-600">Reorder needed</span>
+                                <span className="text-xs text-red-600">Reorder items</span>
                             </div>
                         </div>
                     )}
@@ -75,8 +81,8 @@ const Dashboard = () => {
                                 {stats.pendingLeaveRequests}
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">Leave Requests</span>
-                                <span className="text-xs text-blue-600">Pending approval</span>
+                                <span className="text-xs font-bold text-blue-800 uppercase tracking-wider">Staff Leave</span>
+                                <span className="text-xs text-blue-600">Pending reviews</span>
                             </div>
                         </div>
                     )}
@@ -86,8 +92,8 @@ const Dashboard = () => {
                                 {stats.pendingPurchaseOrders}
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xs font-bold text-purple-800 uppercase tracking-wider">Purchase Orders</span>
-                                <span className="text-xs text-purple-600">Awaiting status</span>
+                                <span className="text-xs font-bold text-purple-800 uppercase tracking-wider">Procurement</span>
+                                <span className="text-xs text-purple-600">Open orders</span>
                             </div>
                         </div>
                     )}
@@ -200,14 +206,12 @@ const Dashboard = () => {
 
                 <div className="premium-card !bg-maroon !text-white">
                     <div className="flex flex-col gap-6">
-                        <div className="flex flex-col">
-                            <span className="text-[11px] font-bold text-white/50 uppercase tracking-[0.2em] mb-4 text-center">Operational Overview</span>
-                            <div className="flex flex-col items-center py-4 bg-white/5 rounded-3xl border border-white/10">
-                                <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">Today's Revenue</span>
-                                <span className="text-4xl font-black text-yellow leading-tight">
-                                    KSh {stats.dailyRevenue.toLocaleString()}
-                                </span>
+                        <div className="flex flex-col items-center">
+                            <span className="text-[11px] font-bold text-white/50 uppercase tracking-[0.2em] mb-4 text-center">Operational Health</span>
+                            <div className="w-24 h-24 rounded-full border-4 border-yellow/20 flex items-center justify-center mb-2">
+                                <span className="text-2xl font-black text-yellow">{stats.occupancyRate}%</span>
                             </div>
+                            <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest">Global Occupancy</span>
                         </div>
 
                         <div className="h-px bg-white/10 w-full"></div>
