@@ -24,6 +24,17 @@ const Guests = () => {
             setLoading(false);
         }
     };
+    
+    const handleVoidGuest = async (id) => {
+        if (!window.confirm('Are you sure you want to VOID this guest? This will hide the guest from the list but keep the record in the database.')) return;
+        try {
+            await api.post(`/guests/${id}/void`);
+            refreshData();
+        } catch (err) {
+            console.error('Failed to void guest:', err);
+            alert(err.response?.data?.message || 'Failed to void guest.');
+        }
+    };
 
     useEffect(() => {
         refreshData();
@@ -142,6 +153,12 @@ const Guests = () => {
                                                 Check In
                                             </a>
                                             <button className="view-btn" onClick={() => handleOpenModal(guest)}>Edit</button>
+                                            <button 
+                                                className="btn-secondary !py-1 !px-3 text-xs !bg-slate-50 !text-slate-500 !border-slate-100 hover:!bg-slate-100" 
+                                                onClick={() => handleVoidGuest(guest.id)}
+                                            >
+                                                Void
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

@@ -38,7 +38,7 @@ const BookingSync = () => {
                 <FeatureCard 
                     icon={RefreshCw}
                     title="Inventory Sync"
-                    description="Automatically close rooms on Booking.com when walk-ins or manual reservations are made."
+                    description="Automatically close rooms on Booking.com when guest check-ins or manual reservations are made."
                 />
                 <FeatureCard 
                     icon={ShieldCheck}

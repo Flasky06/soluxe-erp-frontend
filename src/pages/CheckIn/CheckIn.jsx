@@ -10,7 +10,7 @@ const CheckIn = () => {
     const [loading, setLoading] = useState(true);
 
     // Modal states
-    const [showWalkInModal, setShowWalkInModal] = useState(false);
+    const [showDirectCheckInModal, setShowDirectCheckInModal] = useState(false);
     const [showReservationModal, setShowReservationModal] = useState(false);
     const [showQuickGuestModal, setShowQuickGuestModal] = useState(false);
 
@@ -37,9 +37,9 @@ const CheckIn = () => {
         notes: ''
     });
 
-    // Walk-in state
+    // Direct Check-in state
     const [allRooms, setAllRooms] = useState([]);
-    const [walkInData, setWalkInData] = useState({
+    const [directCheckInData, setDirectCheckInData] = useState({
         guestId: '',
         roomId: '',
         adults: 1,
@@ -51,9 +51,9 @@ const CheckIn = () => {
         departureFlightNo: '',
         notes: ''
     });
-    const [walkInLoading, setWalkInLoading] = useState(false);
-    const [walkInSuccess, setWalkInSuccess] = useState(null);
-    const [walkInError, setWalkInError] = useState(null);
+    const [directCheckInLoading, setDirectCheckInLoading] = useState(false);
+    const [directCheckInSuccess, setDirectCheckInSuccess] = useState(null);
+    const [directCheckInError, setDirectCheckInError] = useState(null);
 
     const [searchParams] = useSearchParams();
     const resIdParam = searchParams.get('resId');
@@ -116,8 +116,8 @@ const CheckIn = () => {
             if (guestIdParam) {
                 const guest = guestsRes.data.find(g => g.id === parseInt(guestIdParam));
                 if (guest) {
-                    setWalkInData(prev => ({ ...prev, guestId: guest.id }));
-                    setShowWalkInModal(true);
+                    setDirectCheckInData(prev => ({ ...prev, guestId: guest.id }));
+                    setShowDirectCheckInModal(true);
                 }
             }
         } catch (err) {
@@ -198,30 +198,30 @@ const CheckIn = () => {
         }
     };
 
-    // --- WALK-IN CHECK-IN ---
-    const availableWalkInRooms = allRooms.filter(r => r.status === 'AVAILABLE');
+    // --- DIRECT CHECK-IN ---
+    const availableDirectCheckInRooms = allRooms.filter(r => r.status === 'AVAILABLE');
 
-    const handleWalkIn = async (e) => {
+    const handleDirectCheckIn = async (e) => {
         e.preventDefault();
-        setWalkInLoading(true);
-        setWalkInSuccess(null);
-        setWalkInError(null);
+        setDirectCheckInLoading(true);
+        setDirectCheckInSuccess(null);
+        setDirectCheckInError(null);
         try {
             const res = await api.post('/stays/direct', {
-                guestId: parseInt(walkInData.guestId),
-                roomId: parseInt(walkInData.roomId),
-                adults: parseInt(walkInData.adults) || 1,
-                children: parseInt(walkInData.children) || 0,
-                dateOut: `${walkInData.dateOut}T11:00:00`,
-                arrivingFrom: walkInData.arrivingFrom,
-                nextDestination: walkInData.nextDestination,
-                arrivalFlightNo: walkInData.arrivalFlightNo,
-                departureFlightNo: walkInData.departureFlightNo,
-                notes: walkInData.notes,
+                guestId: parseInt(directCheckInData.guestId),
+                roomId: parseInt(directCheckInData.roomId),
+                adults: parseInt(directCheckInData.adults) || 1,
+                children: parseInt(directCheckInData.children) || 0,
+                dateOut: directCheckInData.dateOut,
+                arrivingFrom: directCheckInData.arrivingFrom,
+                nextDestination: directCheckInData.nextDestination,
+                arrivalFlightNo: directCheckInData.arrivalFlightNo,
+                departureFlightNo: directCheckInData.departureFlightNo,
+                notes: directCheckInData.notes,
                 userId: user?.id || 1,
             });
-            setWalkInSuccess(`Check-in successful. Stay #${res.data.id} is now ACTIVE.`);
-            setWalkInData({ 
+            setDirectCheckInSuccess(`Check-in successful. Stay #${res.data.id} is now ACTIVE.`);
+            setDirectCheckInData({ 
                 guestId: '', 
                 roomId: '', 
                 adults: 1, 
@@ -234,20 +234,32 @@ const CheckIn = () => {
                 notes: ''
             });
             setTimeout(() => {
-                setShowWalkInModal(false);
-                setWalkInSuccess(null);
+                setShowDirectCheckInModal(false);
+                setDirectCheckInSuccess(null);
             }, 2000);
             fetchAllData();
         } catch (err) {
-            setWalkInError(err.response?.data?.message || 'Walk-in check-in failed. Please try again.');
+            setDirectCheckInError(err.response?.data?.message || 'Check-in failed. Please try again.');
         } finally {
-            setWalkInLoading(false);
+            setDirectCheckInLoading(false);
+        }
+    };
+
+    const handleVoidStay = async (stayId) => {
+        if (!window.confirm('Are you sure you want to VOID this stay? The room will be set back to AVAILABLE and any linked reservation will be restored to BOOKED.')) return;
+        try {
+            await api.post(`/stays/${stayId}/void?userId=${user?.id || 1}`);
+            alert('Stay voided successfully.');
+            fetchAllData();
+        } catch (err) {
+            console.error('Failed to void stay:', err);
+            alert(err.response?.data?.message || 'Failed to void stay.');
         }
     };
 
     const handleQuickGuestSuccess = (newGuest) => {
         setGuests(prev => [...prev, newGuest]);
-        setWalkInData(prev => ({ ...prev, guestId: newGuest.id }));
+        setDirectCheckInData(prev => ({ ...prev, guestId: newGuest.id }));
         setShowQuickGuestModal(false);
     };
 
@@ -288,6 +300,7 @@ const CheckIn = () => {
                                 <th>Exp. Checkout</th>
                                 <th>Occupancy</th>
                                 <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -302,6 +315,14 @@ const CheckIn = () => {
                                         <span className={`status-badge ${stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-booked'}`}>
                                             {stay.status}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <button 
+                                            className="btn-secondary !py-1 !px-3 text-[10px] !bg-slate-50 !text-slate-500 !border-slate-200 hover:!bg-slate-100"
+                                            onClick={() => handleVoidStay(stay.id)}
+                                        >
+                                            Void
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -359,30 +380,30 @@ const CheckIn = () => {
                 )}
             </div>
 
-            {/* WALK-IN MODAL */}
-            {showWalkInModal && (
+            {/* GUEST CHECK-IN MODAL */}
+            {showDirectCheckInModal && (
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-text-dark">Guest Check-in</h2>
-                            <button className="close-modal-btn" onClick={() => setShowWalkInModal(false)}>&times;</button>
+                            <button className="close-modal-btn" onClick={() => setShowDirectCheckInModal(false)}>&times;</button>
                         </div>
                         
-                        {walkInSuccess && (
-                            <div className="m-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm font-medium animate-pulse">{walkInSuccess}</div>
+                        {directCheckInSuccess && (
+                            <div className="m-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm font-medium animate-pulse">{directCheckInSuccess}</div>
                         )}
-                        {walkInError && (
-                            <div className="m-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">{walkInError}</div>
+                        {directCheckInError && (
+                            <div className="m-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">{directCheckInError}</div>
                         )}
 
-                        <form onSubmit={handleWalkIn} className="p-6">
+                        <form onSubmit={handleDirectCheckIn} className="p-6">
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Select Guest</label>
                                     <select
                                         required
-                                        value={walkInData.guestId}
-                                        onChange={e => setWalkInData({ ...walkInData, guestId: e.target.value })}
+                                        value={directCheckInData.guestId}
+                                        onChange={e => setDirectCheckInData({ ...directCheckInData, guestId: e.target.value })}
                                     >
                                         <option value="">-- Choose Guest --</option>
                                         {guests.map(g => (
@@ -405,11 +426,11 @@ const CheckIn = () => {
                                     <label>Assign Available Room</label>
                                     <select
                                         required
-                                        value={walkInData.roomId}
-                                        onChange={e => setWalkInData({ ...walkInData, roomId: e.target.value })}
+                                        value={directCheckInData.roomId}
+                                        onChange={e => setDirectCheckInData({ ...directCheckInData, roomId: e.target.value })}
                                     >
                                         <option value="">-- Choose Room --</option>
-                                        {availableWalkInRooms.map(room => (
+                                        {availableDirectCheckInRooms.map(room => (
                                             <option key={room.id} value={room.id}>
                                                 Room {room.roomNumber} — Floor {room.floor} {room.roomType?.name ? `(${room.roomType.name})` : ''}
                                             </option>
@@ -421,8 +442,8 @@ const CheckIn = () => {
                                     <label>Adults</label>
                                     <input
                                         type="number" min="1" required
-                                        value={walkInData.adults}
-                                        onChange={e => setWalkInData({ ...walkInData, adults: e.target.value })}
+                                        value={directCheckInData.adults}
+                                        onChange={e => setDirectCheckInData({ ...directCheckInData, adults: e.target.value })}
                                     />
                                 </div>
 
@@ -430,8 +451,8 @@ const CheckIn = () => {
                                     <label>Children</label>
                                     <input
                                         type="number" min="0" required
-                                        value={walkInData.children}
-                                        onChange={e => setWalkInData({ ...walkInData, children: e.target.value })}
+                                        value={directCheckInData.children}
+                                        onChange={e => setDirectCheckInData({ ...directCheckInData, children: e.target.value })}
                                     />
                                 </div>
                                 
@@ -441,8 +462,8 @@ const CheckIn = () => {
                                         type="date"
                                         required
                                         min={new Date().toISOString().split('T')[0]}
-                                        value={walkInData.dateOut}
-                                        onChange={e => setWalkInData({ ...walkInData, dateOut: e.target.value })}
+                                        value={directCheckInData.dateOut}
+                                        onChange={e => setDirectCheckInData({ ...directCheckInData, dateOut: e.target.value })}
                                     />
                                     <p className="text-[10px] text-text-slate mt-1 italic leading-tight">
                                         The total room charge will be calculated and posted to the folio automatically based on this date.
@@ -451,35 +472,35 @@ const CheckIn = () => {
 
                                 <div className="form-group">
                                     <label>Arriving From</label>
-                                    <input type="text" value={walkInData.arrivingFrom} onChange={e => setWalkInData({ ...walkInData, arrivingFrom: e.target.value })} placeholder="City or Country" />
+                                    <input type="text" value={directCheckInData.arrivingFrom} onChange={e => setDirectCheckInData({ ...directCheckInData, arrivingFrom: e.target.value })} placeholder="City or Country" />
                                 </div>
                                 <div className="form-group">
                                     <label>Next Destination</label>
-                                    <input type="text" value={walkInData.nextDestination} onChange={e => setWalkInData({ ...walkInData, nextDestination: e.target.value })} placeholder="Target Destination" />
+                                    <input type="text" value={directCheckInData.nextDestination} onChange={e => setDirectCheckInData({ ...directCheckInData, nextDestination: e.target.value })} placeholder="Target Destination" />
                                 </div>
                                 <div className="form-group">
                                     <label>Arrival Flight #</label>
-                                    <input type="text" value={walkInData.arrivalFlightNo} onChange={e => setWalkInData({ ...walkInData, arrivalFlightNo: e.target.value })} placeholder="e.g. KQ101" />
+                                    <input type="text" value={directCheckInData.arrivalFlightNo} onChange={e => setDirectCheckInData({ ...directCheckInData, arrivalFlightNo: e.target.value })} placeholder="e.g. KQ101" />
                                 </div>
                                 <div className="form-group">
                                     <label>Departure Flight #</label>
-                                    <input type="text" value={walkInData.departureFlightNo} onChange={e => setWalkInData({ ...walkInData, departureFlightNo: e.target.value })} placeholder="e.g. KQ102" />
+                                    <input type="text" value={directCheckInData.departureFlightNo} onChange={e => setDirectCheckInData({ ...directCheckInData, departureFlightNo: e.target.value })} placeholder="e.g. KQ102" />
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Stay Notes</label>
                                     <textarea 
                                         className="w-full min-h-[60px]" 
-                                        value={walkInData.notes} 
-                                        onChange={e => setWalkInData({ ...walkInData, notes: e.target.value })} 
+                                        value={directCheckInData.notes} 
+                                        onChange={e => setDirectCheckInData({ ...directCheckInData, notes: e.target.value })} 
                                         placeholder="Special requests, billing instructions, etc."
                                     />
                                 </div>
                             </div>
 
                             <div className="modal-footer !px-0 mt-8">
-                                <button type="button" onClick={() => setShowWalkInModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10" disabled={walkInLoading}>
-                                    {walkInLoading ? 'Loading...' : 'Complete Check-in'}
+                                <button type="button" onClick={() => setShowDirectCheckInModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="submit" className="btn-primary !px-10" disabled={directCheckInLoading}>
+                                    {directCheckInLoading ? 'Loading...' : 'Complete Check-in'}
                                 </button>
                             </div>
                         </form>
