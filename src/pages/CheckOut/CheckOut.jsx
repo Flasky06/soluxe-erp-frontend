@@ -317,8 +317,23 @@ const CheckOut = () => {
                                             </div>
                                             <div className="flex flex-col gap-2 text-right">
                                                 <p className="text-slate-400 font-bold text-[9px] uppercase tracking-wider">Stay Period</p>
-                                                <p className="font-bold text-slate-800">{new Date(selectedStay.dateIn).toLocaleDateString()} — {new Date(selectedStay.dateOut).toLocaleDateString()}</p>
-                                                <p className="text-slate-500 font-medium">Duration: {Math.ceil(Math.abs(new Date(selectedStay.dateOut) - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24))} Nights</p>
+                                                <p className="font-bold text-slate-800">
+                                                    {new Date(selectedStay.dateIn).toLocaleDateString()} — {
+                                                        new Date(selectedStay.dateOut) > new Date() 
+                                                        ? new Date().toLocaleDateString() + ' (Early)' 
+                                                        : new Date(selectedStay.dateOut).toLocaleDateString()
+                                                    }
+                                                </p>
+                                                <p className="text-slate-500 font-medium">
+                                                    Duration: {
+                                                        new Date(selectedStay.dateOut) > new Date()
+                                                        ? Math.max(1, Math.ceil(Math.abs(new Date() - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24)))
+                                                        : Math.ceil(Math.abs(new Date(selectedStay.dateOut) - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24))
+                                                    } Night(s)
+                                                    {new Date(selectedStay.dateOut) > new Date() && (
+                                                        <span className="ml-1 text-[9px] text-amber-600 font-bold uppercase tracking-tighter">(Adjusted)</span>
+                                                    )}
+                                                </p>
                                             </div>
                                         </div>
 
@@ -386,17 +401,54 @@ const CheckOut = () => {
                                         <div className="bg-slate-900 text-white rounded-2xl p-6 print:p-4 mt-4">
                                             <div className="flex flex-col gap-3">
                                                 <div className="flex justify-between items-center opacity-60 text-[10px] font-bold uppercase tracking-widest">
-                                                    <span>Total Charges</span>
+                                                    <span>Original Charges</span>
                                                     <span>KSh {charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0).toLocaleString()}</span>
                                                 </div>
+                                                
+                                                {new Date(selectedStay.dateOut) > new Date() && (
+                                                    <div className="flex justify-between items-center text-amber-400 text-[10px] font-bold uppercase tracking-widest">
+                                                        <span>Early Checkout Project. Credit</span>
+                                                        <span>
+                                                            -KSh {(() => {
+                                                                const plannedNights = Math.ceil(Math.abs(new Date(selectedStay.dateOut) - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24));
+                                                                const actualNights = Math.max(1, Math.ceil(Math.abs(new Date() - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24)));
+                                                                if (actualNights < plannedNights) {
+                                                                    const diff = plannedNights - actualNights;
+                                                                    const roomCharge = charges.find(c => c.description?.includes('Room Charge'));
+                                                                    const rate = roomCharge ? parseFloat(roomCharge.unitPrice || 0) : 0;
+                                                                    return (diff * rate).toLocaleString();
+                                                                }
+                                                                return "0";
+                                                            })()}
+                                                        </span>
+                                                    </div>
+                                                )}
+
                                                 <div className="flex justify-between items-center opacity-60 text-[10px] font-bold uppercase tracking-widest">
-                                                    <span>Total Credits</span>
+                                                    <span>Total Credits / Payments</span>
                                                     <span>KSh {payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="h-px bg-white/10 my-1"></div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-maroon-light">Balance Due</span>
-                                                    <span className="text-xl font-black">KSh {parseFloat(folio.totalAmount || 0).toLocaleString()}</span>
+                                                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-maroon-light">Final Balance Due</span>
+                                                    <span className="text-xl font-black">
+                                                        KSh {(() => {
+                                                            const totalCharges = charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0);
+                                                            const totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+                                                            let adjustment = 0;
+                                                            if (new Date(selectedStay.dateOut) > new Date()) {
+                                                                const plannedNights = Math.ceil(Math.abs(new Date(selectedStay.dateOut) - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24));
+                                                                const actualNights = Math.max(1, Math.ceil(Math.abs(new Date() - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24)));
+                                                                if (actualNights < plannedNights) {
+                                                                    const diff = plannedNights - actualNights;
+                                                                    const roomCharge = charges.find(c => c.description?.includes('Room Charge'));
+                                                                    const rate = roomCharge ? parseFloat(roomCharge.unitPrice || 0) : 0;
+                                                                    adjustment = diff * rate;
+                                                                }
+                                                            }
+                                                            return Math.max(0, totalCharges - totalPayments - adjustment).toLocaleString();
+                                                        })()}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
