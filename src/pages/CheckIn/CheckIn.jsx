@@ -94,7 +94,15 @@ const CheckIn = () => {
             if (resIdParam) {
                 const res = resRes.data.find(r => r.id === parseInt(resIdParam));
                 if (res) {
-                    handleOpenResModal(res, roomsRes.data);
+                    setSelectedReservation(res);
+                    setResCheckInRoomId('');
+                    const availableAll = roomsRes.data.filter(r => r.status === 'AVAILABLE');
+                    const filtered = availableAll.filter(r => {
+                        const rTypeId = r.roomType?.id ?? r.roomTypeId;
+                        return Number(rTypeId) === Number(res.roomTypeId);
+                    });
+                    setAvailableRooms(filtered.length > 0 ? filtered : availableAll);
+                    setShowReservationModal(true);
                 }
             }
         } catch (err) {
@@ -102,7 +110,7 @@ const CheckIn = () => {
         } finally {
             setLoading(false);
         }
-    }, [resIdParam, handleOpenResModal]);
+    }, [resIdParam]);
 
     useEffect(() => { fetchAllData(); }, [fetchAllData]);
 
