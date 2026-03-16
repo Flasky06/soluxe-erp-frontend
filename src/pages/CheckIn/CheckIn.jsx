@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import GuestForm from '../../components/GuestForm/GuestForm';
@@ -51,7 +52,10 @@ const CheckIn = () => {
     const [walkInSuccess, setWalkInSuccess] = useState(null);
     const [walkInError, setWalkInError] = useState(null);
 
-    const fetchAllData = async () => {
+    const [searchParams] = useSearchParams();
+    const resIdParam = searchParams.get('resId');
+
+    const fetchAllData = useCallback(async () => {
         setLoading(true);
         try {
             const [resRes, guestsRes, typesRes, roomsRes, paymentMethodsRes] = await Promise.all([
@@ -67,14 +71,22 @@ const CheckIn = () => {
             setRoomTypes(typesRes.data);
             setAllRooms(roomsRes.data);
             setPaymentMethods(paymentMethodsRes.data);
+
+            // If resId in URL, auto-open modal
+            if (resIdParam) {
+                const res = resRes.data.find(r => r.id === parseInt(resIdParam));
+                if (res) {
+                    handleOpenResModal(res, roomsRes.data);
+                }
+            }
         } catch (err) {
             console.error('Failed to load check-in data:', err);
         } finally {
             setLoading(false);
         }
-    };
+    }, [resIdParam, handleOpenResModal]);
 
-    useEffect(() => { fetchAllData(); }, []);
+    useEffect(() => { fetchAllData(); }, [fetchAllData]);
 
     const getGuestName = (id) => {
         const g = guests.find(g => g.id === id);
@@ -87,10 +99,11 @@ const CheckIn = () => {
     };
 
     // --- RESERVATION CHECK-IN ---
-    const handleOpenResModal = async (res) => {
+    const handleOpenResModal = useCallback(async (res, roomsList = null) => {
         setSelectedReservation(res);
         setResCheckInRoomId('');
-        const availableAll = allRooms.filter(r => r.status === 'AVAILABLE');
+        const sourceRooms = roomsList || allRooms;
+        const availableAll = sourceRooms.filter(r => r.status === 'AVAILABLE');
         const filtered = availableAll.filter(r => {
             const rTypeId = r.roomType?.id ?? r.roomTypeId;
             return Number(rTypeId) === Number(res.roomTypeId);
@@ -101,7 +114,7 @@ const CheckIn = () => {
         }
         setAvailableRooms(filtered.length > 0 ? filtered : availableAll);
         setShowReservationModal(true);
-    };
+    }, [allRooms]);
 
     const handleResCheckIn = async (e) => {
         e.preventDefault();

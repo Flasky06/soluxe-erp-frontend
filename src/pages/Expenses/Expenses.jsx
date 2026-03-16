@@ -17,6 +17,9 @@ const Expenses = () => {
         paymentMethod: 'CASH',
         referenceNumber: ''
     });
+    const [showTypeModal, setShowTypeModal] = useState(false);
+    const [newTypeName, setNewTypeName] = useState('');
+    const [addingType, setAddingType] = useState(false);
 
     const paymentMethods = [
         'CASH', 'BANK_TRANSFER', 'MPESA', 'CREDIT_CARD', 'CHEQUE'
@@ -84,6 +87,30 @@ const Expenses = () => {
         } catch (err) {
             console.error('Failed to save expense:', err);
             alert('Failed to save expense.');
+        }
+    };
+
+    const handleQuickAddExpenseType = async (e) => {
+        e.preventDefault();
+        if (!newTypeName.trim()) return;
+        
+        setAddingType(true);
+        try {
+            const res = await api.post('/expense-types', { name: newTypeName });
+            // Refresh types
+            const typesRes = await api.get('/expense-types');
+            setTypes(typesRes.data);
+            
+            // Set as selected
+            setFormData(prev => ({ ...prev, expenseType: { id: res.data.id } }));
+            
+            setNewTypeName('');
+            setShowTypeModal(false);
+        } catch (err) {
+            console.error('Failed to add expense type:', err);
+            alert('Failed to add category.');
+        } finally {
+            setAddingType(false);
         }
     };
 
@@ -200,7 +227,16 @@ const Expenses = () => {
                                     <input type="date" required value={formData.expenseDate} onChange={(e) => setFormData({...formData, expenseDate: e.target.value})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Expenditure Category</label>
+                                    <label className="flex justify-between">
+                                        Expenditure Category
+                                        <button 
+                                            type="button" 
+                                            className="text-primary text-[10px] flex items-center hover:underline"
+                                            onClick={() => setShowTypeModal(true)}
+                                        >
+                                            <Plus size={10} className="mr-1" /> New Category
+                                        </button>
+                                    </label>
                                     <select 
                                         required
                                         value={formData.expenseType.id} 
@@ -228,6 +264,37 @@ const Expenses = () => {
                             <div className="modal-footer">
                                 <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
                                 <button type="submit" className="btn-primary !px-10">{editingExpense ? 'Save Updates' : 'Record Expense'}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showTypeModal && (
+                <div className="modal-overlay !z-[1100]">
+                    <div className="modal-content premium-card !max-w-[400px]">
+                        <div className="modal-header">
+                            <h2 className="text-lg font-bold">Quick-Add Category</h2>
+                            <button className="close-modal-btn" onClick={() => setShowTypeModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleQuickAddExpenseType}>
+                            <div className="p-4">
+                                <label className="block text-sm font-medium mb-1">New Category Name</label>
+                                <input 
+                                    type="text" 
+                                    required 
+                                    autoFocus
+                                    className="w-full p-2 border rounded"
+                                    value={newTypeName}
+                                    onChange={(e) => setNewTypeName(e.target.value)}
+                                    placeholder="e.g. Marketing, Repairs"
+                                />
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" onClick={() => setShowTypeModal(false)} className="btn-secondary !py-1 text-sm">Cancel</button>
+                                <button type="submit" disabled={addingType} className="btn-primary !py-1 text-sm">
+                                    {addingType ? 'Adding...' : 'Add Category'}
+                                </button>
                             </div>
                         </form>
                     </div>

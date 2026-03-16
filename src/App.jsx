@@ -45,6 +45,7 @@ import Attendance from './pages/Attendance/Attendance';
 import LeaveRequests from './pages/LeaveRequests/LeaveRequests';
 import PurchaseOrders from './pages/PurchaseOrders/PurchaseOrders';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import BookingSync from './pages/Integrations/BookingSync';
 import './index.css';
 
 function App() {
@@ -138,6 +139,10 @@ function App() {
                     <Route path="/leave-types" element={<LeaveTypes />} />
                     <Route path="/employees" element={<Employees />} />
                     <Route path="/users" element={<Users />} />
+                </Route>
+
+                <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />}>
+                    <Route path="/booking-sync" element={<BookingSync />} />
                 </Route>
 
               </Routes>

@@ -1,23 +1,15 @@
 {
-  "short_name": "Soluxe HMS",
-  "name": "Soluxe Club Hotel Management System",
-  "description": "Full-featured Hotel Management System for Soluxe Club Hotel.",
+  "short_name": "Soluxe ERP",
+  "name": "Soluxe Hotel ERP",
   "icons": [
-    {
-      "src": "/logo/soluxe-logo.jpeg",
-      "type": "image/jpeg",
-      "sizes": "192x192"
-    },
     {
       "src": "/logo/soluxe-logo.jpeg",
       "type": "image/jpeg",
       "sizes": "512x512"
     }
   ],
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
-  "theme_color": "#0f172a",
-  "background_color": "#ffffff",
-  "orientation": "any",
-  "scope": "/"
+  "theme_color": "#7B1113",
+  "background_color": "#ffffff"
 }

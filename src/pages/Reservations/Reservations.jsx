@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { 
     Search, Filter, Bed, Utensils, Calendar, User, 
@@ -9,6 +10,7 @@ import {
 import GuestForm from '../../components/GuestForm/GuestForm';
 
 const Reservations = () => {
+    const navigate = useNavigate();
     const [reservations, setReservations] = useState([]);
     const [guests, setGuests] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
@@ -23,15 +25,9 @@ const Reservations = () => {
     const [showQuickGuestModal, setShowQuickGuestModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showActionModal, setShowActionModal] = useState(false);
-    const [actionModalTab, setActionModalTab] = useState('actions'); // 'actions' | 'folio'
     const [selectedReservation, setSelectedReservation] = useState(null);
     const [actionReservation, setActionReservation] = useState(null);
     const [activeFolio, setActiveFolio] = useState(null);
-    const [folioCharges, setFolioCharges] = useState([]);
-    const [folioLoading, setFolioLoading] = useState(false);
-    const [chargeTypesList, setChargeTypesList] = useState([]);
-    const [chargeForm, setChargeForm] = useState({ description: '', quantity: '1', unitPrice: '', chargeTypeId: '' });
-    const [addingCharge, setAddingCharge] = useState(false);
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [paymentData, setPaymentData] = useState({
         amount: '',
@@ -194,61 +190,10 @@ const Reservations = () => {
 
     const handleOpenManageModal = async (res) => {
         setActionReservation(res);
-        setActionModalTab('actions');
         setActiveFolio(null);
-        setFolioCharges([]);
-        setChargeForm({ description: '', quantity: '1', unitPrice: '', chargeTypeId: '' });
         setShowActionModal(true);
-        try {
-            const ctRes = await api.get('/charge-types');
-            setChargeTypesList(ctRes.data || []);
-        } catch { /* charge types optional */ }
     };
 
-    const handleLoadFolioTab = async (res) => {
-        setActionModalTab('folio');
-        if (activeFolio) return;
-        setFolioLoading(true);
-        try {
-            const folioRes = await api.get(`/folios/reservation/${res.id}`);
-            setActiveFolio(folioRes.data);
-            const chargesRes = await api.get(`/folios/${folioRes.data.id}/charges`);
-            setFolioCharges(chargesRes.data || []);
-        } catch (err) {
-            console.error('Failed to load folio:', err);
-        } finally {
-            setFolioLoading(false);
-        }
-    };
-
-    const handleAddCharge = async (e) => {
-        e.preventDefault();
-        if (!activeFolio) return;
-        setAddingCharge(true);
-        try {
-            const payload = {
-                description: chargeForm.description,
-                quantity: parseFloat(chargeForm.quantity) || 1,
-                unitPrice: parseFloat(chargeForm.unitPrice) || 0,
-                taxPct: 0,
-                discountPct: 0,
-                chargeTypeId: (parseInt(chargeForm.chargeTypeId) > 0) ? parseInt(chargeForm.chargeTypeId) : null
-            };
-            await api.post(`/folios/${activeFolio.id}/charges?userId=1`, payload);
-            const [folioRes, chargesRes] = await Promise.all([
-                api.get(`/folios/${activeFolio.id}`),
-                api.get(`/folios/${activeFolio.id}/charges`)
-            ]);
-            setActiveFolio(folioRes.data);
-            setFolioCharges(chargesRes.data || []);
-            setChargeForm({ description: '', quantity: '1', unitPrice: '', chargeTypeId: '' });
-        } catch (err) {
-            console.error('Failed to add charge:', err);
-            alert(err.response?.data?.error || 'Failed to add charge');
-        } finally {
-            setAddingCharge(false);
-        }
-    };
 
     const handleSubmitBooking = async (e) => {
         e.preventDefault();
@@ -501,7 +446,10 @@ const Reservations = () => {
                                                             Manage
                                                         </button>
                                                     ) : (
-                                                        <button className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+                                                        <button 
+                                                            className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"
+                                                            onClick={() => handleOpenManageModal(res)}
+                                                        >
                                                             <MoreVertical size={16} />
                                                         </button>
                                                     )}
@@ -754,6 +702,26 @@ const Reservations = () => {
                             <button className="close-modal-btn bg-slate-50 hover:bg-slate-100 rounded-full p-2 transition-colors" onClick={() => setShowActionModal(false)}>&times;</button>
                         </div>
                         <div className="flex flex-col gap-3">
+                            {actionReservation.status === 'BOOKED' && (
+                                <button 
+                                    className="w-full flex items-center justify-between p-4 bg-maroon text-white border border-maroon hover:bg-[#6b0f11] rounded-xl transition-all shadow-md group"
+                                    onClick={() => {
+                                        setShowActionModal(false);
+                                        navigate(`/check-in?resId=${actionReservation.id}`);
+                                    }}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                            <LogOut size={18} className="rotate-180" />
+                                        </div>
+                                        <div className="flex flex-col items-start">
+                                            <span className="font-bold">Check-In Guest</span>
+                                            <span className="text-[10px] text-white/70 uppercase tracking-widest font-bold">Start Stay #Today</span>
+                                        </div>
+                                    </div>
+                                    <ChevronRight size={18} className="text-white/50" />
+                                </button>
+                            )}
                             <button 
                                 className="w-full flex items-center justify-between p-4 bg-white border border-slate-200 hover:border-maroon/30 hover:bg-maroon/5 rounded-xl transition-all group"
                                 onClick={() => {

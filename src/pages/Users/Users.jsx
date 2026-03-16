@@ -49,7 +49,7 @@ const Users = () => {
                 phoneNumber: user.phoneNumber || '',
                 password: '', // Don't show password hash
                 role: user.role,
-                isActive: user.isActive ?? user.active
+                active: user.active ?? user.isActive ?? true
             });
         } else {
             setEditingUser(null);
@@ -169,9 +169,9 @@ const Users = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${(u.isActive ?? u.active) ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                                            {(u.isActive ?? u.active) ? 'Authenticated' : 'Disabled'}
-                                        </span>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${u.active ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                        {u.active ? 'Authenticated' : 'Disabled'}
+                                    </span>
                                     </td>
                                     <td>
                                         <div className="table-actions">
@@ -242,12 +242,12 @@ const Users = () => {
                                     <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
                                         <input 
                                             type="checkbox" 
-                                            id="isActive"
-                                            checked={formData.isActive} 
-                                            onChange={(e) => setFormData({...formData, isActive: e.target.checked})} 
+                                            id="active"
+                                            checked={formData.active} 
+                                            onChange={(e) => setFormData({...formData, active: e.target.checked})} 
                                             className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary/20" 
                                         />
-                                        <label htmlFor="isActive" className="mb-0 text-sm font-semibold text-slate-700 uppercase tracking-wide">Account Active & Enabled</label>
+                                        <label htmlFor="active" className="mb-0 text-sm font-semibold text-slate-700 uppercase tracking-wide">Account Active & Enabled</label>
                                     </div>
                                 </div>
                             </div>

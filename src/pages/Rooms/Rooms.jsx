@@ -17,7 +17,7 @@ const Rooms = () => {
 
     const [typeFormData, setTypeFormData] = useState({
         name: '',
-        amenities: '',
+        description: '',
         basePrice: ''
     });
 
@@ -68,7 +68,7 @@ const Rooms = () => {
             };
             await api.post('/room-types', payload);
             setShowTypeModal(false);
-            setTypeFormData({ name: '', amenities: '', basePrice: '' });
+            setTypeFormData({ name: '', description: '', basePrice: '' });
             fetchRoomTypes();
         } catch (err) {
             console.error('Failed to create room type', err);

@@ -33,7 +33,8 @@ import {
     Users2,
     FileSpreadsheet,
     Scale,
-    ShieldCheck
+    ShieldCheck,
+    Globe
 } from 'lucide-react';
 
 const menuGroups = [
@@ -123,8 +124,16 @@ const menuGroups = [
             { label: 'Leave Types', path: '/leave-types', icon: CalendarPlus, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Settings', path: '/settings', icon: Settings2, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
         ]
+    },
+    {
+        title: 'Integrations',
+        icon: Globe,
+        items: [
+            { label: 'Booking.com', path: '/booking-sync', icon: Globe, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
+        ]
     }
 ];
+
 
 const Sidebar = () => {
     const { user, logout } = useAuthStore();
