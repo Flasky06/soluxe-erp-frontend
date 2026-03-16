@@ -102,33 +102,38 @@ const GuestForm = ({ initialData, onSuccess, onCancel, isSaving: externalIsSavin
     };
 
     const uploadFile = async (file) => {
-        const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-        const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-        if (!cloudName || !uploadPreset) {
-            console.error('Cloudinary configuration missing');
-            alert('Cloudinary configuration is missing. Please check environment variables.');
-            return;
-        }
-
-        const uploadData = new FormData();
-        uploadData.append('file', file);
-        uploadData.append('upload_preset', uploadPreset);
-        
         setUploading(true);
         try {
-            const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            // 1. Get signature from backend
+            const folder = 'soluxe-hotel';
+            const { data: sigData } = await api.get('/cloudinary/signature', {
+                params: { folder }
+            });
+            
+            // 2. Upload to Cloudinary
+            const uploadData = new FormData();
+            uploadData.append('file', file);
+            uploadData.append('api_key', sigData.api_key);
+            uploadData.append('timestamp', sigData.timestamp);
+            uploadData.append('signature', sigData.signature);
+            uploadData.append('folder', folder);
+            
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${sigData.cloud_name}/image/upload`, {
                 method: 'POST',
                 body: uploadData
             });
             
-            if (!res.ok) throw new Error('Cloudinary upload failed');
+            if (!res.ok) {
+                const errorData = await res.json();
+                console.error('Cloudinary error details:', errorData);
+                throw new Error(errorData.error?.message || 'Cloudinary upload failed');
+            }
             
             const data = await res.json();
             setFormData({ ...formData, imageUrl: data.secure_url });
         } catch (err) {
             console.error('Upload failed:', err);
-            alert('Failed to upload image to Cloudinary.');
+            alert(`Upload failed: ${err.message}`);
         } finally {
             setUploading(false);
         }
