@@ -1,7 +1,6 @@
-const CACHE_NAME = 'soluxe-club-hms-v1';
+const CACHE_NAME = 'soluxe-club-hms-v1.1';
 const ASSETS_TO_CACHE = [
   '/',
-  '/index.html',
   '/manifest.json',
   '/logo/soluxe-logo.jpeg'
 ];
@@ -29,6 +28,23 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  
+  // Use Network First for index.html/root to ensure latest asset hashes
+  if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const clonedResponse = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clonedResponse));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Default Cache First for other assets
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
