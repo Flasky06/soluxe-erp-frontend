@@ -29,19 +29,26 @@ const CheckOut = () => {
         notes: ''
     });
 
+    // Extension Modal State
+    const [showExtensionModal, setShowExtensionModal] = useState(false);
+    const [extensionDate, setExtensionDate] = useState('');
+    const [extensionLoading, setExtensionLoading] = useState(false);
+
+    // Override State
+    const [overrideNote, setOverrideNote] = useState('');
+    const [isManagerOverride, setIsManagerOverride] = useState(false);
+
     const fetchData = async () => {
         setLoading(true);
         try {
             const [staysRes, guestsRes, roomsRes, paymentMethodsRes] = await Promise.all([
-                api.get('/stays'),
+                api.get('/stays/active'),
                 api.get('/guests'),
                 api.get('/rooms'),
                 api.get('/folios/payment-methods')
             ]);
             
-            // Filter only active stays
-            const activeStays = staysRes.data.filter(s => s.status === 'ACTIVE');
-            setStays(activeStays);
+            setStays(staysRes.data);
             setGuests(guestsRes.data);
             setRooms(roomsRes.data);
             setPaymentMethods(paymentMethodsRes.data);
@@ -80,15 +87,43 @@ const CheckOut = () => {
         });
     }, [stays, searchTerm, getGuestName, getRoomNumber]);
 
-    const handleCheckOut = async (stayId) => {
-        if (!window.confirm('Confirm check-out for this guest? Room will be set to DIRTY.')) return;
+    const handleCheckOut = async (stayId, approveAdjustment = false) => {
+        if (!approveAdjustment && !window.confirm('Confirm check-out for this guest? Room will be set to DIRTY.')) return;
         try {
-            await api.post(`/stays/${stayId}/check-out?userId=${user?.id || 1}`);
+            const url = `/stays/${stayId}/check-out?userId=${user?.id || 1}&approveAdjustment=${approveAdjustment}`;
+            await api.post(url);
             setShowInvoiceModal(false);
             fetchData();
         } catch (err) {
             console.error('Failed to check out:', err);
-            alert(err.response?.data?.message || 'Check-out failed.');
+            const errorMsg = err.response?.data?.message || 'Check-out failed.';
+            
+            if (errorMsg.includes('Outstanding folio balance') && user?.role === 'ROLE_MANAGER') {
+                setIsManagerOverride(true);
+            } else {
+                alert(errorMsg);
+            }
+        }
+    };
+
+    const handleExtendStay = async (e) => {
+        e.preventDefault();
+        setExtensionLoading(true);
+        try {
+            await api.post(`/stays/${selectedStay.id}/extend`, null, {
+                params: {
+                    newDateOut: extensionDate,
+                    userId: user?.id || 1
+                }
+            });
+            setShowExtensionModal(false);
+            handleViewInvoice(selectedStay);
+            fetchData();
+        } catch (err) {
+            console.error('Failed to extend stay:', err);
+            alert(err.response?.data?.message || 'Extension failed.');
+        } finally {
+            setExtensionLoading(false);
         }
     };
 
@@ -182,10 +217,23 @@ const CheckOut = () => {
                                             </div>
                                         </td>
                                         <td>
-                                            <span className="font-semibold text-slate-800">{getGuestName(stay.guestId)}</span>
+                                            <div className="flex flex-col">
+                                                <span className="font-semibold text-slate-800">{getGuestName(stay.guestId)}</span>
+                                                {stay.status === 'OVERSTAY' && (
+                                                    <span className="bg-red-100 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded w-fit uppercase tracking-wider mt-1">
+                                                        Overdue
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td>{formatDate(stay.dateIn)}</td>
-                                        <td>{formatDate(stay.dateOut)}</td>
+                                        <td>
+                                            <div className="flex flex-col">
+                                                <span className={stay.status === 'OVERSTAY' ? 'text-red-600 font-bold' : ''}>
+                                                    {formatDate(stay.dateOut)}
+                                                </span>
+                                            </div>
+                                        </td>
                                         <td>
                                             <div className="table-actions">
                                                 <button 
@@ -214,7 +262,7 @@ const CheckOut = () => {
             {/* Invoice Folio Modal */}
             {showInvoiceModal && selectedStay && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[95%] !max-w-[800px] print:!max-w-[300px] print:!mx-auto print:shadow-none print:p-0 print:border-none print:bg-white text-slate-800">
+                    <div className="modal-content premium-card !w-[95%] !max-w-[800px] print:!max-w-[100%] print:!mx-auto print:shadow-none print:p-0 print:border-none print:bg-white text-slate-800">
                         <div className="modal-header print:hidden pb-4 mb-4 border-b border-slate-200">
                             <div>
                                 <h2 className="text-xl font-bold text-slate-800">Folio & Check-out</h2>
@@ -236,53 +284,55 @@ const CheckOut = () => {
                             <div className="flex flex-col h-full max-h-[70vh] print:max-h-none overflow-hidden pb-4">
                                 {/* Scrollable Printable Area */}
                                 <div className="flex-1 overflow-y-auto pr-2 print:overflow-visible">
-                                    <div className="p-8 print:p-0 bg-white border border-slate-200 rounded-xl print:border-none shadow-sm print:shadow-none">
+                                    <div className="p-10 print:p-4 bg-white border border-slate-200 rounded-2xl print:border-none shadow-sm print:shadow-none font-['Inter',_sans-serif] text-[11px]">
                                         
-                                        {/* Hotel Header - Thermal Format */}
-                                        <div className="flex flex-col items-center border-b border-dashed border-slate-400 pb-4 mb-4 print:pb-2 print:mb-2 text-center">
-                                            <h1 className="text-2xl print:text-xl font-extrabold tracking-widest text-slate-900 m-0">SOLUXE</h1>
-                                            <p className="font-bold text-slate-800 uppercase text-[12px] print:text-[10px] tracking-widest mt-1">HOTEL</p>
-                                            <p className="text-[11px] print:text-[9px] text-slate-600 mt-2 font-mono">123 Horizon Ave, Seaside<br/>info@soluxe.com<br/>+254 700 000 000</p>
+                                        {/* Hotel Header */}
+                                        <div className="flex flex-col items-center border-b border-slate-100 pb-6 mb-6 print:pb-4 print:mb-4 text-center">
+                                            <div className="bg-maroon text-white w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl mb-3 print:mb-2">S</div>
+                                            <h1 className="text-2xl print:text-xl font-black tracking-tight text-slate-900 m-0 uppercase">Soluxe Club Hotel</h1>
+                                            <p className="text-[10px] print:text-[8px] text-slate-400 mt-2 font-medium max-w-[200px] leading-relaxed">
+                                                123 Horizon Avenue, Seaside Plaza<br/>
+                                                Tel: +254 700 000 000 | info@soluxe.com
+                                            </p>
                                         </div>
                                         
                                         {/* Receipt Meta */}
-                                        <div className="text-center mb-6 print:mb-4 border-b border-dashed border-slate-400 pb-4 print:pb-2">
-                                            <h2 className="text-lg print:text-base font-bold text-slate-800 uppercase tracking-widest m-0">GUEST FOLIO</h2>
-                                            <p className="font-mono text-[11px] print:text-[9px] text-slate-600 mt-1">Folio #{folio.id.toString().padStart(5, '0')} | {new Date().toLocaleDateString()}</p>
-                                        </div>
-
-                                        {/* Guest Details - Thermal Format */}
-                                        <div className="mb-6 print:mb-4 border-b border-dashed border-slate-400 pb-4 print:pb-2 font-mono text-[11px] print:text-[9px]">
-                                            <div className="flex justify-between mb-1">
-                                                <span className="font-bold">Guest:</span>
-                                                <span className="text-right">{getGuestName(selectedStay.guestId)}</span>
+                                        <div className="flex justify-between items-end mb-8 print:mb-6">
+                                            <div>
+                                                <h2 className="text-xl font-black text-slate-900 m-0 leading-none">INVOICE</h2>
+                                                <p className="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-widest">#{folio.id.toString().padStart(6, '0')}</p>
                                             </div>
-                                            <div className="flex justify-between mb-1">
-                                                <span className="font-bold">Room:</span>
-                                                <span>{getRoomNumber(selectedStay.roomId)}</span>
-                                            </div>
-                                            <div className="flex justify-between mb-1">
-                                                <span className="font-bold">Check-in:</span>
-                                                <span>{new Date(selectedStay.dateIn).toLocaleDateString()}</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="font-bold">Check-out:</span>
-                                                <span>{new Date(selectedStay.dateOut).toLocaleDateString()}</span>
+                                            <div className="text-right">
+                                                <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Date Issued</p>
+                                                <p className="font-black text-slate-900 text-[12px] mt-1">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                                             </div>
                                         </div>
 
-                                        {/* Charges Table - Thermal Format */}
-                                        <div className="mb-6 print:mb-4 font-mono">
-                                            <h3 className="text-[12px] font-bold text-center border-b border-slate-800 pb-1 mb-2 uppercase">Charges</h3>
-                                            <table className="w-full text-left border-collapse text-[11px] print:text-[9px]">
+                                        {/* Guest & Stay Info */}
+                                        <div className="grid grid-cols-2 gap-8 mb-8 print:mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                            <div className="flex flex-col gap-2">
+                                                <p className="text-slate-400 font-bold text-[9px] uppercase tracking-wider">Billed To</p>
+                                                <p className="font-bold text-[13px] text-slate-900">{getGuestName(selectedStay.guestId)}</p>
+                                                <p className="text-slate-500 font-medium">Room {getRoomNumber(selectedStay.roomId)}</p>
+                                            </div>
+                                            <div className="flex flex-col gap-2 text-right">
+                                                <p className="text-slate-400 font-bold text-[9px] uppercase tracking-wider">Stay Period</p>
+                                                <p className="font-bold text-slate-800">{new Date(selectedStay.dateIn).toLocaleDateString()} — {new Date(selectedStay.dateOut).toLocaleDateString()}</p>
+                                                <p className="text-slate-500 font-medium">Duration: {Math.ceil(Math.abs(new Date(selectedStay.dateOut) - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24))} Nights</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Charges Table */}
+                                        <div className="mb-8 print:mb-6">
+                                            <table className="w-full text-left border-collapse">
                                                 <thead>
-                                                    <tr className="border-b border-slate-300">
-                                                        <th className="py-1 font-bold">Item</th>
-                                                        <th className="py-1 text-center w-[30px]">Qty</th>
-                                                        <th className="py-1 text-right w-[60px]">Amt</th>
+                                                    <tr className="border-b-2 border-slate-900">
+                                                        <th className="py-3 font-black text-slate-900 uppercase tracking-widest text-[10px]">Description</th>
+                                                        <th className="py-3 font-black text-slate-900 uppercase tracking-widest text-[10px] text-center w-20">Qty</th>
+                                                        <th className="py-3 font-black text-slate-900 uppercase tracking-widest text-[10px] text-right w-32">Amount</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody className="divide-y divide-slate-100">
                                                     {charges.length === 0 ? (
                                                         <tr><td colSpan="3" className="py-2 text-center italic">No charges.</td></tr>
                                                     ) : (
@@ -303,19 +353,26 @@ const CheckOut = () => {
                                             </table>
                                         </div>
 
-                                        {/* Payments Table - Thermal Format */}
+                                        {/* Payments Table */}
                                         {payments.length > 0 && (
-                                            <div className="mb-6 print:mb-4 font-mono">
-                                                <h3 className="text-[12px] font-bold text-center border-b border-slate-800 pb-1 mb-2 uppercase">Payments</h3>
-                                                <table className="w-full text-left border-collapse text-[11px] print:text-[9px]">
+                                            <div className="mb-8 print:mb-6 pt-4">
+                                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Payments Received</h3>
+                                                <table className="w-full text-left border-collapse">
                                                     <tbody>
                                                         {payments.map(payment => (
-                                                            <tr key={payment.id} className="align-top">
-                                                                <td className="py-1 text-slate-600">
-                                                                    <div>{new Date(payment.recordedAt).toLocaleDateString()}</div>
-                                                                    <div className="text-[9px] print:text-[8px]">{payment.referenceNumber || 'Cash/Card'}</div>
+                                                            <tr key={payment.id} className="group">
+                                                                <td className="py-3 border-b border-slate-50">
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-green-600 font-bold text-[10px]">
+                                                                            {payment.paymentMethodName?.charAt(0) || 'P'}
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="font-bold text-slate-800">{payment.paymentMethodName || 'Payment'}</p>
+                                                                            <p className="text-[9px] text-slate-400 font-medium uppercase tracking-wider">{new Date(payment.recordedAt).toLocaleDateString()} • {payment.referenceNumber || 'N/A'}</p>
+                                                                        </div>
+                                                                    </div>
                                                                 </td>
-                                                                <td className="py-1 text-right font-bold">
+                                                                <td className="py-3 border-b border-slate-50 text-right font-black text-slate-900">
                                                                     -{parseFloat(payment.amount || 0).toLocaleString()}
                                                                 </td>
                                                             </tr>
@@ -325,25 +382,35 @@ const CheckOut = () => {
                                             </div>
                                         )}
 
-                                        {/* Totals - Thermal Format */}
-                                        <div className="border-t border-dashed border-slate-400 pt-2 font-mono text-[11px] print:text-[10px]">
-                                            <div className="flex justify-between py-1">
-                                                <span>Subtotal:</span>
-                                                <span className="font-bold">{charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0).toLocaleString()}</span>
-                                            </div>
-                                            <div className="flex justify-between py-1">
-                                                <span>Paid:</span>
-                                                <span className="font-bold border-b border-slate-800 border-solid pb-1">-{payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0).toLocaleString()}</span>
-                                            </div>
-                                            <div className="flex justify-between py-2 text-[14px] print:text-[12px] font-extrabold mt-1">
-                                                <span>DUE:</span>
-                                                <span>KSh {parseFloat(folio.totalAmount || 0).toLocaleString()}</span>
+                                        {/* Summary Totals */}
+                                        <div className="bg-slate-900 text-white rounded-2xl p-6 print:p-4 mt-4">
+                                            <div className="flex flex-col gap-3">
+                                                <div className="flex justify-between items-center opacity-60 text-[10px] font-bold uppercase tracking-widest">
+                                                    <span>Total Charges</span>
+                                                    <span>KSh {charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0).toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center opacity-60 text-[10px] font-bold uppercase tracking-widest">
+                                                    <span>Total Credits</span>
+                                                    <span>KSh {payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0).toLocaleString()}</span>
+                                                </div>
+                                                <div className="h-px bg-white/10 my-1"></div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-maroon-light">Balance Due</span>
+                                                    <span className="text-xl font-black">KSh {parseFloat(folio.totalAmount || 0).toLocaleString()}</span>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        {/* Footer - Thermal Format */}
-                                        <div className="text-center mt-6 print:mt-4 text-[10px] print:text-[8px] font-mono border-t border-dashed border-slate-400 pt-4 print:pt-2">
-                                            Thank you for staying at<br/><span className="font-bold">Soluxe Hotel</span><br/>Have a safe journey!
+                                        {/* Footer */}
+                                        <div className="text-center mt-10 print:mt-8">
+                                            <p className="text-[11px] font-bold text-slate-900 uppercase tracking-[0.3em]">Soluxe Signature Service</p>
+                                            <div className="flex justify-center gap-4 mt-4 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                                                <span>Privacy Policy</span>
+                                                <span>•</span>
+                                                <span>Terms of Stay</span>
+                                                <span>•</span>
+                                                <span>Support</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -358,20 +425,63 @@ const CheckOut = () => {
                                     </button>
                                     
                                     {folio.totalAmount > 0 ? (
-                                        <div className="bg-red-50 text-red-600 px-4 py-2.5 rounded-lg border border-red-100 flex items-center gap-3">
-                                            <span className="text-sm font-bold">Balance must be KSh 0 to Check-out.</span>
-                                            <button className="bg-maroon text-white hover:bg-maroon/90 px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1.5" onClick={handleOpenPaymentModal}>
-                                                <Wallet size={12} /> Record Payment
-                                            </button>
+                                        <div className="flex flex-col gap-2 w-full max-w-[400px]">
+                                            <div className="bg-red-50 text-red-600 px-4 py-2.5 rounded-lg border border-red-100 flex items-center justify-between gap-3">
+                                                <span className="text-sm font-bold">Balance must be KSh 0 to Check-out.</span>
+                                                <button className="bg-maroon text-white hover:bg-maroon/90 px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1.5" onClick={handleOpenPaymentModal}>
+                                                    <Wallet size={12} /> Record Payment
+                                                </button>
+                                            </div>
+                                            
+                                            {isManagerOverride && (
+                                                <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                                                    <p className="text-[10px] font-bold text-slate-500 uppercase mb-2">Manager Override Required</p>
+                                                    <textarea 
+                                                        className="text-xs w-full p-2 border border-slate-200 rounded"
+                                                        placeholder="Reason for checking out with balance..."
+                                                        value={overrideNote}
+                                                        onChange={e => setOverrideNote(e.target.value)}
+                                                    />
+                                                    <button 
+                                                        className="mt-2 w-full bg-slate-800 text-white py-1.5 rounded text-xs font-bold"
+                                                        onClick={() => {
+                                                            alert('Override logic implementation would go here (requires backend support for notes)');
+                                                            // For now we'll just show the UI
+                                                        }}
+                                                    >
+                                                        Confirm Manager Checkout
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     ) : (
-                                        <button 
-                                            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold tracking-wide shadow-sm transition-all flex items-center gap-2"
-                                            onClick={() => handleCheckOut(selectedStay.id)}
-                                        >
-                                            Confirm Check-out
-                                        </button>
+                                        <div className="flex items-center gap-3">
+                                            {new Date(selectedStay.dateOut) > new Date() && (
+                                                <button 
+                                                    className="bg-amber-100 text-amber-700 hover:bg-amber-200 px-4 py-3 rounded-xl font-bold text-[13px] transition-all"
+                                                    onClick={() => handleCheckOut(selectedStay.id, true)}
+                                                >
+                                                    Approve Early Checkout Adjustment
+                                                </button>
+                                            )}
+                                            <button 
+                                                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold tracking-wide shadow-sm transition-all flex items-center gap-2"
+                                                onClick={() => handleCheckOut(selectedStay.id)}
+                                            >
+                                                Confirm Check-out
+                                            </button>
+                                        </div>
                                     )}
+                                    
+                                    <button 
+                                        className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-4 py-3 rounded-xl font-bold text-[13px] transition-all flex items-center gap-2"
+                                        onClick={() => {
+                                            setExtensionDate(selectedStay.dateOut.split('T')[0]);
+                                            setShowExtensionModal(true);
+                                        }}
+                                    >
+                                        Extend Stay
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -423,6 +533,43 @@ const CheckOut = () => {
                             <div className="modal-footer !mt-8">
                                 <button type="button" onClick={() => setShowPaymentModal(false)} className="btn-secondary">Cancel</button>
                                 <button type="submit" className="btn-primary flex-1">Record Payment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Extension Modal */}
+            {showExtensionModal && (
+                <div className="modal-overlay z-[1100]">
+                    <div className="modal-content !max-w-[400px]">
+                        <div className="modal-header">
+                            <h2 className="flex items-center gap-2">
+                                <FileText className="text-indigo-600" /> Extend Stay
+                            </h2>
+                            <button className="close-modal-btn" onClick={() => setShowExtensionModal(false)}>&times;</button>
+                        </div>
+                        <div className="p-4 bg-indigo-50 rounded-xl mb-6">
+                            <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Current Check-out</p>
+                            <p className="text-lg font-black text-slate-800">{new Date(selectedStay.dateOut).toLocaleDateString()}</p>
+                        </div>
+                        <form onSubmit={handleExtendStay}>
+                            <div className="form-group">
+                                <label>New Departure Date</label>
+                                <input 
+                                    type="date" 
+                                    required
+                                    min={selectedStay.dateOut.split('T')[0]}
+                                    value={extensionDate}
+                                    onChange={e => setExtensionDate(e.target.value)}
+                                />
+                                <p className="text-[10px] text-slate-500 mt-2 italic">Additional nights will be automatically posted to the folio.</p>
+                            </div>
+                            <div className="modal-footer !mt-8">
+                                <button type="button" onClick={() => setShowExtensionModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="submit" className="btn-primary flex-1 !bg-indigo-600 hover:!bg-indigo-700" disabled={extensionLoading}>
+                                    {extensionLoading ? 'Extending...' : 'Confirm Extension'}
+                                </button>
                             </div>
                         </form>
                     </div>

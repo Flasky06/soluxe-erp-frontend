@@ -9,8 +9,7 @@ const ExpenseTypes = () => {
     const [editingType, setEditingType] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [formData, setFormData] = useState({
-        name: '',
-        description: ''
+        name: ''
     });
 
     const fetchTypes = async () => {
@@ -32,14 +31,12 @@ const ExpenseTypes = () => {
         if (type) {
             setEditingType(type);
             setFormData({
-                name: type.name,
-                description: type.description || ''
+                name: type.name
             });
         } else {
             setEditingType(null);
             setFormData({
-                name: '',
-                description: ''
+                name: ''
             });
         }
         setShowModal(true);
@@ -103,9 +100,8 @@ const ExpenseTypes = () => {
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th>Category Name</th>
-                                <th>Description</th>
-                                <th>Actions</th>
+                                <th style={{ width: '85%' }}>Category Name</th>
+                                <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -113,9 +109,6 @@ const ExpenseTypes = () => {
                                 <tr key={type.id}>
                                     <td>
                                         <span className="font-bold text-text-dark uppercase text-sm tracking-wide">{type.name}</span>
-                                    </td>
-                                    <td>
-                                        <span className="text-slate-500 text-sm">{type.description || '-'}</span>
                                     </td>
                                     <td>
                                         <div className="table-actions">
@@ -126,7 +119,7 @@ const ExpenseTypes = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="3" className="text-center py-12 text-slate-400 font-medium italic">
+                                    <td colSpan="2" className="text-center py-12 text-slate-400 font-medium italic">
                                         No categories found matching "{searchTerm}"
                                     </td>
                                 </tr>
@@ -138,7 +131,7 @@ const ExpenseTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Expense Category' : 'New Expense Category'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -148,10 +141,6 @@ const ExpenseTypes = () => {
                                 <div className="form-group">
                                     <label>Category Name</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Utilities, Salaries" />
-                                </div>
-                                <div className="form-group">
-                                    <label>Description</label>
-                                    <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Optional details..." rows="3" className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"></textarea>
                                 </div>
                             </div>
                             <div className="modal-footer">

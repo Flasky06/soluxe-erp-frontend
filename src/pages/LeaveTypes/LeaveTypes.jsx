@@ -8,8 +8,7 @@ const LeaveTypes = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingType, setEditingType] = useState(null);
     const [formData, setFormData] = useState({
-        name: '',
-        description: ''
+        name: ''
     });
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -32,12 +31,11 @@ const LeaveTypes = () => {
         if (type) {
             setEditingType(type);
             setFormData({
-                name: type.name,
-                description: type.description || ''
+                name: type.name
             });
         } else {
             setEditingType(null);
-            setFormData({ name: '', description: '' });
+            setFormData({ name: '' });
         }
         setShowModal(true);
     };
@@ -71,8 +69,7 @@ const LeaveTypes = () => {
     };
 
     const filteredTypes = leaveTypes.filter(t => 
-        t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        t.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -98,8 +95,7 @@ const LeaveTypes = () => {
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th style={{ width: '30%' }}>Policy Name</th>
-                                <th style={{ width: '55%' }}>Policy Description</th>
+                                <th style={{ width: '85%' }}>Policy Name</th>
                                 <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
@@ -111,7 +107,6 @@ const LeaveTypes = () => {
                                             <span className="font-bold text-slate-800">{t.name}</span>
                                         </div>
                                     </td>
-                                    <td><span className="text-slate-500 text-sm leading-relaxed">{t.description || 'No description provided.'}</span></td>
                                     <td>
                                         <div className="table-actions">
                                             <button className="view-btn" onClick={() => handleOpenModal(t)}>Edit</button>
@@ -121,7 +116,7 @@ const LeaveTypes = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="3" className="text-center py-20 text-slate-400 italic font-medium">
+                                    <td colSpan="2" className="text-center py-20 text-slate-400 italic font-medium">
                                         {searchTerm ? 'No leave policies match your search.' : 'No leave types registered.'}
                                     </td>
                                 </tr>
@@ -133,7 +128,7 @@ const LeaveTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[400px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Leave Type' : 'Create HR Policy'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -148,15 +143,6 @@ const LeaveTypes = () => {
                                         value={formData.name} 
                                         onChange={(e) => setFormData({...formData, name: e.target.value})} 
                                         placeholder="e.g. Annual Leave, Sick Leave"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Description & Scope</label>
-                                    <textarea 
-                                        value={formData.description} 
-                                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                                        placeholder="Define the scope and eligibility for this leave type"
-                                        rows="4"
                                     />
                                 </div>
                             </div>

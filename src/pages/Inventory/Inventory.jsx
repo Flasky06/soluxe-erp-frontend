@@ -13,8 +13,8 @@ const Inventory = () => {
         name: '',
         categoryId: '',
         currentStock: 0,
+        minimumStock: 0,
         unitId: '',
-        unitCost: 0,
         buyingPrice: 0,
         notes: ''
     });
@@ -76,8 +76,8 @@ const Inventory = () => {
                 name: item.name || '',
                 categoryId: item.categoryId || '',
                 currentStock: item.currentStock || 0,
+                minimumStock: item.minimumStock || 0,
                 unitId: item.unitId || '',
-                unitCost: item.unitCost || 0,
                 buyingPrice: item.buyingPrice || 0,
                 notes: item.notes || ''
             });
@@ -87,8 +87,8 @@ const Inventory = () => {
                 name: '',
                 categoryId: categories.length > 0 ? categories[0].id : '',
                 currentStock: 0,
+                minimumStock: 0,
                 unitId: units.length > 0 ? units[0].id : '',
-                unitCost: 0,
                 buyingPrice: 0,
                 notes: ''
             });
@@ -104,7 +104,7 @@ const Inventory = () => {
                 categoryId: parseInt(formData.categoryId) || categories[0]?.id || 0,
                 unitId: parseInt(formData.unitId) || units[0]?.id || 0,
                 currentStock: parseFloat(formData.currentStock) || 0,
-                unitCost: parseFloat(formData.unitCost) || 0,
+                minimumStock: parseFloat(formData.minimumStock) || 0,
                 buyingPrice: parseFloat(formData.buyingPrice) || 0,
                 notes: formData.notes || ''
             };
@@ -212,7 +212,7 @@ const Inventory = () => {
                                         <td>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-base font-bold text-text-dark">
-                                                    {item.currentStock ?? '-'}
+                                                    {item.currentStock ?? '-'} / <span className="text-xs text-text-slate">Min: {item.minimumStock ?? 0}</span>
                                                 </span>
                                             </div>
                                         </td>
@@ -287,12 +287,12 @@ const Inventory = () => {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Buying Price (KSh)</label>
-                                    <input type="number" step="0.01" required value={formData.buyingPrice} onChange={(e) => setFormData({...formData, buyingPrice: e.target.value})} />
+                                    <label>Minimum Stock Level</label>
+                                    <input type="number" required value={formData.minimumStock} onChange={(e) => setFormData({...formData, minimumStock: e.target.value})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Selling Price (KSh)</label>
-                                    <input type="number" step="0.01" required value={formData.unitCost} onChange={(e) => setFormData({...formData, unitCost: e.target.value})} />
+                                    <label>Buying Price (KSh)</label>
+                                    <input type="number" step="0.01" required value={formData.buyingPrice} onChange={(e) => setFormData({...formData, buyingPrice: e.target.value})} />
                                 </div>
                                 <div className="form-group full-width">
                                     <label>Internal Notes / Description</label>

@@ -94,7 +94,7 @@ const ProfitAndLoss = () => {
                 </div>
                 
                 <div className="mb-10 text-center border-b border-slate-100 pb-10">
-                    <h2 className="text-3xl font-black text-slate-800 uppercase tracking-widest">Soluxe Hotel Limited</h2>
+                    <h2 className="text-3xl font-black text-slate-800 uppercase tracking-widest">Soluxe Club Hotel Limited</h2>
                     <p className="text-slate-400 font-bold mt-2">STATEMENT OF COMPREHENSIVE INCOME</p>
                     <p className="text-xs font-bold text-primary mt-1 uppercase tracking-tighter">
                         For the period: {startDate} to {endDate}

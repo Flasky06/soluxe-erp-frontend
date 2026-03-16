@@ -19,7 +19,7 @@ const Settings = () => {
     });
 
     const [hotelInfo, setHotelInfo] = useState({
-        name: 'Soluxe Hotel & Spa',
+        name: 'Soluxe Club Hotel',
         address: '123 Luxury Ave, Nairobi, Kenya',
         email: 'info@soluxe.com',
         phone: '+254 700 000 000',
@@ -47,10 +47,12 @@ const Settings = () => {
     const defTypes = useMemo(() => [
         { id: 'id-types', name: 'Identity Types', endpoint: '/id-types' },
         { id: 'inventory-units', name: 'Inventory Units', endpoint: '/inventory-units' },
+        { id: 'inventory-categories', name: 'Inventory Categories', endpoint: '/inventory-categories' },
         { id: 'charge-types', name: 'Charge Types', endpoint: '/charge-types' },
         { id: 'maintenance-issue-types', name: 'Maintenance Issues', endpoint: '/maintenance-issue-types' },
         { id: 'leave-types', name: 'Leave Types', endpoint: '/leave-types' },
-        { id: 'payment-methods', name: 'Payment Methods', endpoint: '/folios/payment-methods' }
+        { id: 'payment-methods', name: 'Payment Methods', endpoint: '/folios/payment-methods' },
+        { id: 'departments', name: 'Departments', endpoint: '/departments' }
     ], []);
 
     const fetchUsers = useCallback(async () => {

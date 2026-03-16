@@ -9,7 +9,6 @@ const MenuItems = () => {
     const [editingItem, setEditingItem] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        description: '',
         price: '',
         categoryId: '',
         available: true,
@@ -18,7 +17,7 @@ const MenuItems = () => {
 
     // Quick Category Add
     const [showQuickCatModal, setShowQuickCatModal] = useState(false);
-    const [quickCatData, setQuickCatData] = useState({ name: '', description: '' });
+    const [quickCatData, setQuickCatData] = useState({ name: '' });
     const [quickCatLoading, setQuickCatLoading] = useState(false);
 
     const fetchData = async () => {
@@ -56,7 +55,7 @@ const MenuItems = () => {
             // Select the new category
             setFormData(prev => ({ ...prev, categoryId: res.data.id }));
             setShowQuickCatModal(false);
-            setQuickCatData({ name: '', description: '' });
+            setQuickCatData({ name: '' });
         } catch (err) {
             console.error('Failed to quick add category:', err);
             alert('Failed to add category.');
@@ -70,7 +69,6 @@ const MenuItems = () => {
             setEditingItem(item);
             setFormData({
                 name: item.name,
-                description: item.description || '',
                 price: item.price,
                 categoryId: item.categoryId || (categories.length > 0 ? categories[0].id : ''),
                 available: item.available,
@@ -80,7 +78,6 @@ const MenuItems = () => {
             setEditingItem(null);
             setFormData({
                 name: '',
-                description: '',
                 price: '',
                 categoryId: categories.length > 0 ? categories[0].id : '',
                 available: true,
@@ -152,12 +149,11 @@ const MenuItems = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {items.map((item) => (
+                            {items.length > 0 ? items.map((item) => (
                                 <tr key={item.id}>
                                     <td>
                                         <div className="flex flex-col">
                                             <span className="font-bold text-text-dark">{item.name}</span>
-                                            <span className="text-[12px] text-text-slate line-clamp-1">{item.description}</span>
                                         </div>
                                     </td>
                                     <td><span className="status-badge info">{categories.find(c => c.id === item.categoryId)?.name || 'Uncategorized'}</span></td>
@@ -175,7 +171,13 @@ const MenuItems = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="6" className="text-center py-20 text-slate-400 italic">
+                                        No menu items found.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}
@@ -216,10 +218,6 @@ const MenuItems = () => {
                                 <div className="flex items-center gap-2.5 mt-6">
                                     <input type="checkbox" id="available" checked={formData.available} onChange={(e) => setFormData({...formData, available: e.target.checked})} className="w-4 h-4" />
                                     <label htmlFor="available" className="mb-0">Item available for orders</label>
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Description</label>
-                                    <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Public description shown on the menu..." rows="3" className="min-h-[100px]" />
                                 </div>
                             </div>
                             <div className="modal-footer">

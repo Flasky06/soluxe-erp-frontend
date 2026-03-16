@@ -9,7 +9,6 @@ const ChargeTypes = () => {
     const [editingType, setEditingType] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        description: '',
         active: true
     });
     const [searchTerm, setSearchTerm] = useState('');
@@ -34,14 +33,12 @@ const ChargeTypes = () => {
             setEditingType(type);
             setFormData({
                 name: type.name,
-                description: type.description || '',
                 active: type.active ?? true
             });
         } else {
             setEditingType(null);
             setFormData({ 
                 name: '', 
-                description: '', 
                 active: true
             });
         }
@@ -77,8 +74,7 @@ const ChargeTypes = () => {
     };
 
     const filteredTypes = chargeTypes.filter(type => 
-        type.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        type.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        type.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -104,8 +100,7 @@ const ChargeTypes = () => {
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th style={{ width: '30%' }}>Name</th>
-                                <th style={{ width: '45%' }}>Description</th>
+                                <th style={{ width: '75%' }}>Name</th>
                                 <th style={{ width: '10%' }}>Status</th>
                                 <th style={{ width: '15%' }}>Actions</th>
                             </tr>
@@ -114,7 +109,6 @@ const ChargeTypes = () => {
                             {filteredTypes.length > 0 ? filteredTypes.map((type) => (
                                 <tr key={type.id}>
                                     <td><span className="font-bold text-slate-800">{type.name}</span></td>
-                                    <td><span className="text-slate-600 italic">{type.description || '-'}</span></td>
                                     <td>
                                         <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${type.active ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
                                             {type.active ? 'Active' : 'Inactive'}
@@ -129,7 +123,7 @@ const ChargeTypes = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="4" className="text-center py-20 text-slate-400 italic">
+                                    <td colSpan="3" className="text-center py-20 text-slate-400 italic">
                                         {searchTerm ? 'No types match your search.' : 'No charge types defined yet.'}
                                     </td>
                                 </tr>
@@ -141,7 +135,7 @@ const ChargeTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[600px]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[400px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Charge Type' : 'Add New Charge Type'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -156,15 +150,6 @@ const ChargeTypes = () => {
                                         value={formData.name} 
                                         onChange={(e) => setFormData({...formData, name: e.target.value})} 
                                         placeholder="e.g. Laundry, Spa, Extra Bed"
-                                    />
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Description</label>
-                                    <textarea 
-                                        value={formData.description} 
-                                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                                        placeholder="Enter details..."
-                                        className="min-h-[100px]"
                                     />
                                 </div>
                                 <div className="form-group flex items-center gap-2 mt-4">

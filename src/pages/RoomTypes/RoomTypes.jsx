@@ -8,7 +8,6 @@ const RoomTypes = () => {
     const [editingType, setEditingType] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        description: '',
         defaultRate: '',
         capacity: 2,
         bedType: 'Queen'
@@ -32,11 +31,8 @@ const RoomTypes = () => {
     const handleOpenModal = (type = null) => {
         if (type) {
             setEditingType(type);
-            // Merge features/amenities into description for the form if they exist separately in DB
-            const mergedDesc = [type.description, type.amenities].filter(Boolean).join('\nAmenities: ');
             setFormData({
                 name: type.name,
-                description: mergedDesc,
                 defaultRate: type.defaultRate || '',
                 capacity: type.capacity || 2,
                 bedType: type.bedType || 'Queen'
@@ -45,7 +41,6 @@ const RoomTypes = () => {
             setEditingType(null);
             setFormData({ 
                 name: '', 
-                description: '', 
                 defaultRate: '',
                 capacity: 2,
                 bedType: 'Queen'
@@ -60,9 +55,7 @@ const RoomTypes = () => {
             const payload = {
                 ...formData,
                 defaultRate: parseFloat(formData.defaultRate) || 0,
-                // We'll send empty or same for weekendRate to satisfy backend if required
-                weekendRate: parseFloat(formData.defaultRate) || 0,
-                amenities: '' // Moved into description
+                weekendRate: parseFloat(formData.defaultRate) || 0
             };
             if (editingType) {
                 await api.put(`/room-types/${editingType.id}`, payload);
@@ -105,23 +98,16 @@ const RoomTypes = () => {
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th style={{ width: '25%' }}>Type Name</th>
-                                <th style={{ width: '45%' }}>Description & Amenities</th>
-                                <th style={{ width: '15%' }}>Setup</th>
-                                <th style={{ width: '15%' }}>Rate</th>
+                                <th style={{ width: '40%' }}>Type Name</th>
+                                <th style={{ width: '20%' }}>Setup</th>
+                                <th style={{ width: '25%' }}>Rate</th>
                                 <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {roomTypes.map((type) => (
+                            {roomTypes.length > 0 ? roomTypes.map((type) => (
                                 <tr key={type.id}>
                                     <td><span className="font-bold text-slate-800">{type.name}</span></td>
-                                    <td>
-                                        <div className="flex flex-col">
-                                            <p className="line-clamp-2 text-slate-600 text-sm leading-snug">{type.description || 'No details'}</p>
-                                            {type.amenities && <p className="text-[11px] text-slate-400 mt-1 italic">Features: {type.amenities}</p>}
-                                        </div>
-                                    </td>
                                     <td>
                                         <div className="flex flex-col">
                                             <span className="text-sm font-bold text-slate-700">{type.capacity} Pax</span>
@@ -138,7 +124,13 @@ const RoomTypes = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-20 text-slate-400 italic font-medium">
+                                        No room types defined yet.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}
@@ -146,14 +138,14 @@ const RoomTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Room Type' : 'Register New Type'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>
-                            <div className="form-grid">
-                                <div className="form-group full-width">
+                            <div className="form-grid !grid-cols-1">
+                                <div className="form-group">
                                     <label>Room Category Name</label>
                                     <input 
                                         type="text" 
@@ -188,18 +180,7 @@ const RoomTypes = () => {
                                     </select>
                                 </div>
 
-                                <div className="form-group full-width">
-                                    <label>Description & Amenities</label>
-                                    <textarea 
-                                        value={formData.description} 
-                                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                                        placeholder="Enter room details and amenities here..."
-                                        className="min-h-[120px]"
-                                        rows="4"
-                                    />
-                                </div>
-
-                                <div className="form-group full-width">
+                                <div className="form-group">
                                     <label>Room Rate (KSh per Night)</label>
                                     <input 
                                         type="number" 

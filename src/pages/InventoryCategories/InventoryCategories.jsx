@@ -7,8 +7,7 @@ const InventoryCategories = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
     const [formData, setFormData] = useState({
-        name: '',
-        description: ''
+        name: ''
     });
 
     const fetchCategories = async () => {
@@ -30,14 +29,12 @@ const InventoryCategories = () => {
         if (category) {
             setEditingCategory(category);
             setFormData({
-                name: category.name,
-                description: category.description || ''
+                name: category.name
             });
         } else {
             setEditingCategory(null);
             setFormData({
-                name: '',
-                description: ''
+                name: ''
             });
         }
         setShowModal(true);
@@ -84,16 +81,14 @@ const InventoryCategories = () => {
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th>Category Name</th>
-                                <th>Description</th>
-                                <th>Actions</th>
+                                <th style={{ width: '85%' }}>Category Name</th>
+                                <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {categories.map((cat) => (
+                            {categories.length > 0 ? categories.map((cat) => (
                                 <tr key={cat.id}>
                                     <td className="font-bold text-text-dark">{cat.name}</td>
-                                    <td>{cat.description}</td>
                                     <td>
                                         <div className="table-actions">
                                             <button className="view-btn" onClick={() => handleOpenModal(cat)}>Edit</button>
@@ -101,7 +96,13 @@ const InventoryCategories = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="2" className="text-center py-20 text-slate-400 italic">
+                                        No inventory categories found.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}
@@ -109,20 +110,16 @@ const InventoryCategories = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
+                    <div className="modal-content premium-card !w-[70%] !max-w-[400px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
                         <form onSubmit={handleSubmit}>
-                            <div className="form-grid">
-                                <div className="form-group full-width">
+                            <div className="form-grid !grid-cols-1">
+                                <div className="form-group">
                                     <label>Category Name</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Toiletries, Perishables" />
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Description</label>
-                                    <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Brief details about what items belong in this category..." rows="3" className="min-h-[100px]" />
                                 </div>
                             </div>
                             <div className="modal-footer">

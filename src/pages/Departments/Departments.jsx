@@ -6,7 +6,7 @@ const Departments = () => {
     const [departments, setDepartments] = useState([]);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentDepartment, setCurrentDepartment] = useState({ name: '', description: '' });
+    const [currentDepartment, setCurrentDepartment] = useState({ name: '' });
     const [isEditing, setIsEditing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -26,7 +26,7 @@ const Departments = () => {
         fetchDepartments();
     }, [fetchDepartments]);
 
-    const handleOpenModal = (dept = { name: '', description: '' }) => {
+    const handleOpenModal = (dept = { name: '' }) => {
         setCurrentDepartment(dept);
         setIsEditing(!!dept.id);
         setIsModalOpen(true);
@@ -34,7 +34,7 @@ const Departments = () => {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setCurrentDepartment({ name: '', description: '' });
+        setCurrentDepartment({ name: '' });
         setIsEditing(false);
     };
 
@@ -67,8 +67,7 @@ const Departments = () => {
     };
 
     const filteredDepartments = (departments || []).filter(dept => 
-        dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (dept.description && dept.description.toLowerCase().includes(searchTerm.toLowerCase()))
+        dept.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -99,8 +98,7 @@ const Departments = () => {
                 <table className="management-table">
                     <thead>
                         <tr>
-                            <th style={{ width: '30%' }}>Department Name</th>
-                            <th style={{ width: '55%' }}>Description</th>
+                            <th style={{ width: '85%' }}>Department Name</th>
                             <th style={{ width: '15%' }} className="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -113,9 +111,6 @@ const Departments = () => {
                                     </div>
                                 </td>
                                 <td>
-                                    <p className="text-slate-500 text-sm italic truncate">{dept.description || 'No description'}</p>
-                                </td>
-                                <td>
                                     <div className="table-actions">
                                         <button className="view-btn" onClick={() => handleOpenModal(dept)}>Edit</button>
                                         <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleDelete(dept.id)}>Delete</button>
@@ -124,7 +119,7 @@ const Departments = () => {
                             </tr>
                         )) : (
                             <tr>
-                                <td colSpan="3" className="text-center py-20 text-slate-400 italic">
+                                <td colSpan="2" className="text-center py-20 text-slate-400 italic">
                                     {searchTerm ? 'No departments match your search.' : 'No departments found.'}
                                 </td>
                             </tr>
@@ -135,7 +130,7 @@ const Departments = () => {
 
             {isModalOpen && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
+                    <div className="modal-content premium-card !w-[50%] !max-w-[600px]">
                         <div className="modal-header">
                             <h2>{isEditing ? 'Edit Department' : 'Add New Department'}</h2>
                             <button className="close-modal-btn" onClick={handleCloseModal}>&times;</button>
@@ -150,16 +145,6 @@ const Departments = () => {
                                         onChange={(e) => setCurrentDepartment({...currentDepartment, name: e.target.value})}
                                         placeholder="e.g. Front Office"
                                         required 
-                                    />
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Description</label>
-                                    <textarea 
-                                        value={currentDepartment.description}
-                                        onChange={(e) => setCurrentDepartment({...currentDepartment, description: e.target.value})}
-                                        placeholder="Briefly describe the department's responsibilities"
-                                        className="min-h-[100px]"
-                                        rows="3"
                                     />
                                 </div>
                             </div>

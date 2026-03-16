@@ -9,7 +9,6 @@ const PaymentMethods = () => {
     const [editingMethod, setEditingMethod] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        description: '',
         active: true
     });
     const [searchTerm, setSearchTerm] = useState('');
@@ -34,14 +33,12 @@ const PaymentMethods = () => {
             setEditingMethod(method);
             setFormData({
                 name: method.name,
-                description: method.description || '',
                 active: method.active ?? true
             });
         } else {
             setEditingMethod(null);
             setFormData({ 
                 name: '', 
-                description: '', 
                 active: true
             });
         }
@@ -77,8 +74,7 @@ const PaymentMethods = () => {
     };
 
     const filteredMethods = methods.filter(m => 
-        m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        m.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -104,8 +100,7 @@ const PaymentMethods = () => {
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th style={{ width: '30%' }}>Method Name</th>
-                                <th style={{ width: '45%' }}>Details / Notes</th>
+                                <th style={{ width: '75%' }}>Method Name</th>
                                 <th style={{ width: '10%' }}>Status</th>
                                 <th style={{ width: '15%' }}>Actions</th>
                             </tr>
@@ -118,7 +113,6 @@ const PaymentMethods = () => {
                                             <span className="font-bold text-slate-800">{m.name}</span>
                                         </div>
                                     </td>
-                                    <td><span className="text-slate-600 italic text-sm">{m.description || 'No additional details'}</span></td>
                                     <td>
                                         <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${m.active ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
                                             {m.active ? 'Active' : 'Inactive'}
@@ -133,7 +127,7 @@ const PaymentMethods = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="4" className="text-center py-20 text-slate-400 italic">
+                                    <td colSpan="3" className="text-center py-20 text-slate-400 italic">
                                         {searchTerm ? 'No methods match your search.' : 'No payment methods registered yet.'}
                                     </td>
                                 </tr>
@@ -145,7 +139,7 @@ const PaymentMethods = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[600px]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[400px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingMethod ? 'Edit Payment Method' : 'Register New Method'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -160,15 +154,6 @@ const PaymentMethods = () => {
                                         value={formData.name} 
                                         onChange={(e) => setFormData({...formData, name: e.target.value})} 
                                         placeholder="e.g. M-Pesa, Cash, Bank Transfer"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Description / Instructions</label>
-                                    <textarea 
-                                        value={formData.description} 
-                                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                                        placeholder="e.g. For mobile payments use Paybill 123456"
-                                        className="min-h-[100px]"
                                     />
                                 </div>
                                 <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">

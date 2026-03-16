@@ -9,6 +9,7 @@ import {
     LogOut, 
     Users, 
     Bed, 
+    BedDouble, // Added
     MapPin, 
     CalendarPlus, 
     Sparkles, 
@@ -72,20 +73,24 @@ const menuGroups = [
         ]
     },
     {
-        title: 'Financials',
-        icon: FileText,
+        title: 'Accounts',
+        icon: Wallet,
         items: [
             { label: 'Folio & Billing', path: '/folio', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT'] },
             { label: 'Charge Types', path: '/charge-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Payment Methods', path: '/payment-methods', icon: CreditCard, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Expenses', path: '/expenses', icon: Wallet, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'General Reports', path: '/reports', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Financial Audit', path: '/financial-reports', icon: ShieldCheck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Cash Movements', path: '/cash-movements', icon: PiggyBank, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Petty Cash', path: '/petty-cash', icon: HandCoins, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Debtor Alerts', path: '/debtors', icon: Users2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Profit & Loss', path: '/profit-and-loss', icon: FileSpreadsheet, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Balance Sheet', path: '/balance-sheet', icon: Scale, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+        ]
+    },
+    {
+        title: 'Reports',
+        icon: FileSpreadsheet,
+        items: [
+            { label: 'Operational Reports', path: '/reports', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
+            { label: 'Financial Audit', path: '/financial-reports', icon: ShieldCheck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
         ]
     },
     {
@@ -172,7 +177,7 @@ const Sidebar = () => {
         <aside className="w-[var(--sidebar-width)] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100]">
             <div className="px-6 mb-10 flex items-center gap-4">
                 <img src="/logo/soluxe-logo.jpeg" alt="Soluxe Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg border border-white/20" />
-                <span className="text-xl font-extrabold -tracking-tight text-white">Soluxe <span className="text-yellow">Hotel</span></span>
+                <span className="text-xl font-extrabold -tracking-tight text-white uppercase tracking-tighter">Soluxe <span className="text-yellow">Club Hotel</span></span>
             </div>
             
             <nav className="flex-1 flex flex-col overflow-y-auto">

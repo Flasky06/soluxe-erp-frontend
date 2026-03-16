@@ -28,13 +28,8 @@ const Dashboard = () => {
 
         const fetchDashboardData = async () => {
             try {
-                const arrivalsRes = await api.get('/reservations');
-                
-                const today = new Date().toISOString().split('T')[0];
-                const todaysArrivals = arrivalsRes.data.filter(
-                    res => res.dateIn && res.dateIn.startsWith(today)
-                );
-                setRecentArrivals(todaysArrivals.slice(0, 5));
+                const arrivalsRes = await api.get('/reservations/arrivals');
+                setRecentArrivals(arrivalsRes.data.slice(0, 5));
             } catch (err) {
                 console.error("Failed to fetch dashboard data", err);
             }
@@ -99,11 +94,11 @@ const Dashboard = () => {
             {/* Core Operational KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Expected Today</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Front Desk Status</span>
                     <div className="flex items-center justify-between mt-3">
                         <div className="flex flex-col">
                             <span className="text-3xl font-black text-slate-800">{stats.totalArrivalsToday}</span>
-                            <span className="text-[10px] font-bold text-green-600 uppercase tracking-tighter">Arrivals</span>
+                            <span className="text-[10px] font-bold text-green-600 uppercase tracking-tighter">Pending Arrivals</span>
                         </div>
                         <div className="w-px h-10 bg-slate-100"></div>
                         <div className="flex flex-col text-right">
@@ -114,14 +109,14 @@ const Dashboard = () => {
                 </div>
 
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Occupancy</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Occupancy Rate</span>
                     <div className="flex items-center gap-4 mt-3">
                         <span className="text-3xl font-black text-slate-800">{stats.occupancyRate}%</span>
                         <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
                             <div className="h-full bg-maroon transition-all duration-1000" style={{ width: `${stats.occupancyRate}%` }}></div>
                         </div>
                     </div>
-                    <span className="text-[10px] font-bold text-slate-400 mt-2 block uppercase">{stats.activeStays} Active Stays</span>
+                    <span className="text-[10px] font-bold text-slate-400 mt-2 block uppercase">{stats.activeStays} In-House Guests</span>
                 </div>
 
                 <div className="premium-card !bg-white">

@@ -24,7 +24,7 @@ const Employees = () => {
         idNumber: '',
         kraPin: ''
     });
-    const [deptFormData, setDeptFormData] = useState({ name: '', description: '' });
+    const [deptFormData, setDeptFormData] = useState({ name: '' });
     const [serverErrors, setServerErrors] = useState({});
     const [isSaving, setIsSaving] = useState(false);
 
@@ -71,7 +71,7 @@ const Employees = () => {
         try {
             await api.post('/departments', deptFormData);
             setShowDeptModal(false);
-            setDeptFormData({ name: '', description: '' });
+            setDeptFormData({ name: '' });
             fetchDepartments();
         } catch (err) {
             console.error('Failed to create department', err);
@@ -346,16 +346,12 @@ const Employees = () => {
                             <h2 className="text-xl font-bold text-primary">Add Department</h2>
                             <button className="close-modal-btn" onClick={() => setShowDeptModal(false)}>&times;</button>
                         </div>
-                        <form onSubmit={handleCreateDept} className="form-grid">
-                            <div className="form-group full-width">
+                        <form onSubmit={handleCreateDept} className="form-grid !grid-cols-1">
+                            <div className="form-group">
                                 <label>Department Name</label>
                                 <input type="text" required value={deptFormData.name} onChange={e => setDeptFormData({...deptFormData, name: e.target.value})} placeholder="e.g. Housekeeping, Kitchen" />
                             </div>
-                            <div className="form-group full-width">
-                                <label>Description</label>
-                                <textarea required value={deptFormData.description} onChange={e => setDeptFormData({...deptFormData, description: e.target.value})} placeholder="Responsibilities..." />
-                            </div>
-                            <div className="modal-footer col-span-full">
+                            <div className="modal-footer">
                                 <button type="button" onClick={() => setShowDeptModal(false)} className="btn-secondary">Cancel</button>
                                 <button type="submit" className="btn-primary">Create Department</button>
                             </div>

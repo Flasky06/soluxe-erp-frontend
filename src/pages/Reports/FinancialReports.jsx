@@ -108,28 +108,28 @@ const FinancialReports = () => {
                     bg="bg-red-50"
                 />
                 <StatCard 
-                    label="Net Profit" 
-                    value={`KSh ${parseFloat(financeData?.totalPayments || 0) - parseFloat(financeData?.operationalExpenses || 0).toLocaleString()}`} 
+                    label="Net Collections" 
+                    value={`KSh ${ (parseFloat(financeData?.totalPayments || 0) - parseFloat(financeData?.operationalExpenses || 0)).toLocaleString()}`} 
                     desc="Collections - OpEx"
                     icon={DollarSign}
                     color="text-blue-600"
                     bg="bg-blue-50"
                 />
                 <StatCard 
-                    label="Money In (Capital)" 
-                    value={`KSh ${parseFloat(financeData?.totalCapitalInjected || 0).toLocaleString()}`} 
-                    desc="Owner investments"
-                    icon={TrendingUp}
-                    color="text-indigo-600"
-                    bg="bg-indigo-50"
+                    label="Petty Cash" 
+                    value={`KSh ${parseFloat(financeData?.pettyCash || 0).toLocaleString()}`} 
+                    desc="Daily cash spend"
+                    icon={Zap}
+                    color="text-orange-600"
+                    bg="bg-orange-50"
                 />
                 <StatCard 
-                    label="Fixed Assets" 
-                    value={`KSh ${parseFloat(financeData?.totalAssets || 0).toLocaleString()}`} 
-                    desc="Freezers, Furniture, etc."
-                    icon={Building2}
-                    color="text-blue-600"
-                    bg="bg-blue-50"
+                    label="Billed Revenue" 
+                    value={`KSh ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
+                    desc="Total invoices generated"
+                    icon={FileText}
+                    color="text-primary"
+                    bg="bg-primary/5"
                 />
             </div>
 
@@ -253,47 +253,34 @@ const FinancialReports = () => {
                     </div>
                 </div>
 
-                {/* Owner's Equity & Savings */}
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
-                        <span>Equity & Reserves</span>
+                        <span>Liquidity Summary</span>
                         <Zap className="w-4 h-4 text-amber-500" />
                     </h3>
                     <div className="space-y-4">
-                        <div className="flex justify-between items-center p-3 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                        <div className="flex justify-between items-center p-3 rounded-xl bg-orange-50/50 border border-orange-100">
                             <div>
-                                <p className="text-[10px] font-bold text-emerald-600 uppercase">Total Savings</p>
-                                <p className="text-sm font-black text-slate-700">Capital Reserves</p>
+                                <p className="text-[10px] font-bold text-orange-600 uppercase">Petty Cash</p>
+                                <p className="text-sm font-black text-slate-700">Daily Cash Spend</p>
                             </div>
-                            <span className="text-sm font-black text-emerald-600">
-                                KSh {parseFloat(financeData?.totalSavings || 0).toLocaleString()}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 rounded-xl bg-amber-50/50 border border-amber-100">
-                            <div>
-                                <p className="text-[10px] font-bold text-amber-600 uppercase">Total Drawings</p>
-                                <p className="text-sm font-black text-slate-700">Owner Withdrawals</p>
-                            </div>
-                            <span className="text-sm font-black text-amber-600">
-                                KSh {parseFloat(financeData?.totalDrawings || 0).toLocaleString()}
+                            <span className="text-sm font-black text-orange-600">
+                                KSh {parseFloat(financeData?.pettyCash || 0).toLocaleString()}
                             </span>
                         </div>
                         <div className="mt-4 pt-4 border-t border-slate-100">
                             <div className="flex justify-between items-center px-1">
-                                <span className="text-xs font-bold text-slate-500 uppercase italic">Available Liquidity</span>
+                                <span className="text-xs font-bold text-slate-500 uppercase italic">Active Collections</span>
                                 <span className="text-lg font-black text-green-600">
                                     KSh {(
-                                        parseFloat(financeData?.totalPayments || 0) + 
-                                        parseFloat(financeData?.totalCapitalInjected || 0) - 
+                                        parseFloat(financeData?.totalPayments || 0) - 
                                         parseFloat(financeData?.operationalExpenses || 0) - 
-                                        parseFloat(financeData?.totalAssets || 0) -
-                                        parseFloat(financeData?.totalDrawings || 0) -
                                         parseFloat(financeData?.pettyCash || 0)
                                     ).toLocaleString()}
                                 </span>
                             </div>
                             <p className="px-1 mt-1 text-[10px] text-slate-400 text-right uppercase tracking-tighter">
-                                Net Cash on Hand
+                                Net Cash from Operations
                             </p>
                         </div>
                     </div>

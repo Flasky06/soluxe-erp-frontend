@@ -29,7 +29,7 @@ const CheckIn = () => {
     const [paymentData, setPaymentData] = useState({
         amount: '',
         paymentMethodId: '',
-        reference: '',
+        referenceNumber: '',
         notes: ''
     });
 
@@ -55,14 +55,14 @@ const CheckIn = () => {
         setLoading(true);
         try {
             const [resRes, guestsRes, typesRes, roomsRes, paymentMethodsRes] = await Promise.all([
-                api.get('/reservations'),
+                api.get('/reservations/arrivals'),
                 api.get('/guests'),
                 api.get('/room-types'),
                 api.get('/rooms'),
                 api.get('/folios/payment-methods')
             ]);
-            // Only BOOKED room reservations can be checked in
-            setReservations(resRes.data.filter(r => r.status === 'BOOKED' && r.roomTypeId));
+            // Today's arrivals only
+            setReservations(resRes.data);
             setGuests(guestsRes.data);
             setRoomTypes(typesRes.data);
             setAllRooms(roomsRes.data);
@@ -132,7 +132,7 @@ const CheckIn = () => {
             setPaymentData({
                 amount: '',
                 paymentMethodId: paymentMethods[0]?.id || '',
-                reference: '',
+                referenceNumber: '',
                 notes: ''
             });
             setShowPaymentModal(true);
@@ -146,12 +146,18 @@ const CheckIn = () => {
         e.preventDefault();
         if (!activeFolio) return;
         try {
-            await api.post(`/folios/${activeFolio.id}/payments?userId=${user?.id || 1}`, paymentData);
+            const payload = {
+                ...paymentData,
+                amount: parseFloat(paymentData.amount),
+                paymentMethodId: parseInt(paymentData.paymentMethodId)
+            };
+            await api.post(`/folios/${activeFolio.id}/payments?userId=${user?.id || 1}`, payload);
             setShowPaymentModal(false);
             alert('Payment recorded successfully!');
+            fetchAllData();
         } catch (err) {
             console.error('Failed to record payment:', err);
-            alert('Error recording payment.');
+            alert(err.response?.data?.message || 'Error recording payment.');
         }
     };
 
@@ -219,7 +225,7 @@ const CheckIn = () => {
                         setShowWalkInModal(true);
                     }}
                 >
-                    + Walk-in Check-in
+                    + Check-in Guest
                 </button>
             </div>
 
@@ -277,7 +283,7 @@ const CheckIn = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
                         <div className="modal-header">
-                            <h2 className="text-xl font-bold text-text-dark">Walk-in Check-in</h2>
+                            <h2 className="text-xl font-bold text-text-dark">Guest Check-in</h2>
                             <button className="close-modal-btn" onClick={() => setShowWalkInModal(false)}>&times;</button>
                         </div>
                         
@@ -479,7 +485,7 @@ const CheckIn = () => {
                                 <div className="form-group">
                                     <label>Amount (KSh)</label>
                                     <input 
-                                        type="number" required autoFocus
+                                        type="number" step="0.01" required autoFocus
                                         value={paymentData.amount} 
                                         onChange={e => setPaymentData({...paymentData, amount: e.target.value})}
                                     />
@@ -494,7 +500,7 @@ const CheckIn = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Reference</label>
-                                    <input type="text" value={paymentData.reference} onChange={e => setPaymentData({...paymentData, reference: e.target.value})} placeholder="Receipt #" />
+                                    <input type="text" value={paymentData.referenceNumber} onChange={e => setPaymentData({...paymentData, referenceNumber: e.target.value})} placeholder="Receipt #" />
                                 </div>
                             </div>
                             <div className="modal-footer !mt-8">

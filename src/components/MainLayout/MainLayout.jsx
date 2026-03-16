@@ -53,7 +53,7 @@ const MainLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const pageTitle = pageTitles[location.pathname] || 'Soluxe Hotel CRM';
+    const pageTitle = pageTitles[location.pathname] || 'Soluxe HMS';
 
     const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -90,7 +90,7 @@ const MainLayout = ({ children }) => {
                     {/* Page breadcrumb / title */}
                     <div className="flex items-center gap-3">
                         <img src="/logo/soluxe-logo.jpeg" alt="Logo" className="w-6 h-6 rounded-md object-cover opacity-80" />
-                        <span className="text-[13px] font-semibold text-slate-400">Soluxe Hotel</span>
+                        <span className="text-[13px] font-semibold text-slate-400">Soluxe Club Hotel</span>
                         <span className="text-slate-200 font-light">/</span>
                         <span className="text-[13px] font-bold text-slate-700">{pageTitle}</span>
                     </div>

@@ -227,7 +227,7 @@ const Users = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Email Address</label>
-                                    <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="jane@soluxehotel.com" />
+                                    <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="jane@soluxeclubhotel.com" />
                                     {serverErrors.email && <p className="text-red-500 text-xs mt-1">{serverErrors.email}</p>}
                                 </div>
                                 <div className="form-group">

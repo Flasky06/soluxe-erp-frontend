@@ -8,8 +8,7 @@ const MaintenanceIssueTypes = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingType, setEditingType] = useState(null);
     const [formData, setFormData] = useState({
-        name: '',
-        description: ''
+        name: ''
     });
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -32,12 +31,11 @@ const MaintenanceIssueTypes = () => {
         if (type) {
             setEditingType(type);
             setFormData({
-                name: type.name,
-                description: type.description || ''
+                name: type.name
             });
         } else {
             setEditingType(null);
-            setFormData({ name: '', description: '' });
+            setFormData({ name: '' });
         }
         setShowModal(true);
     };
@@ -71,8 +69,7 @@ const MaintenanceIssueTypes = () => {
     };
 
     const filteredTypes = issueTypes.filter(t => 
-        t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        t.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -98,8 +95,7 @@ const MaintenanceIssueTypes = () => {
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th style={{ width: '30%' }}>Category Name</th>
-                                <th style={{ width: '55%' }}>Internal Description</th>
+                                <th style={{ width: '85%' }}>Category Name</th>
                                 <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
@@ -111,7 +107,6 @@ const MaintenanceIssueTypes = () => {
                                             <span className="font-bold text-slate-800">{t.name}</span>
                                         </div>
                                     </td>
-                                    <td><span className="text-slate-500 text-sm">{t.description || '-'}</span></td>
                                     <td>
                                         <div className="table-actions">
                                             <button className="view-btn" onClick={() => handleOpenModal(t)}>Edit</button>
@@ -121,7 +116,7 @@ const MaintenanceIssueTypes = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="3" className="text-center py-20 text-slate-400 italic">
+                                    <td colSpan="2" className="text-center py-20 text-slate-400 italic">
                                         {searchTerm ? 'No categories match your search.' : 'Define your first maintenance category.'}
                                     </td>
                                 </tr>
@@ -133,7 +128,7 @@ const MaintenanceIssueTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[400px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Category' : 'New Issue Category'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -148,15 +143,6 @@ const MaintenanceIssueTypes = () => {
                                         value={formData.name} 
                                         onChange={(e) => setFormData({...formData, name: e.target.value})} 
                                         placeholder="e.g. Electrical, Plumbing, HVAC, ICT"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Brief Description</label>
-                                    <textarea 
-                                        value={formData.description} 
-                                        onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                                        placeholder="Internal notes about what this category covers"
-                                        rows="3"
                                     />
                                 </div>
                             </div>

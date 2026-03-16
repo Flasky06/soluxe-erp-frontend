@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
+    const [showPassword, setShowPassword] = useState(false);
 
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -42,7 +44,7 @@ const Login = () => {
     };
 
     return (
-        <div className="flex min-h-screen bg-white font-inter">
+        <div className="flex h-screen bg-white font-inter overflow-hidden">
             <div 
                 className="hidden lg:flex flex-1 items-center justify-center p-16 relative overflow-hidden"
                 style={visualStyles}
@@ -53,11 +55,11 @@ const Login = () => {
                 </div>
             </div>
             
-            <div className="w-full lg:w-[550px] flex items-center justify-center p-10 bg-white">
-                <div className="w-full max-w-[400px] premium-card !p-8 sm:!p-10">
+            <div className="w-full lg:w-[650px] flex items-center justify-center p-6 sm:p-10 bg-white overflow-y-auto h-full">
+                <div className="w-full max-w-[480px] premium-card !p-8 sm:!p-12">
                     <div className="text-center mb-8">
                         <img src="/logo/soluxe-logo.jpeg" alt="Soluxe Logo" className="w-[100px] h-[100px] mx-auto mb-6 rounded-2xl object-cover shadow-xl border-4 border-slate-50" />
-                        <h2 className="text-[28px] font-bold mb-2 text-text-dark">Soluxe Hotel ERP</h2>
+                        <h2 className="text-[28px] font-bold mb-2 text-text-dark">Soluxe HMS</h2>
                         <p className="text-text-slate text-sm">Sign in to your staff account</p>
                     </div>
 
@@ -84,16 +86,25 @@ const Login = () => {
 
                         <div className="flex flex-col gap-2">
                             <label htmlFor="password" className="text-[13px] font-semibold text-text-dark">Password</label>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                name="password" 
-                                value={credentials.password} 
-                                onChange={handleChange} 
-                                placeholder="••••••••"
-                                required 
-                                className="bg-white border border-border-gray p-3 px-4 rounded-[10px] text-text-dark text-[15px] transition-all duration-300 focus:outline-none focus:border-yellow focus:shadow-[0_0_0_4px_rgba(250,204,21,0.2)]"
-                            />
+                            <div className="relative">
+                                <input 
+                                    type={showPassword ? "text" : "password"} 
+                                    id="password" 
+                                    name="password" 
+                                    value={credentials.password} 
+                                    onChange={handleChange} 
+                                    placeholder="••••••••"
+                                    required 
+                                    className="w-full bg-white border border-border-gray p-3 px-4 pr-12 rounded-[10px] text-text-dark text-[15px] transition-all duration-300 focus:outline-none focus:border-yellow focus:shadow-[0_0_0_4px_rgba(250,204,21,0.2)]"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-slate hover:text-maroon transition-colors"
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex justify-between items-center text-[13px]">

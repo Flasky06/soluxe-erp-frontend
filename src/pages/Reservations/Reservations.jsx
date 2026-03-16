@@ -226,6 +226,18 @@ const Reservations = () => {
         }
     };
 
+    const handleMarkNoShow = async (id) => {
+        if (window.confirm('Mark this guest as No-Show? The room will be released.')) {
+            try {
+                await api.post(`/stays/reservations/${id}/no-show?userId=${1}`);
+                fetchAllData();
+            } catch (err) {
+                console.error('Failed to mark no-show:', err);
+                alert('No-show update failed.');
+            }
+        }
+    };
+
     const getStatusInfo = (status) => {
         switch(status?.toUpperCase()) {
             case 'BOOKED': return { icon: null, class: 'booked', label: 'Confirmed' };
@@ -420,7 +432,8 @@ const Reservations = () => {
                                                                 <Wallet size={12} /> Pay
                                                             </button>
                                                             <button className="edit-btn" onClick={() => handleOpenBookingModal(res)}>Edit</button>
-                                                            <button className="delete-btn" onClick={() => handleCancelBooking(res.id)}>Cancel</button>
+                                                            <button className="delete-btn" onClick={() => handleMarkNoShow(res.id)}>No-Show</button>
+                                                            <button className="delete-btn !text-slate-400" onClick={() => handleCancelBooking(res.id)}>Cancel</button>
                                                         </div>
                                                     ) : (
                                                         <button className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">

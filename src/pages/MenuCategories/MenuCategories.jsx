@@ -8,7 +8,6 @@ const MenuCategories = () => {
     const [editingCategory, setEditingCategory] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        description: '',
         sortOrder: 0,
         isActive: true
     });
@@ -33,7 +32,6 @@ const MenuCategories = () => {
             setEditingCategory(category);
             setFormData({
                 name: category.name,
-                description: category.description || '',
                 sortOrder: category.sortOrder || 0,
                 isActive: (category.isActive ?? category.active) !== undefined ? (category.isActive ?? category.active) : true
             });
@@ -41,7 +39,6 @@ const MenuCategories = () => {
             setEditingCategory(null);
             setFormData({
                 name: '',
-                description: '',
                 sortOrder: categories.length,
                 isActive: true
             });
@@ -90,18 +87,16 @@ const MenuCategories = () => {
                     <table className="management-table">
                         <thead>
                             <tr>
-                                <th>Category Name</th>
-                                <th>Description</th>
-                                <th>Sort Order</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th style={{ width: '60%' }}>Category Name</th>
+                                <th style={{ width: '15%' }}>Sort Order</th>
+                                <th style={{ width: '10%' }}>Status</th>
+                                <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {categories.map((cat) => (
+                            {categories.length > 0 ? categories.map((cat) => (
                                 <tr key={cat.id}>
                                     <td className="font-bold text-text-dark">{cat.name}</td>
-                                    <td className="text-text-slate text-sm italic">{cat.description || 'No description'}</td>
                                     <td>{cat.sortOrder}</td>
                                     <td>
                                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${(cat.isActive ?? cat.active) ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
@@ -115,7 +110,13 @@ const MenuCategories = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-20 text-slate-400 italic">
+                                        No categories found. Click 'Add Category' to start.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 )}
@@ -123,7 +124,7 @@ const MenuCategories = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[70%] !max-w-[700px]">
+                    <div className="modal-content premium-card !w-[70%] !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
@@ -141,10 +142,6 @@ const MenuCategories = () => {
                                 <div className="flex items-center gap-2.5 mt-6">
                                     <input type="checkbox" id="isActive" checked={formData.isActive} onChange={(e) => setFormData({...formData, isActive: e.target.checked})} className="w-4 h-4" />
                                     <label htmlFor="isActive" className="mb-0">Active / Visible on Menu</label>
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Description</label>
-                                    <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Internal notes or public description..." rows="3" className="min-h-[100px]" />
                                 </div>
                             </div>
                             <div className="modal-footer">

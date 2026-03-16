@@ -438,7 +438,7 @@ const Folio = () => {
                                 receipts.map(receipt => (
                                     <div key={receipt.id} className="p-10 max-w-[600px] mx-auto w-full bg-white border border-dashed border-slate-300 relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[radial-gradient(circle,theme(colors.slate.300)_1px,transparent_1px)] before:bg-[length:8px_4px] before:bg-repeat-x after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-[radial-gradient(circle,theme(colors.slate.300)_1px,transparent_1px)] after:bg-[length:8px_4px] after:bg-repeat-x shadow-md print:shadow-none print:border-none print:mx-0 print:max-w-none">
                                         <div className="text-center border-b-2 border-slate-200 pb-6 mb-6">
-                                            <h2 className="text-3xl font-extrabold tracking-[4px] text-primary m-0">SOLUXE HOTEL</h2>
+                                            <h2 className="text-3xl font-extrabold tracking-[4px] text-primary m-0">SOLUXE CLUB HOTEL</h2>
                                             <p className="uppercase text-[10px] text-slate-400 mt-1 font-bold tracking-widest">Official Payment Receipt</p>
                                         </div>
                                         <div className="flex flex-col gap-4">
@@ -460,7 +460,7 @@ const Folio = () => {
                                             </div>
                                         </div>
                                         <div className="text-center mt-8 pt-4">
-                                            <p className="text-[15px] font-medium text-slate-600">Thank you for choosing Soluxe Hotel!</p>
+                                            <p className="text-[15px] font-medium text-slate-600">Thank you for choosing Soluxe Club Hotel!</p>
                                             <div className="text-[10px] mt-4 opacity-70 font-mono text-slate-500 flex flex-col items-center">
                                                 <p>Auth Code: {receipt.paymentId}</p>
                                                 <p>Issued by: {receipt.issuedBy}</p>

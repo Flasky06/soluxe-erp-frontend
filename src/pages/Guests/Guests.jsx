@@ -8,6 +8,9 @@ const Guests = () => {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingGuest, setEditingGuest] = useState(null);
+    const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'history'
+    const [stayHistory, setStayHistory] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
 
     const refreshData = async () => {
         try {
@@ -28,7 +31,21 @@ const Guests = () => {
 
     const handleOpenModal = (guest = null) => {
         setEditingGuest(guest);
+        setActiveTab('profile');
+        setStayHistory([]);
         setShowModal(true);
+    };
+
+    const fetchStayHistory = async (guestId) => {
+        setHistoryLoading(true);
+        try {
+            const res = await api.get(`/stays/guest/${guestId}`);
+            setStayHistory(res.data);
+        } catch (err) {
+            console.error('Failed to fetch stay history:', err);
+        } finally {
+            setHistoryLoading(false);
+        }
     };
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -134,17 +151,76 @@ const Guests = () => {
                 <div className="modal-overlay">
                     <div className="modal-content premium-card !w-[80%] !max-w-[1000px] !p-0">
                         <div className="modal-header">
-                            <h2 className="text-xl font-bold text-text-dark leading-tight">{editingGuest ? 'Edit Guest Profile' : 'Register New Guest'}</h2>
+                            <h2 className="text-xl font-bold text-text-dark leading-tight">{editingGuest ? 'Guest Profile' : 'Register New Guest'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
                         </div>
-                        <GuestForm 
-                            initialData={editingGuest} 
-                            onSuccess={() => {
-                                setShowModal(false);
-                                refreshData();
-                            }}
-                            onCancel={() => setShowModal(false)}
-                        />
+                        <div className="flex border-b border-border-gray px-6">
+                            <button 
+                                className={`px-6 py-3 font-bold text-sm transition-all ${activeTab === 'profile' ? 'border-b-2 border-primary text-primary' : 'text-text-slate hover:text-primary'}`}
+                                onClick={() => setActiveTab('profile')}
+                            >
+                                Profile Details
+                            </button>
+                            {editingGuest && (
+                                <button 
+                                    className={`px-6 py-3 font-bold text-sm transition-all ${activeTab === 'history' ? 'border-b-2 border-primary text-primary' : 'text-text-slate hover:text-primary'}`}
+                                    onClick={() => {
+                                        setActiveTab('history');
+                                        if (stayHistory.length === 0) fetchStayHistory(editingGuest.id);
+                                    }}
+                                >
+                                    Stay History
+                                </button>
+                            )}
+                        </div>
+
+                        {activeTab === 'profile' ? (
+                            <GuestForm 
+                                initialData={editingGuest} 
+                                onSuccess={() => {
+                                    setShowModal(false);
+                                    refreshData();
+                                }}
+                                onCancel={() => setShowModal(false)}
+                            />
+                        ) : (
+                            <div className="p-6 overflow-y-auto max-h-[80vh]">
+                                {historyLoading ? (
+                                    <div className="text-center py-10 animate-pulse text-text-slate">Loading history...</div>
+                                ) : stayHistory.length > 0 ? (
+                                    <table className="management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Room</th>
+                                                <th>Dates</th>
+                                                <th>Duration</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {stayHistory.map(stay => (
+                                                <tr key={stay.id}>
+                                                    <td><span className="font-bold text-text-dark">Room {stay.roomId}</span></td>
+                                                    <td className="text-xs">
+                                                        {new Date(stay.dateIn).toLocaleDateString()} — {stay.actualDateOut ? new Date(stay.actualDateOut).toLocaleDateString() : (stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : 'Active')}
+                                                    </td>
+                                                    <td className="text-xs font-medium">
+                                                        {Math.ceil((new Date(stay.actualDateOut || stay.dateOut || new Date()) - new Date(stay.dateIn)) / (1000 * 60 * 60 * 24))} Night(s)
+                                                    </td>
+                                                    <td>
+                                                        <span className={`status-badge ${stay.status === 'ACTIVE' ? 'status-booked' : stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-completed'}`}>
+                                                            {stay.status}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <div className="text-center py-20 text-text-slate italic">No past stays recorded for this guest.</div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
