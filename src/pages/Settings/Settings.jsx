@@ -27,7 +27,6 @@ const Settings = () => {
         kraPin: 'P000000000A',
         vatStatus: 'Registered',
         companyReg: 'PVT-12345',
-        currency: 'KES',
         checkInTime: '14:00',
         checkOutTime: '10:00',
         vatPercentage: 16,
@@ -313,14 +312,6 @@ const Settings = () => {
                                 <select value={hotelInfo.vatStatus} onChange={(e) => setHotelInfo({...hotelInfo, vatStatus: e.target.value})}>
                                     <option value="Registered">Registered</option>
                                     <option value="Not Registered">Not Registered</option>
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label>Default Currency</label>
-                                <select value={hotelInfo.currency} onChange={(e) => setHotelInfo({...hotelInfo, currency: e.target.value})}>
-                                    <option value="KES">Kenyan Shilling (KES)</option>
-                                    <option value="USD">US Dollar (USD)</option>
-                                    <option value="EUR">Euro (EUR)</option>
                                 </select>
                             </div>
 
