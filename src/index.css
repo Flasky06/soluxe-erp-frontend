@@ -18,6 +18,12 @@
   --header-height: 64px;
 }
 
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+}
+
 @layer base {
   * { @apply m-0 p-0 box-border; }
 
@@ -57,7 +63,7 @@
 @utility search-input {
   @apply px-3.5 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 bg-white
          focus:ring-0 focus:border-maroon outline-none transition-colors duration-150
-         placeholder:text-slate-400;
+         placeholder:text-slate-400 w-full;
 }
 
 @layer components {
@@ -68,7 +74,7 @@
   }
 
   .modal-content {
-    @apply bg-white rounded-lg border border-slate-200 max-h-[95vh] overflow-y-auto;
+    @apply bg-white rounded-lg border border-slate-200 max-h-[95vh] overflow-y-auto w-[95%] md:w-auto;
   }
 
   .modal-header {
@@ -87,7 +93,7 @@
 
   /* ─── Forms ────────────────────────────────────────────────────────────────── */
   .form-grid {
-    @apply grid grid-cols-2 gap-x-4 gap-y-3 px-8 py-6;
+    @apply grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 px-4 md:px-8 py-6;
   }
 
   .form-grid.triple { @apply grid-cols-3; }
@@ -114,7 +120,7 @@
   .form-group.full-width { @apply col-span-full; }
 
   .modal-footer {
-    @apply flex justify-end gap-3 px-8 py-5 border-t border-slate-200;
+    @apply flex justify-end gap-3 px-4 md:px-8 py-5 border-t border-slate-200;
   }
 
   .form-section-title {
@@ -147,7 +153,7 @@
 
   /* ─── Table Tools & Search ─────────────────────────────────────────────────── */
   .table-tools {
-    @apply flex justify-between items-center gap-4 mb-4;
+    @apply flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4;
   }
 
   .table-search {
@@ -164,7 +170,7 @@
 
   /* ─── Management Table ─────────────────────────────────────────────────────── */
   .management-table {
-    @apply w-full border-collapse text-left table-fixed;
+    @apply w-full border-collapse text-left;
   }
 
   .management-table th {

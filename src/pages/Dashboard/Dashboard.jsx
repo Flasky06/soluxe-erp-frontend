@@ -46,16 +46,16 @@ const Dashboard = () => {
         <div className="flex flex-col gap-8">
             {/* Priority Housekeeping Section */}
             {stats.pendingHousekeeping > 0 && (
-                <div className="flex items-center gap-6 p-6 bg-white border border-orange-100 rounded-2xl shadow-sm animate-pulse">
-                    <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center text-white text-2xl font-black">
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 md:p-6 bg-white border border-orange-100 rounded-2xl shadow-sm animate-pulse">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-orange-500 rounded-full flex items-center justify-center text-white text-xl md:text-2xl font-black">
                         {stats.pendingHousekeeping}
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-sm font-black text-orange-800 uppercase tracking-[0.2em]">Prioritize Housekeeping</span>
-                        <span className="text-xs text-orange-600 font-bold">There are rooms awaiting cleaning for new arrivals.</span>
+                    <div className="flex flex-col text-center sm:text-left">
+                        <span className="text-xs md:text-sm font-black text-orange-800 uppercase tracking-[0.2em]">Prioritize Housekeeping</span>
+                        <span className="text-[10px] md:text-xs text-orange-600 font-bold">There are rooms awaiting cleaning for new arrivals.</span>
                     </div>
-                    <div className="ml-auto">
-                        <button className="px-6 py-2 bg-orange-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-600 transition-colors shadow-lg shadow-orange-200">
+                    <div className="sm:ml-auto w-full sm:w-auto">
+                        <button className="w-full sm:w-auto px-6 py-2 bg-orange-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-600 transition-colors shadow-lg shadow-orange-200">
                             Assign Tasks
                         </button>
                     </div>
@@ -89,7 +89,7 @@ const Dashboard = () => {
             </div>
 
             {/* Room Issues & Health Portfolio */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-4 mb-4">
                         <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">✓</div>
@@ -170,7 +170,7 @@ const Dashboard = () => {
 
                         <div className="h-px bg-white/10 w-full"></div>
 
-                        <div className="grid grid-cols-2 gap-4 text-center">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
                             <div className="flex flex-col px-4 py-3 bg-white/5 rounded-2xl border border-white/5">
                                 <span className="text-[10px] font-bold text-white/40 uppercase tracking-tighter mb-1">In-House</span>
                                 <span className="text-xl font-black">{stats.activeStays}</span>

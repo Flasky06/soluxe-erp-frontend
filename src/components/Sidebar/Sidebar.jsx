@@ -135,7 +135,7 @@ const menuGroups = [
 ];
 
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
     const { user, logout } = useAuthStore();
     const location = useLocation();
 
@@ -183,10 +183,18 @@ const Sidebar = () => {
     };
 
     return (
-        <aside className="w-[var(--sidebar-width)] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100]">
-            <div className="px-6 mb-10 flex items-center gap-4">
-                <img src="/logo/soluxe-logo.jpeg" alt="Soluxe Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg border border-white/20" />
-                <span className="text-xl font-extrabold -tracking-tight text-white uppercase tracking-tighter">Soluxe <span className="text-yellow">Club Hotel</span></span>
+        <aside className={`w-[var(--sidebar-width)] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100] transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+            <div className="px-6 mb-10 flex items-center justify-between lg:justify-start gap-4">
+                <div className="flex items-center gap-4">
+                    <img src="/logo/soluxe-logo.jpeg" alt="Soluxe Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg border border-white/20" />
+                    <span className="text-xl font-extrabold -tracking-tight text-white uppercase tracking-tighter">Soluxe <span className="text-yellow">Club Hotel</span></span>
+                </div>
+                <button onClick={onClose} className="lg:hidden text-white/50 hover:text-white transition-colors">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
             </div>
             
             <nav className="flex-1 flex flex-col overflow-y-auto">
@@ -207,6 +215,7 @@ const Sidebar = () => {
                                 <NavLink 
                                     key={item.label} 
                                     to={item.path} 
+                                    onClick={() => window.innerWidth < 1024 && onClose()}
                                     className={({ isActive }) => 
                                         `flex items-center gap-3 px-6 py-3 pl-8 no-underline text-white/70 font-medium text-sm transition-all duration-300 border-l-4 border-transparent hover:text-yellow hover:bg-yellow/5 ${isActive ? 'text-yellow bg-yellow/10 border-l-yellow font-bold' : ''}`
                                     }

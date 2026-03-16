@@ -178,14 +178,16 @@ const Folio = () => {
     }, []);
 
     return (
-        <div className="flex flex-col">
-            <div className="flex justify-end items-center gap-2 mb-4">
-                <button className="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors flex items-center gap-2" onClick={() => navigate('/charge-types')}>
-                    <Plus size={14} /> Manage Charge Types
-                </button>
-                <button className="btn-secondary !py-1.5 !px-3 text-xs flex items-center gap-2" onClick={() => setShowMethodModal(true)}>
-                    <CreditCard size={14} /> Manage Payment Methods
-                </button>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h1 className="text-xl font-bold text-slate-800">Folio & Billing</h1>
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+                    <button className="flex-1 sm:flex-none px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors flex items-center justify-center gap-2" onClick={() => navigate('/charge-types')}>
+                        <Plus size={14} /> Charge Types
+                    </button>
+                    <button className="flex-1 sm:flex-none btn-secondary !py-1.5 !px-3 text-xs flex items-center justify-center gap-2 whitespace-nowrap" onClick={() => setShowMethodModal(true)}>
+                        <CreditCard size={14} /> Payment Methods
+                    </button>
+                </div>
             </div>
 
             {/* Search & Filter Bar */}
@@ -220,7 +222,8 @@ const Folio = () => {
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse text-lg">Loading folios...</div>
                 ) : (
-                    <table className="management-table">
+                    <div className="overflow-x-auto">
+                        <table className="management-table min-w-[900px]">
                         <thead>
                             <tr>
                                 <th>Folio ID</th>

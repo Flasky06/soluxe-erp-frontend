@@ -49,6 +49,7 @@ const pageTitles = {
 const MainLayout = ({ children }) => {
     const { notifications, totalCount } = useNotifications();
     const [panelOpen, setPanelOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const panelRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
@@ -79,19 +80,40 @@ const MainLayout = ({ children }) => {
 
     return (
         <div className="flex min-h-screen bg-slate-50">
-            <Sidebar />
-            <main className="flex-1 ml-[var(--sidebar-width)] flex flex-col min-h-screen">
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+            
+            {/* Mobile Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-[95] lg:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
+            <main className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarOpen ? 'lg:ml-[var(--sidebar-width)]' : 'ml-0 lg:ml-[var(--sidebar-width)]'}`}>
 
                 {/* ── Header ── */}
-                <header className="h-[var(--header-height)] px-8 flex items-center justify-between
+                <header className="h-[var(--header-height)] px-4 md:px-8 flex items-center justify-between
                                    border-b border-slate-100 bg-white sticky top-0 z-[90]
                                    shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
 
-                    {/* Page breadcrumb / title */}
+                    {/* Left side: Hamburger + Breadcrumb */}
                     <div className="flex items-center gap-3">
-                        <img src="/logo/soluxe-logo.jpeg" alt="Logo" className="w-6 h-6 rounded-md object-cover opacity-80" />
-                        <span className="text-[13px] font-semibold text-slate-400">Soluxe Club Hotel</span>
-                        <span className="text-slate-200 font-light">/</span>
+                        <button 
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                            className="p-2 -ml-2 lg:hidden text-slate-500 hover:text-maroon transition-colors"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </button>
+                        <div className="hidden sm:flex items-center gap-3">
+                            <img src="/logo/soluxe-logo.jpeg" alt="Logo" className="w-6 h-6 rounded-md object-cover opacity-80" />
+                            <span className="text-[13px] font-semibold text-slate-400">Soluxe Club Hotel</span>
+                            <span className="text-slate-200 font-light">/</span>
+                        </div>
                         <span className="text-[13px] font-bold text-slate-700">{pageTitle}</span>
                     </div>
 
@@ -189,7 +211,7 @@ const MainLayout = ({ children }) => {
                 </header>
 
                 {/* ── Page Content ── */}
-                <div className="flex-1 p-8">
+                <div className="flex-1 p-4 md:p-8 overflow-x-hidden">
                     <div className="max-w-[1400px] mx-auto">
                         {children}
                     </div>

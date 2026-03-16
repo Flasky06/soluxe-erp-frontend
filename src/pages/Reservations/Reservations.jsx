@@ -290,8 +290,9 @@ const Reservations = () => {
     return (
         <div className="flex flex-col gap-6">
             {/* Header & New Action */}
-            <div className="flex justify-end items-center">
-                <button className="btn-primary flex items-center gap-2 h-11" onClick={() => handleOpenBookingModal()}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h1 className="text-xl font-bold text-slate-800">Reservations</h1>
+                <button className="btn-primary flex items-center gap-2 h-11 w-full sm:w-auto justify-center" onClick={() => handleOpenBookingModal()}>
                     <span>+ New Reservation</span>
                 </button>
             </div>
@@ -360,7 +361,7 @@ const Reservations = () => {
             {/* Main Table */}
             <div className="premium-card overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse min-w-[800px]">
                         <thead>
                             <tr className="bg-slate-50/50">
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Guest</th>
@@ -481,7 +482,7 @@ const Reservations = () => {
             {/* Booking Modal */}
             {showBookingModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content !w-[90%] !max-w-[1000px]">
+                    <div className="modal-content !w-[95%] !max-w-[1000px] !p-0">
                         <div className="modal-header">
                             <h2>{selectedReservation ? 'Modify Reservation' : 'Create New Booking'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowBookingModal(false)}>&times;</button>
@@ -514,7 +515,7 @@ const Reservations = () => {
 
                                 <div className="form-group full-width">
                                     <label>Booking Type</label>
-                                    <div className="flex gap-10 mt-2">
+                                    <div className="flex flex-wrap gap-6 md:gap-10 mt-2">
                                         <label className="flex items-center gap-2.5 cursor-pointer text-[14px] font-bold text-text-dark">
                                             <input type="radio" value="ROOM" checked={formData.bookingType === 'ROOM'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> Room Only
                                         </label>
@@ -622,7 +623,7 @@ const Reservations = () => {
             {/* Payment Modal */}
             {showPaymentModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content !max-w-[450px]">
+                    <div className="modal-content !w-[95%] !max-w-[450px]">
                         <div className="modal-header">
                             <h2 className="flex items-center gap-2">
                                 <Wallet className="text-maroon" /> Record Payment
