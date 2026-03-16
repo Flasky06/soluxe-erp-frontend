@@ -14,7 +14,8 @@ const Dashboard = () => {
         pendingPurchaseOrders: 0,
         cleanRooms: 0,
         dirtyRooms: 0,
-        maintenanceRooms: 0
+        maintenanceRooms: 0,
+        availableRoomsByType: {}
     });
     const [recentArrivals, setRecentArrivals] = useState([]);
 
@@ -179,6 +180,21 @@ const Dashboard = () => {
                                 <span className="text-xl font-black text-yellow">{stats.totalRooms - stats.activeStays}</span>
                             </div>
                         </div>
+
+                        {/* Room Availability By Type */}
+                        {stats.availableRoomsByType && Object.keys(stats.availableRoomsByType).length > 0 && (
+                            <div className="mt-2 p-4 bg-white/5 rounded-2xl border border-white/5">
+                                <span className="text-xs font-bold text-white/70 block mb-3 pb-2 border-b border-white/10 uppercase tracking-widest text-center">Available by Type</span>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {Object.entries(stats.availableRoomsByType).map(([type, count]) => (
+                                        <div key={type} className="flex justify-between items-center bg-white/5 px-3 py-2 rounded-lg">
+                                            <span className="text-[10px] font-bold text-white/60 truncate mr-2" title={type}>{type}</span>
+                                            <span className="text-sm font-black text-yellow">{count}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="mt-2 p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="flex justify-between items-center mb-2">

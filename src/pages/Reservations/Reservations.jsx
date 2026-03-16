@@ -3,7 +3,8 @@ import api from '../../services/api';
 import { 
     Search, Filter, Bed, Utensils, Calendar, User, 
     ChevronRight, MoreVertical, CheckCircle2, 
-    LogOut, AlertCircle, Clock, Wallet
+    LogOut, AlertCircle, Clock, Wallet, Edit, UserX, XCircle, CreditCard,
+    Plus, Receipt, Loader2
 } from 'lucide-react';
 import GuestForm from '../../components/GuestForm/GuestForm';
 
@@ -21,8 +22,16 @@ const Reservations = () => {
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [showQuickGuestModal, setShowQuickGuestModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [showActionModal, setShowActionModal] = useState(false);
+    const [actionModalTab, setActionModalTab] = useState('actions'); // 'actions' | 'folio'
     const [selectedReservation, setSelectedReservation] = useState(null);
+    const [actionReservation, setActionReservation] = useState(null);
     const [activeFolio, setActiveFolio] = useState(null);
+    const [folioCharges, setFolioCharges] = useState([]);
+    const [folioLoading, setFolioLoading] = useState(false);
+    const [chargeTypesList, setChargeTypesList] = useState([]);
+    const [chargeForm, setChargeForm] = useState({ description: '', quantity: '1', unitPrice: '', chargeTypeId: '' });
+    const [addingCharge, setAddingCharge] = useState(false);
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [paymentData, setPaymentData] = useState({
         amount: '',
@@ -180,6 +189,64 @@ const Reservations = () => {
         } catch (err) {
             console.error('Failed to record payment:', err);
             alert('Error recording payment.');
+        }
+    };
+
+    const handleOpenManageModal = async (res) => {
+        setActionReservation(res);
+        setActionModalTab('actions');
+        setActiveFolio(null);
+        setFolioCharges([]);
+        setChargeForm({ description: '', quantity: '1', unitPrice: '', chargeTypeId: '' });
+        setShowActionModal(true);
+        try {
+            const ctRes = await api.get('/charge-types');
+            setChargeTypesList(ctRes.data || []);
+        } catch { /* charge types optional */ }
+    };
+
+    const handleLoadFolioTab = async (res) => {
+        setActionModalTab('folio');
+        if (activeFolio) return;
+        setFolioLoading(true);
+        try {
+            const folioRes = await api.get(`/folios/reservation/${res.id}`);
+            setActiveFolio(folioRes.data);
+            const chargesRes = await api.get(`/folios/${folioRes.data.id}/charges`);
+            setFolioCharges(chargesRes.data || []);
+        } catch (err) {
+            console.error('Failed to load folio:', err);
+        } finally {
+            setFolioLoading(false);
+        }
+    };
+
+    const handleAddCharge = async (e) => {
+        e.preventDefault();
+        if (!activeFolio) return;
+        setAddingCharge(true);
+        try {
+            const payload = {
+                description: chargeForm.description,
+                quantity: parseFloat(chargeForm.quantity) || 1,
+                unitPrice: parseFloat(chargeForm.unitPrice) || 0,
+                taxPct: 0,
+                discountPct: 0,
+                chargeTypeId: (parseInt(chargeForm.chargeTypeId) > 0) ? parseInt(chargeForm.chargeTypeId) : null
+            };
+            await api.post(`/folios/${activeFolio.id}/charges?userId=1`, payload);
+            const [folioRes, chargesRes] = await Promise.all([
+                api.get(`/folios/${activeFolio.id}`),
+                api.get(`/folios/${activeFolio.id}/charges`)
+            ]);
+            setActiveFolio(folioRes.data);
+            setFolioCharges(chargesRes.data || []);
+            setChargeForm({ description: '', quantity: '1', unitPrice: '', chargeTypeId: '' });
+        } catch (err) {
+            console.error('Failed to add charge:', err);
+            alert(err.response?.data?.error || 'Failed to add charge');
+        } finally {
+            setAddingCharge(false);
         }
     };
 
@@ -427,14 +494,12 @@ const Reservations = () => {
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex justify-end items-center gap-2">
                                                     {res.status === 'BOOKED' ? (
-                                                        <div className="table-actions">
-                                                            <button className="btn-secondary !py-1 !px-3 flex items-center gap-1.5" onClick={() => handleOpenPaymentModal(res)}>
-                                                                <Wallet size={12} /> Pay
-                                                            </button>
-                                                            <button className="edit-btn" onClick={() => handleOpenBookingModal(res)}>Edit</button>
-                                                            <button className="delete-btn" onClick={() => handleMarkNoShow(res.id)}>No-Show</button>
-                                                            <button className="delete-btn !text-slate-400" onClick={() => handleCancelBooking(res.id)}>Cancel</button>
-                                                        </div>
+                                                        <button 
+                                                            className="btn-primary !py-1.5 !px-4 flex items-center gap-2 text-xs uppercase tracking-widest font-black shadow-md shadow-maroon/20 hover:shadow-lg hover:shadow-maroon/30 transition-all" 
+                                                            onClick={() => handleOpenManageModal(res)}
+                                                        >
+                                                            Manage
+                                                        </button>
                                                     ) : (
                                                         <button className="p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
                                                             <MoreVertical size={16} />
@@ -673,6 +738,98 @@ const Reservations = () => {
                                 <button type="submit" className="btn-primary flex-1">Record Payment</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Manage Action Modal */}
+            {showActionModal && actionReservation && (
+                <div className="modal-overlay z-[2000]">
+                    <div className="modal-content !w-[90%] !max-w-[400px]">
+                        <div className="modal-header border-b border-slate-100 pb-4 mb-4">
+                            <div>
+                                <h2 className="text-lg font-black text-slate-800">Manage Booking</h2>
+                                <p className="text-xs font-bold text-slate-400">Guest: {getGuest(actionReservation.guestId).fullName}</p>
+                            </div>
+                            <button className="close-modal-btn bg-slate-50 hover:bg-slate-100 rounded-full p-2 transition-colors" onClick={() => setShowActionModal(false)}>&times;</button>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <button 
+                                className="w-full flex items-center justify-between p-4 bg-white border border-slate-200 hover:border-maroon/30 hover:bg-maroon/5 rounded-xl transition-all group"
+                                onClick={() => {
+                                    setShowActionModal(false);
+                                    handleOpenPaymentModal(actionReservation);
+                                }}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                                        <CreditCard size={18} />
+                                    </div>
+                                    <div className="flex flex-col items-start">
+                                        <span className="font-bold text-slate-800">Receive Payment</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Add to Folio</span>
+                                    </div>
+                                </div>
+                                <ChevronRight size={18} className="text-slate-300 group-hover:text-maroon transition-colors" />
+                            </button>
+
+                            <button 
+                                className="w-full flex items-center justify-between p-4 bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50 rounded-xl transition-all group"
+                                onClick={() => {
+                                    setShowActionModal(false);
+                                    handleOpenBookingModal(actionReservation);
+                                }}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                                        <Edit size={18} />
+                                    </div>
+                                    <div className="flex flex-col items-start">
+                                        <span className="font-bold text-slate-800">Edit Details</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Modify Booking</span>
+                                    </div>
+                                </div>
+                                <ChevronRight size={18} className="text-slate-300 group-hover:text-blue-500 transition-colors" />
+                            </button>
+
+                            <button 
+                                className="w-full flex items-center justify-between p-4 bg-white border border-slate-200 hover:border-orange-300 hover:bg-orange-50 rounded-xl transition-all group"
+                                onClick={() => {
+                                    setShowActionModal(false);
+                                    handleMarkNoShow(actionReservation.id);
+                                }}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 group-hover:scale-110 transition-transform">
+                                        <UserX size={18} />
+                                    </div>
+                                    <div className="flex flex-col items-start">
+                                        <span className="font-bold text-slate-800">Mark No-Show</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Release Room/Table</span>
+                                    </div>
+                                </div>
+                                <ChevronRight size={18} className="text-slate-300 group-hover:text-orange-500 transition-colors" />
+                            </button>
+
+                            <button 
+                                className="w-full flex items-center justify-between p-4 bg-white border border-slate-200 hover:border-red-300 hover:bg-red-50 rounded-xl transition-all group"
+                                onClick={() => {
+                                    setShowActionModal(false);
+                                    handleCancelBooking(actionReservation.id);
+                                }}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                                        <XCircle size={18} />
+                                    </div>
+                                    <div className="flex flex-col items-start">
+                                        <span className="font-bold text-slate-800">Cancel Booking</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Void Reservation</span>
+                                    </div>
+                                </div>
+                                <ChevronRight size={18} className="text-slate-300 group-hover:text-red-500 transition-colors" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

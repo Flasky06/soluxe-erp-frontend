@@ -49,7 +49,7 @@ const Folio = () => {
         try {
             const payload = {
                 ...newCharge,
-                chargeTypeId: parseInt(newCharge.chargeTypeId) || 0,
+                chargeTypeId: parseInt(newCharge.chargeTypeId) > 0 ? parseInt(newCharge.chargeTypeId) : null,
                 quantity: parseFloat(newCharge.quantity) || 0,
                 unitPrice: parseFloat(newCharge.unitPrice) || 0,
                 taxPct: parseFloat(newCharge.taxPct) || 0,
