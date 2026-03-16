@@ -12,7 +12,10 @@ const Dashboard = () => {
         pendingHousekeeping: 0,
         lowStockItems: 0,
         pendingLeaveRequests: 0,
-        pendingPurchaseOrders: 0
+        pendingPurchaseOrders: 0,
+        cleanRooms: 0,
+        dirtyRooms: 0,
+        maintenanceRooms: 0
     });
     const [recentArrivals, setRecentArrivals] = useState([]);
 
@@ -94,44 +97,75 @@ const Dashboard = () => {
             {/* Core Operational KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Front Desk Status</span>
-                    <div className="flex items-center justify-between mt-3">
-                        <div className="flex flex-col">
-                            <span className="text-3xl font-black text-slate-800">{stats.totalArrivalsToday}</span>
-                            <span className="text-[10px] font-bold text-green-600 uppercase tracking-tighter">Pending Arrivals</span>
-                        </div>
-                        <div className="w-px h-10 bg-slate-100"></div>
-                        <div className="flex flex-col text-right">
-                            <span className="text-3xl font-black text-slate-800">{stats.totalDeparturesToday}</span>
-                            <span className="text-[10px] font-bold text-orange-600 uppercase tracking-tighter">Departures</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Occupancy Rate</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Occupancy Status</span>
                     <div className="flex items-center gap-4 mt-3">
                         <span className="text-3xl font-black text-slate-800">{stats.occupancyRate}%</span>
                         <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
                             <div className="h-full bg-maroon transition-all duration-1000" style={{ width: `${stats.occupancyRate}%` }}></div>
                         </div>
                     </div>
-                    <span className="text-[10px] font-bold text-slate-400 mt-2 block uppercase">{stats.activeStays} In-House Guests</span>
+                    <span className="text-[10px] font-bold text-slate-400 mt-2 block uppercase">{stats.activeStays} Guests Checked In</span>
                 </div>
 
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Average Daily Rate</span>
-                    <div className="mt-3">
-                        <span className="text-3xl font-black text-slate-800">KSh {stats.averageDailyRate.toLocaleString()}</span>
-                        <div className="text-[10px] font-bold text-blue-600 uppercase mt-1 tracking-wider">Average Daily Rate (ADR)</div>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Front Desk Status</span>
+                    <div className="flex items-center justify-between mt-3">
+                        <div className="flex flex-col">
+                            <span className="text-3xl font-black text-slate-800">{stats.totalArrivalsToday}</span>
+                            <span className="text-[10px] font-bold text-green-600 uppercase tracking-tighter">Expected Arrivals</span>
+                        </div>
+                        <div className="w-px h-10 bg-slate-100"></div>
+                        <div className="flex flex-col text-right">
+                            <span className="text-3xl font-black text-slate-800">{stats.totalDeparturesToday}</span>
+                            <span className="text-[10px] font-bold text-orange-600 uppercase tracking-tighter">Expected Departures</span>
+                        </div>
                     </div>
                 </div>
 
                 <div className="premium-card !bg-white">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Revenue Per Available Room</span>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Rooms Available</span>
                     <div className="mt-3">
-                        <span className="text-3xl font-black text-slate-800">KSh {stats.revenuePerAvailableRoom.toLocaleString()}</span>
-                        <div className="text-[10px] font-bold text-indigo-600 uppercase mt-1 tracking-wider">Revenue Per Available Room (RevPAR)</div>
+                        <span className="text-3xl font-black text-slate-800">{stats.totalRooms - stats.activeStays}</span>
+                        <div className="text-[10px] font-bold text-blue-600 uppercase mt-1 tracking-wider">Empty & Ready Units</div>
+                    </div>
+                </div>
+
+                <div className="premium-card !bg-white">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Total Inventory</span>
+                    <div className="mt-3">
+                        <span className="text-3xl font-black text-slate-800">{stats.totalRooms}</span>
+                        <div className="text-[10px] font-bold text-indigo-600 uppercase mt-1 tracking-wider">Total Registered Rooms</div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Room Health Portfolio */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 font-bold text-lg">✓</div>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Clean & Ready</span>
+                            <span className="text-xl font-black text-slate-800">{stats.cleanRooms} Rooms</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 font-bold text-lg">⚠</div>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Dirty / Pending</span>
+                            <span className="text-xl font-black text-slate-800">{stats.dirtyRooms} Rooms</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 font-bold text-lg">⚙</div>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Out of Order</span>
+                            <span className="text-xl font-black text-slate-800">{stats.maintenanceRooms} Rooms</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -167,33 +201,39 @@ const Dashboard = () => {
                 <div className="premium-card !bg-maroon !text-white">
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col">
-                            <span className="text-[11px] font-bold text-white/50 uppercase tracking-[0.2em] mb-4">Financial Snapshot</span>
-                            <span className="text-[10px] font-bold text-white/40 uppercase mb-1">Total Revenue Today</span>
-                            <div className="text-4xl font-black text-yellow leading-tight">
-                                KSh {stats.dailyRevenue.toLocaleString()}
+                            <span className="text-[11px] font-bold text-white/50 uppercase tracking-[0.2em] mb-4 text-center">Operational Overview</span>
+                            <div className="flex flex-col items-center py-4 bg-white/5 rounded-3xl border border-white/10">
+                                <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">Today's Revenue</span>
+                                <span className="text-4xl font-black text-yellow leading-tight">
+                                    KSh {stats.dailyRevenue.toLocaleString()}
+                                </span>
                             </div>
                         </div>
 
                         <div className="h-px bg-white/10 w-full"></div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-white/40 uppercase">Room Rev</span>
-                                <span className="text-lg font-bold">KSh {(stats.averageDailyRate * stats.activeStays).toLocaleString()}</span>
+                        <div className="grid grid-cols-2 gap-4 text-center">
+                            <div className="flex flex-col px-4 py-3 bg-white/5 rounded-2xl border border-white/5">
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-tighter mb-1">In-House</span>
+                                <span className="text-xl font-black">{stats.activeStays}</span>
                             </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-white/40 uppercase">Other Rev</span>
-                                <span className="text-lg font-bold">KSh {(stats.dailyRevenue - (stats.averageDailyRate * stats.activeStays)).toLocaleString()}</span>
+                            <div className="flex flex-col px-4 py-3 bg-white/5 rounded-2xl border border-white/5">
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-tighter mb-1">Available</span>
+                                <span className="text-xl font-black text-yellow">{stats.totalRooms - stats.activeStays}</span>
                             </div>
                         </div>
 
-                        <div className="mt-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                            <div className="flex justify-between items-center">
+                        <div className="mt-2 p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <div className="flex justify-between items-center mb-2">
                                 <span className="text-xs font-bold text-white/70">Occupancy Target</span>
-                                <span className="text-xs font-black text-yellow">85%</span>
+                                <span className="text-[10px] font-black uppercase bg-yellow text-maroon px-2 py-0.5 rounded-full">85% Goal</span>
                             </div>
-                            <div className="w-full h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
-                                <div className="h-full bg-yellow" style={{ width: `${Math.min(100, (stats.occupancyRate / 85) * 100)}%` }}></div>
+                            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                                <div className="h-full bg-yellow transition-all duration-1000 shadow-[0_0_8px_rgba(255,255,0,0.4)]" style={{ width: `${Math.min(100, (stats.occupancyRate / 85) * 100)}%` }}></div>
+                            </div>
+                            <div className="flex justify-between mt-2">
+                                <span className="text-[9px] font-bold text-white/40 uppercase tracking-tighter">Growth Status</span>
+                                <span className="text-[9px] font-bold text-white/40 uppercase tracking-tighter">{stats.occupancyRate}% Current</span>
                             </div>
                         </div>
                     </div>
