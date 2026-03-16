@@ -85,7 +85,7 @@ const FinancialReports = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard 
                     label="Billed Revenue" 
-                    value={`KSh ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
+                    value={`$ ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
                     desc="Total invoices generated"
                     icon={FileText}
                     color="text-primary"
@@ -93,7 +93,7 @@ const FinancialReports = () => {
                 />
                 <StatCard 
                     label="Cash Collected" 
-                    value={`KSh ${parseFloat(financeData?.totalPayments || 0).toLocaleString()}`} 
+                    value={`$ ${parseFloat(financeData?.totalPayments || 0).toLocaleString()}`} 
                     desc="Actual payments received"
                     icon={CreditCard}
                     color="text-green-600"
@@ -101,7 +101,7 @@ const FinancialReports = () => {
                 />
                 <StatCard 
                     label="Total Expenses" 
-                    value={`KSh ${parseFloat(financeData?.totalExpenses || 0).toLocaleString()}`} 
+                    value={`$ ${parseFloat(financeData?.totalExpenses || 0).toLocaleString()}`} 
                     desc="Operational expenditures"
                     icon={ArrowDownRight}
                     color="text-red-600"
@@ -109,7 +109,7 @@ const FinancialReports = () => {
                 />
                 <StatCard 
                     label="Net Collections" 
-                    value={`KSh ${ (parseFloat(financeData?.totalPayments || 0) - parseFloat(financeData?.operationalExpenses || 0)).toLocaleString()}`} 
+                    value={`$ ${ (parseFloat(financeData?.totalPayments || 0) - parseFloat(financeData?.operationalExpenses || 0)).toLocaleString()}`} 
                     desc="Collections - OpEx"
                     icon={DollarSign}
                     color="text-blue-600"
@@ -117,7 +117,7 @@ const FinancialReports = () => {
                 />
                 <StatCard 
                     label="Petty Cash" 
-                    value={`KSh ${parseFloat(financeData?.pettyCash || 0).toLocaleString()}`} 
+                    value={`$ ${parseFloat(financeData?.pettyCash || 0).toLocaleString()}`} 
                     desc="Daily cash spend"
                     icon={Zap}
                     color="text-orange-600"
@@ -125,7 +125,7 @@ const FinancialReports = () => {
                 />
                 <StatCard 
                     label="Billed Revenue" 
-                    value={`KSh ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
+                    value={`$ ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
                     desc="Total invoices generated"
                     icon={FileText}
                     color="text-primary"
@@ -141,7 +141,7 @@ const FinancialReports = () => {
                         <thead>
                             <tr className="text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                                 <th className="pb-3 text-left">Category</th>
-                                <th className="pb-3 text-right">Amount (KSh)</th>
+                                <th className="pb-3 text-right">Amount ($)</th>
                                 <th className="pb-3 text-right">Share (%)</th>
                             </tr>
                         </thead>
@@ -174,7 +174,7 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Pending Folios</p>
                             </div>
                             <span className="text-sm font-black text-slate-600">
-                                KSh {Math.max(0, (financeData?.totalRevenue || 0) - (financeData?.totalPayments || 0)).toLocaleString()}
+                                $ {Math.max(0, (financeData?.totalRevenue || 0) - (financeData?.totalPayments || 0)).toLocaleString()}
                             </span>
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -183,7 +183,7 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Supply Spend</p>
                             </div>
                             <span className="text-sm font-black text-red-600">
-                                KSh {parseFloat(financeData?.supplyCosts || 0).toLocaleString()}
+                                $ {parseFloat(financeData?.supplyCosts || 0).toLocaleString()}
                             </span>
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -192,7 +192,7 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Staff Salaries</p>
                             </div>
                             <span className="text-sm font-black text-red-600">
-                                KSh {parseFloat(financeData?.payrollExpenses || 0).toLocaleString()}
+                                $ {parseFloat(financeData?.payrollExpenses || 0).toLocaleString()}
                             </span>
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -201,7 +201,7 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Stock Value</p>
                             </div>
                             <span className="text-sm font-black text-blue-600">
-                                KSh {parseFloat(financeData?.inventoryValue || 0).toLocaleString()}
+                                $ {parseFloat(financeData?.inventoryValue || 0).toLocaleString()}
                             </span>
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -210,7 +210,7 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Daily Cash Spend</p>
                             </div>
                             <span className="text-sm font-black text-orange-600">
-                                KSh {parseFloat(financeData?.pettyCash || 0).toLocaleString()}
+                                $ {parseFloat(financeData?.pettyCash || 0).toLocaleString()}
                             </span>
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-orange-50/50 border border-orange-100">
@@ -219,7 +219,7 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Repairs & Upkeep</p>
                             </div>
                             <span className="text-sm font-black text-orange-600">
-                                KSh {parseFloat(financeData?.maintenanceCosts || 0).toLocaleString()}
+                                $ {parseFloat(financeData?.maintenanceCosts || 0).toLocaleString()}
                             </span>
                         </div>
                     </div>
@@ -238,7 +238,7 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Owed to Suppliers</p>
                             </div>
                             <span className="text-sm font-black text-red-600">
-                                KSh {parseFloat(financeData?.accountsPayable || 0).toLocaleString()}
+                                $ {parseFloat(financeData?.accountsPayable || 0).toLocaleString()}
                             </span>
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-blue-50/50 border border-blue-100">
@@ -247,7 +247,7 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Due from Guests</p>
                             </div>
                             <span className="text-sm font-black text-blue-600">
-                                KSh {parseFloat(financeData?.accountsReceivable || 0).toLocaleString()}
+                                $ {parseFloat(financeData?.accountsReceivable || 0).toLocaleString()}
                             </span>
                         </div>
                     </div>
@@ -265,14 +265,14 @@ const FinancialReports = () => {
                                 <p className="text-sm font-black text-slate-700">Daily Cash Spend</p>
                             </div>
                             <span className="text-sm font-black text-orange-600">
-                                KSh {parseFloat(financeData?.pettyCash || 0).toLocaleString()}
+                                $ {parseFloat(financeData?.pettyCash || 0).toLocaleString()}
                             </span>
                         </div>
                         <div className="mt-4 pt-4 border-t border-slate-100">
                             <div className="flex justify-between items-center px-1">
                                 <span className="text-xs font-bold text-slate-500 uppercase italic">Active Collections</span>
                                 <span className="text-lg font-black text-green-600">
-                                    KSh {(
+                                    $ {(
                                         parseFloat(financeData?.totalPayments || 0) - 
                                         parseFloat(financeData?.operationalExpenses || 0) - 
                                         parseFloat(financeData?.pettyCash || 0)
@@ -328,7 +328,7 @@ const FinancialReports = () => {
                                     </td>
                                     <td className="py-4 text-right">
                                         <span className="text-sm font-black text-slate-800">
-                                            KSh {parseFloat(item.runningBalance || 0).toLocaleString()}
+                                            $ {parseFloat(item.runningBalance || 0).toLocaleString()}
                                         </span>
                                     </td>
                                 </tr>

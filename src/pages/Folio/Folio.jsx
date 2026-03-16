@@ -256,7 +256,7 @@ const Folio = () => {
                                                 {folio.status}
                                             </span>
                                         </td>
-                                        <td className="font-bold text-primary">KSh {folio.totalAmount.toLocaleString()}</td>
+                                        <td className="font-bold text-primary">$ {folio.totalAmount.toLocaleString()}</td>
                                         <td>
                                             <div className="flex justify-end gap-2">
                                                 <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleOpenChargeModal(folio.id)}>Post Charge</button>
@@ -318,7 +318,7 @@ const Folio = () => {
                                     <input type="number" step="0.01" required value={newCharge.quantity} onChange={(e) => setNewCharge({...newCharge, quantity: parseFloat(e.target.value) || 0})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Unit Price (KSh)</label>
+                                    <label>Unit Price ($)</label>
                                     <input type="number" step="0.01" required value={newCharge.unitPrice} onChange={(e) => setNewCharge({...newCharge, unitPrice: parseFloat(e.target.value) || 0})} />
                                 </div>
                             </div>
@@ -361,7 +361,7 @@ const Folio = () => {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Amount (KSh)</label>
+                                    <label>Amount ($)</label>
                                     <input type="number" step="0.01" required value={newPayment.amount} onChange={(e) => setNewPayment({...newPayment, amount: parseFloat(e.target.value) || 0})} />
                                 </div>
                                 <div className="form-group">
@@ -456,7 +456,7 @@ const Folio = () => {
                                             </div>
                                             <div className="py-5 border-t border-dashed border-slate-200 border-b-2 border-primary my-2 flex justify-between items-center bg-slate-50/30 px-2 rounded">
                                                 <span className="text-lg font-bold text-slate-800">Amount Paid:</span>
-                                                <span className="text-2xl font-extrabold text-green-600">KSh {receipt.amount.toLocaleString()}</span>
+                                                <span className="text-2xl font-extrabold text-green-600">$ {receipt.amount.toLocaleString()}</span>
                                             </div>
                                         </div>
                                         <div className="text-center mt-8 pt-4">

@@ -119,10 +119,10 @@ const Venues = () => {
                                         </td>
                                         <td className="text-text-slate font-medium">{venue.capacity} pax</td>
                                         <td>
-                                            <span className="font-semibold text-slate-700">KSh {parseFloat(venue.ratePerHour).toLocaleString()}</span>
+                                            <span className="font-semibold text-slate-700">$ {parseFloat(venue.ratePerHour).toLocaleString()}</span>
                                         </td>
                                         <td>
-                                            <span className="font-semibold text-slate-700">KSh {parseFloat(venue.ratePerDay).toLocaleString()}</span>
+                                            <span className="font-semibold text-slate-700">$ {parseFloat(venue.ratePerDay).toLocaleString()}</span>
                                         </td>
                                         <td>
                                             <div className="table-actions">
@@ -181,7 +181,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Hourly Rate (KSh)</label>
+                                    <label>Hourly Rate ($)</label>
                                     <input 
                                         type="number" 
                                         required 
@@ -190,7 +190,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Daily Rate (KSh)</label>
+                                    <label>Daily Rate ($)</label>
                                     <input 
                                         type="number" 
                                         required 

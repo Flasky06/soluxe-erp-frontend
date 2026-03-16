@@ -402,14 +402,14 @@ const CheckOut = () => {
                                             <div className="flex flex-col gap-3">
                                                 <div className="flex justify-between items-center opacity-60 text-[10px] font-bold uppercase tracking-widest">
                                                     <span>Original Charges</span>
-                                                    <span>KSh {charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0).toLocaleString()}</span>
+                                                    <span>$ {charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0).toLocaleString()}</span>
                                                 </div>
                                                 
                                                 {new Date(selectedStay.dateOut) > new Date() && (
                                                     <div className="flex justify-between items-center text-amber-400 text-[10px] font-bold uppercase tracking-widest">
                                                         <span>Early Checkout Project. Credit</span>
                                                         <span>
-                                                            -KSh {(() => {
+                                                            -$ {(() => {
                                                                 const plannedNights = Math.ceil(Math.abs(new Date(selectedStay.dateOut) - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24));
                                                                 const actualNights = Math.max(1, Math.ceil(Math.abs(new Date() - new Date(selectedStay.dateIn)) / (1000 * 60 * 60 * 24)));
                                                                 if (actualNights < plannedNights) {
@@ -426,13 +426,13 @@ const CheckOut = () => {
 
                                                 <div className="flex justify-between items-center opacity-60 text-[10px] font-bold uppercase tracking-widest">
                                                     <span>Total Credits / Payments</span>
-                                                    <span>KSh {payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0).toLocaleString()}</span>
+                                                    <span>$ {payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="h-px bg-white/10 my-1"></div>
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-maroon-light">Final Balance Due</span>
                                                     <span className="text-xl font-black">
-                                                        KSh {(() => {
+                                                        $ {(() => {
                                                             const totalCharges = charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0);
                                                             const totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
                                                             let adjustment = 0;
@@ -479,7 +479,7 @@ const CheckOut = () => {
                                     {folio.totalAmount > 0 ? (
                                         <div className="flex flex-col gap-2 w-full max-w-[400px]">
                                             <div className="bg-red-50 text-red-600 px-4 py-2.5 rounded-lg border border-red-100 flex items-center justify-between gap-3">
-                                                <span className="text-sm font-bold">Balance must be KSh 0 to Check-out.</span>
+                                                <span className="text-sm font-bold">Balance must be $ 0 to Check-out.</span>
                                                 <button className="bg-maroon text-white hover:bg-maroon/90 px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1.5" onClick={handleOpenPaymentModal}>
                                                     <Wallet size={12} /> Record Payment
                                                 </button>
@@ -556,13 +556,13 @@ const CheckOut = () => {
                             <p className="text-lg font-black text-text-dark">{getGuestName(selectedStay?.guestId)}</p>
                             <div className="flex justify-between mt-2 pt-2 border-t border-maroon/10">
                                 <span className="text-xs font-bold text-slate-500 uppercase">Balance Due</span>
-                                <span className="text-sm font-black text-slate-900">KSh {parseFloat(folio?.totalAmount || 0).toLocaleString()}</span>
+                                <span className="text-sm font-black text-slate-900">$ {parseFloat(folio?.totalAmount || 0).toLocaleString()}</span>
                             </div>
                         </div>
                         <form onSubmit={handleRecordPayment}>
                             <div className="flex flex-col gap-4">
                                 <div className="form-group">
-                                    <label>Amount (KSh)</label>
+                                    <label>Amount ($)</label>
                                     <input 
                                         type="number" step="0.01" required autoFocus
                                         value={paymentData.amount} 

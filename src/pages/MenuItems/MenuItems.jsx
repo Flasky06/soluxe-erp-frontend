@@ -158,7 +158,7 @@ const MenuItems = () => {
                                     </td>
                                     <td><span className="status-badge info">{categories.find(c => c.id === item.categoryId)?.name || 'Uncategorized'}</span></td>
                                     <td>{item.prepTimeMins} Min</td>
-                                    <td className="font-bold text-primary">KSh {parseFloat(item.price || 0).toLocaleString()}</td>
+                                    <td className="font-bold text-primary">$ {parseFloat(item.price || 0).toLocaleString()}</td>
                                     <td>
                                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight ${item.available ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
                                             {item.available ? 'Available' : 'Out of Stock'}
@@ -208,7 +208,7 @@ const MenuItems = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Price (KSh)</label>
+                                    <label>Price ($)</label>
                                     <input type="number" step="0.01" required value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
                                 </div>
                                 <div className="form-group">

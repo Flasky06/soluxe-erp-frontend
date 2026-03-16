@@ -240,7 +240,7 @@ const Reports = () => {
                 {activeTab === 'revenue' && (
                     <Section title="Revenue Report" period={periodLabel}>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <StatCard label="Net Revenue" value={`KSh ${parseFloat(revenue?.netRevenue || 0).toLocaleString()}`} sub={`Gross: KSh ${parseFloat(revenue?.totalRevenue || 0).toLocaleString()}`} accent="border-l-green-500" />
+                            <StatCard label="Net Revenue" value={`$ ${parseFloat(revenue?.netRevenue || 0).toLocaleString()}`} sub={`Gross: $ ${parseFloat(revenue?.totalRevenue || 0).toLocaleString()}`} accent="border-l-green-500" />
                             <StatCard label="Occupancy Rate" value={`${occupancyPct}%`} sub={`${occupiedRooms} occupied · ${totalRooms - occupiedRooms} available`} accent="border-l-indigo-500" />
                             <StatCard label="Arrivals Today" value={arrivalsToday} sub="Guests checking in today" accent="border-l-blue-500" />
                             <StatCard label="Departures Today" value={departuresToday} sub="Guests checking out today" accent="border-l-slate-400" />
@@ -256,7 +256,7 @@ const Reports = () => {
                                     <table className="w-full">
                                         <thead><tr className="border-b border-slate-100">
                                             <th className="text-left text-[11px] font-bold text-slate-400 uppercase pb-2">Charge Type</th>
-                                            <th className="text-right text-[11px] font-bold text-slate-400 uppercase pb-2">Amount (KSh)</th>
+                                            <th className="text-right text-[11px] font-bold text-slate-400 uppercase pb-2">Amount ($)</th>
                                             <th className="text-right text-[11px] font-bold text-slate-400 uppercase pb-2">Share</th>
                                         </tr></thead>
                                         <tbody>
@@ -301,7 +301,7 @@ const Reports = () => {
                                 </div>
                                 <div className="flex items-center justify-between py-3 border-t border-slate-100">
                                     <span className="text-sm font-bold text-slate-600">All-time Folio Value</span>
-                                    <span className="font-extrabold text-primary text-lg">KSh {folioTotal.toLocaleString()}</span>
+                                    <span className="font-extrabold text-primary text-lg">$ {folioTotal.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
@@ -456,14 +456,14 @@ const Reports = () => {
                             <StatCard label="Total Orders" value={diningOrders.length} accent="border-l-yellow-500" />
                             <StatCard label="Dining Sessions" value={dinningSessions.length} accent="border-l-orange-500" />
                             <StatCard label="Open Sessions" value={dinningSessions.filter(s => s.status === 'OPEN' || !s.closedAt).length} accent="border-l-red-400" />
-                            <StatCard label="Total POS Revenue" value={`KSh ${posTotal.toLocaleString()}`} accent="border-l-green-500" />
+                            <StatCard label="Total POS Revenue" value={`$ ${posTotal.toLocaleString()}`} accent="border-l-green-500" />
                         </div>
 
                         <div className="premium-card overflow-x-auto">
                             <div className="p-5 border-b border-slate-100 font-bold text-slate-700">Dining Orders</div>
                             <table className="management-table">
                                 <thead><tr>
-                                    <th>#</th><th>Session</th><th>Table</th><th>Items</th><th>Total (KSh)</th><th>Status</th>
+                                    <th>#</th><th>Session</th><th>Table</th><th>Items</th><th>Total ($)</th><th>Status</th>
                                 </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : diningOrders.length === 0
@@ -493,14 +493,14 @@ const Reports = () => {
                             <StatCard label="Total Bookings" value={venueBookings.length} accent="border-l-primary" />
                             <StatCard label="Confirmed" value={venueBookings.filter(b => b.status === 'CONFIRMED').length} accent="border-l-green-500" />
                             <StatCard label="Pending" value={venueBookings.filter(b => b.status === 'PENDING').length} accent="border-l-yellow-400" />
-                            <StatCard label="Total Value" value={`KSh ${venueTotal.toLocaleString()}`} accent="border-l-indigo-500" />
+                            <StatCard label="Total Value" value={`$ ${venueTotal.toLocaleString()}`} accent="border-l-indigo-500" />
                         </div>
 
                         <div className="premium-card overflow-x-auto">
                             <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Venue Bookings</div>
                             <table className="management-table">
                                 <thead><tr>
-                                    <th>#</th><th>Client</th><th>Venue</th><th>Event</th><th>Date In</th><th>Guests</th><th>Total (KSh)</th><th>Deposit</th><th>Status</th>
+                                    <th>#</th><th>Client</th><th>Venue</th><th>Event</th><th>Date In</th><th>Guests</th><th>Total ($)</th><th>Deposit</th><th>Status</th>
                                 </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : venueBookings.length === 0

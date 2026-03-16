@@ -178,7 +178,7 @@ const Expenses = () => {
                                         <span className="status-badge info">{exp.expenseType?.name || 'Uncategorized'}</span>
                                     </td>
                                     <td>
-                                        <span className="font-bold text-maroon">KSh {Number(exp.amount).toLocaleString()}</span>
+                                        <span className="font-bold text-maroon">$ {Number(exp.amount).toLocaleString()}</span>
                                     </td>
                                     <td>
                                         <div className="flex flex-col text-[11px]">
@@ -219,7 +219,7 @@ const Expenses = () => {
                                     <input type="text" required value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="e.g. Electricity Bill October 2023" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Amount (KSh)</label>
+                                    <label>Amount ($)</label>
                                     <input type="number" step="0.01" required value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} placeholder="0.00" />
                                 </div>
                                 <div className="form-group">

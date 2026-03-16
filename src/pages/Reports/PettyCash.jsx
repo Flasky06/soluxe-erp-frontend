@@ -78,12 +78,12 @@ const PettyCash = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="premium-card p-6 border-l-4 border-l-primary">
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Available Reserve</span>
-                    <div className="text-2xl font-black text-slate-800 mt-1">KSh 15,000</div>
+                    <div className="text-2xl font-black text-slate-800 mt-1">$ 15,000</div>
                     <p className="text-[10px] text-slate-400 mt-1 italic">Replenished weekly</p>
                 </div>
                 <div className="premium-card p-6">
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Spent Today</span>
-                    <div className="text-2xl font-black text-red-600 mt-1">KSh {pettyCashEntries.filter(e => e.expenseDate === new Date().toISOString().split('T')[0]).reduce((acc, curr) => acc + curr.amount, 0).toLocaleString()}</div>
+                    <div className="text-2xl font-black text-red-600 mt-1">$ {pettyCashEntries.filter(e => e.expenseDate === new Date().toISOString().split('T')[0]).reduce((acc, curr) => acc + curr.amount, 0).toLocaleString()}</div>
                 </div>
             </div>
 
@@ -95,7 +95,7 @@ const PettyCash = () => {
                             <th className="px-6 py-4">Category</th>
                             <th className="px-6 py-4">Description</th>
                             <th className="px-6 py-4">Issued To</th>
-                            <th className="px-6 py-4 text-right">Amount (KSh)</th>
+                            <th className="px-6 py-4 text-right">Amount ($)</th>
                             <th className="px-6 py-4 text-center">Actions</th>
                         </tr>
                     </thead>
@@ -144,7 +144,7 @@ const PettyCash = () => {
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-slate-400 uppercase">Amount (KSh)</label>
+                                    <label className="text-xs font-bold text-slate-400 uppercase">Amount ($)</label>
                                     <input 
                                         type="number"
                                         required

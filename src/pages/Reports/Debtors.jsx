@@ -50,7 +50,7 @@ const Debtors = () => {
                     </div>
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Accounts Receivable (AR)</span>
                     <div className="text-3xl font-black text-slate-800 mt-1">
-                        KSh {parseFloat(financeData?.accountsReceivable || 0).toLocaleString()}
+                        $ {parseFloat(financeData?.accountsReceivable || 0).toLocaleString()}
                     </div>
                     <p className="text-[12px] text-slate-500 mt-2">Total outstanding due from checked-out guests</p>
                 </div>
@@ -65,7 +65,7 @@ const Debtors = () => {
                     </div>
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Accounts Payable (AP)</span>
                     <div className="text-3xl font-black text-slate-800 mt-1">
-                        KSh {parseFloat(financeData?.accountsPayable || 0).toLocaleString()}
+                        $ {parseFloat(financeData?.accountsPayable || 0).toLocaleString()}
                     </div>
                     <p className="text-[12px] text-slate-500 mt-2">Total owed to suppliers for received stock/orders</p>
                 </div>

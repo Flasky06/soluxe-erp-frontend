@@ -38,7 +38,7 @@ const BalanceSheet = () => {
     const StatementLine = ({ label, value, isIndented = false, isBold = false, isTotal = false }) => (
         <div className={`flex justify-between items-center py-2 ${isTotal ? 'border-t-2 border-slate-700 font-black text-slate-900 mt-2 mb-4 pt-3' : 'border-b border-slate-50 text-sm'} ${isBold ? 'font-black text-slate-800' : 'text-slate-600 font-medium'}`}>
             <span className={isIndented ? 'pl-8 text-xs' : ''}>{label}</span>
-            <span>KSh {parseFloat(value || 0).toLocaleString()}</span>
+            <span>$ {parseFloat(value || 0).toLocaleString()}</span>
         </div>
     );
 
@@ -87,7 +87,7 @@ const BalanceSheet = () => {
                     <div className="mt-auto pt-20">
                         <div className="bg-emerald-500 p-6 rounded-2xl flex justify-between items-center text-white shadow-lg shadow-emerald-200">
                             <span className="font-black uppercase tracking-widest text-sm">Total Assets</span>
-                            <span className="text-3xl font-black tracking-tighter">KSh {parseFloat(data?.totalAssets || 0).toLocaleString()}</span>
+                            <span className="text-3xl font-black tracking-tighter">$ {parseFloat(data?.totalAssets || 0).toLocaleString()}</span>
                         </div>
                     </div>
                 </div>
@@ -133,7 +133,7 @@ const BalanceSheet = () => {
                     <div className="bg-slate-900 p-6 rounded-2xl flex justify-between items-center text-white shadow-xl">
                         <div className="flex flex-col">
                             <span className="font-bold uppercase tracking-widest text-[10px] opacity-60">Total Liabilities & Equity</span>
-                            <span className="text-2xl font-black tracking-tighter">KSh {(parseFloat(data?.totalLiabilities || 0) + parseFloat(data?.totalEquity || 0)).toLocaleString()}</span>
+                            <span className="text-2xl font-black tracking-tighter">$ {(parseFloat(data?.totalLiabilities || 0) + parseFloat(data?.totalEquity || 0)).toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className={`w-3 h-3 rounded-full ${Math.abs((data?.totalAssets || 0) - ((data?.totalLiabilities || 0) + (data?.totalEquity || 0))) < 1 ? 'bg-emerald-500 shadow-[0_0_10px_#10b981]' : 'bg-red-500'}`}></div>

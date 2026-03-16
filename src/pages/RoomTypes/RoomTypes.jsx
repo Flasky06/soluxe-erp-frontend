@@ -115,7 +115,7 @@ const RoomTypes = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className="font-extrabold text-slate-900 tracking-tight">KSh {parseFloat(type.defaultRate || 0).toLocaleString()}</span>
+                                        <span className="font-extrabold text-slate-900 tracking-tight">$ {parseFloat(type.defaultRate || 0).toLocaleString()}</span>
                                     </td>
                                     <td>
                                         <div className="table-actions">
@@ -181,7 +181,7 @@ const RoomTypes = () => {
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Room Rate (KSh per Night)</label>
+                                    <label>Room Rate ($ per Night)</label>
                                     <input 
                                         type="number" 
                                         required 

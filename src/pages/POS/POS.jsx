@@ -158,7 +158,7 @@ const POS = () => {
                                     <div className="font-bold text-slate-800 leading-tight mb-1">{item.name}</div>
                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">{item.category?.name || 'Item'}</div>
                                     <div className="mt-auto flex justify-between items-center text-primary">
-                                        <span className="font-extrabold text-sm">KSh {parseFloat(item.price).toLocaleString()}</span>
+                                        <span className="font-extrabold text-sm">$ {parseFloat(item.price).toLocaleString()}</span>
                                         <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center font-bold text-lg leading-none">+</div>
                                     </div>
                                 </div>
@@ -186,7 +186,7 @@ const POS = () => {
                                 <div key={c.menuItem.id} className="flex flex-col bg-white border border-slate-100 p-3 rounded-xl shadow-sm relative group">
                                     <div className="flex justify-between items-start mb-2 pr-6">
                                         <span className="font-bold text-[13px] text-slate-800 leading-tight">{c.menuItem.name}</span>
-                                        <span className="font-bold text-primary text-[13px]">KSh {(c.menuItem.price * c.quantity).toLocaleString()}</span>
+                                        <span className="font-bold text-primary text-[13px]">$ {(c.menuItem.price * c.quantity).toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-3 bg-slate-50 rounded-lg p-1 border border-slate-200">
@@ -210,7 +210,7 @@ const POS = () => {
                     <div className="p-5 border-t border-slate-200 bg-white shrink-0 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] z-10">
                         <div className="flex justify-between items-center mb-5">
                             <span className="text-slate-500 font-bold uppercase tracking-widest text-xs">Total</span>
-                            <span className="text-2xl font-extrabold text-primary">KSh {cartTotal.toLocaleString()}</span>
+                            <span className="text-2xl font-extrabold text-primary">$ {cartTotal.toLocaleString()}</span>
                         </div>
 
                         {!checkoutMode ? (
@@ -266,7 +266,7 @@ const POS = () => {
                                     disabled={isProcessing}
                                     className={`w-full mt-2 font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 ${isProcessing ? 'bg-slate-300 text-slate-500 cursor-wait' : 'bg-primary hover:bg-primary-dark text-white'}`}
                                 >
-                                    {isProcessing ? 'Processing...' : checkoutMode === 'PAY_NOW' ? `Confirm KSh ${cartTotal.toLocaleString()}` : 'Post Charge to Folio'}
+                                    {isProcessing ? 'Processing...' : checkoutMode === 'PAY_NOW' ? `Confirm $ ${cartTotal.toLocaleString()}` : 'Post Charge to Folio'}
                                 </button>
                             </form>
                         )}

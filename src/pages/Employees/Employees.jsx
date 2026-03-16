@@ -214,7 +214,7 @@ const Employees = () => {
                                     </td>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="font-semibold text-slate-800">KSh {parseFloat(emp.basicSalary || 0).toLocaleString()}</span>
+                                            <span className="font-semibold text-slate-800">$ {parseFloat(emp.basicSalary || 0).toLocaleString()}</span>
                                             <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining || '-'}</span>
                                         </div>
                                     </td>
@@ -296,7 +296,7 @@ const Employees = () => {
                                     {serverErrors.designation && <p className="text-red-500 text-xs mt-1">{serverErrors.designation}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label>Basic Salary (KSh)</label>
+                                    <label>Basic Salary ($)</label>
                                     <input type="number" required value={formData.basicSalary} onChange={(e) => setFormData({...formData, basicSalary: e.target.value})} placeholder="3500" />
                                 </div>
                                 <div className="form-group">

@@ -291,7 +291,7 @@ const Inventory = () => {
                                     <input type="number" required value={formData.minimumStock} onChange={(e) => setFormData({...formData, minimumStock: e.target.value})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Buying Price (KSh)</label>
+                                    <label>Buying Price ($)</label>
                                     <input type="number" step="0.01" required value={formData.buyingPrice} onChange={(e) => setFormData({...formData, buyingPrice: e.target.value})} />
                                 </div>
                                 <div className="form-group full-width">

@@ -183,7 +183,7 @@ const VenueBookings = () => {
                                 <th>Event</th>
                                 <th>Dates</th>
                                 <th>Guests</th>
-                                <th>Total (KSh)</th>
+                                <th>Total ($)</th>
                                 <th>Deposit</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -320,11 +320,11 @@ const VenueBookings = () => {
                                 {/* Financials */}
                                 <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-2 col-span-full text-base tracking-tight uppercase">Financials & Status</div>
                                 <div className="form-group">
-                                    <label>Total Amount (KSh)</label>
+                                    <label>Total Amount ($)</label>
                                     <input type="number" min="0" value={formData.totalAmount} onChange={e => set('totalAmount', e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Deposit (KSh)</label>
+                                    <label>Deposit ($)</label>
                                     <input type="number" min="0" value={formData.deposit} onChange={e => set('deposit', e.target.value)} />
                                 </div>
                                 <div className="form-group">

@@ -634,13 +634,13 @@ const Reservations = () => {
                             <p className="text-lg font-black text-text-dark">{getGuest(selectedReservation?.guestId).fullName}</p>
                             <div className="flex justify-between mt-2 pt-2 border-t border-maroon/10">
                                 <span className="text-xs font-bold text-slate-500 uppercase">Current Balance</span>
-                                <span className="text-sm font-black text-slate-900">KSh {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
+                                <span className="text-sm font-black text-slate-900">$ {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
                             </div>
                         </div>
                         <form onSubmit={handleRecordPayment}>
                             <div className="flex flex-col gap-4">
                                 <div className="form-group">
-                                    <label>Amount to Pay (KSh)</label>
+                                    <label>Amount to Pay ($)</label>
                                     <input 
                                         type="number" 
                                         required 

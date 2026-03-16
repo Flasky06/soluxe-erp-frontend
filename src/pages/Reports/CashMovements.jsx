@@ -103,7 +103,7 @@ const CashMovements = () => {
                             <th className="px-6 py-4">Date</th>
                             <th className="px-6 py-4">Type</th>
                             <th className="px-6 py-4">Description</th>
-                            <th className="px-6 py-4 text-right">Amount (KSh)</th>
+                            <th className="px-6 py-4 text-right">Amount ($)</th>
                             <th className="px-6 py-4 text-center">Actions</th>
                         </tr>
                     </thead>
@@ -154,9 +154,9 @@ const CashMovements = () => {
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Amount (KSh)</label>
+                                <label className="text-xs font-bold text-slate-400 uppercase">Amount ($)</label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">KSh</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
                                     <input 
                                         type="number"
                                         required
@@ -207,7 +207,7 @@ const EquityCard = ({ label, value, icon: _Icon, color, bg }) => {
             </div>
             <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
-                <div className={`text-2xl font-black mt-1 ${color}`}>KSh {value.toLocaleString()}</div>
+                <div className={`text-2xl font-black mt-1 ${color}`}>$ {value.toLocaleString()}</div>
             </div>
         </div>
     );

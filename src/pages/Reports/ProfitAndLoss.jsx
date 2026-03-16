@@ -119,7 +119,7 @@ const ProfitAndLoss = () => {
 
                 <div className="mb-10 bg-slate-50 p-4 rounded-xl flex justify-between items-center">
                     <span className="text-lg font-black text-slate-700 uppercase tracking-tight">Gross Profit</span>
-                    <span className="text-2xl font-black text-slate-900">KSh {parseFloat(data?.grossProfit || 0).toLocaleString()}</span>
+                    <span className="text-2xl font-black text-slate-900">$ {parseFloat(data?.grossProfit || 0).toLocaleString()}</span>
                 </div>
 
                 {/* Expenses Section */}
@@ -141,7 +141,7 @@ const ProfitAndLoss = () => {
                             <ArrowRight size={10} />
                         </div>
                     </div>
-                    <span className="text-4xl font-black tracking-tighter">KSh {parseFloat(data?.netProfit || 0).toLocaleString()}</span>
+                    <span className="text-4xl font-black tracking-tighter">$ {parseFloat(data?.netProfit || 0).toLocaleString()}</span>
                 </div>
             </div>
         </div>
@@ -154,7 +154,7 @@ const SummaryCard = ({ label, value, icon: _Icon, color, bg }) => {
         <div className="premium-card p-6 flex items-center justify-between">
             <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{label}</span>
-                <div className={`text-2xl font-black mt-1 ${color}`}>KSh {parseFloat(value || 0).toLocaleString()}</div>
+                <div className={`text-2xl font-black mt-1 ${color}`}>$ {parseFloat(value || 0).toLocaleString()}</div>
             </div>
             <div className={`p-3 rounded-2xl ${bg} ${color}`}>
                 <Icon size={24} />

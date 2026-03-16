@@ -274,7 +274,7 @@ const Rooms = () => {
                                 <input type="text" required value={typeFormData.name} onChange={e => setTypeFormData({...typeFormData, name: e.target.value})} placeholder="e.g. Deluxe Suite" />
                             </div>
                             <div className="form-group full-width">
-                                <label>Base Price (KSh)</label>
+                                <label>Base Price ($)</label>
                                 <input type="number" required value={typeFormData.basePrice} onChange={e => setTypeFormData({...typeFormData, basePrice: e.target.value})} placeholder="5000" />
                             </div>
                             <div className="form-group full-width">

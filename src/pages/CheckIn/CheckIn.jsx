@@ -269,9 +269,9 @@ const CheckIn = () => {
                 <button 
                     className="btn-primary flex items-center gap-2"
                     onClick={() => {
-                        setWalkInSuccess(null);
-                        setWalkInError(null);
-                        setShowWalkInModal(true);
+                        setDirectCheckInSuccess(null);
+                        setDirectCheckInError(null);
+                        setShowDirectCheckInModal(true);
                     }}
                 >
                     + Check-in Guest
@@ -579,13 +579,13 @@ const CheckIn = () => {
                             <p className="text-lg font-black text-text-dark">{getGuestName(selectedReservation?.guestId)}</p>
                             <div className="flex justify-between mt-2 pt-2 border-t border-maroon/10">
                                 <span className="text-xs font-bold text-slate-500 uppercase">Balance</span>
-                                <span className="text-sm font-black text-slate-900">KSh {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
+                                <span className="text-sm font-black text-slate-900">$ {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
                             </div>
                         </div>
                         <form onSubmit={handleRecordPayment}>
                             <div className="flex flex-col gap-4">
                                 <div className="form-group">
-                                    <label>Amount (KSh)</label>
+                                    <label>Amount ($)</label>
                                     <input 
                                         type="number" step="0.01" required autoFocus
                                         value={paymentData.amount} 
