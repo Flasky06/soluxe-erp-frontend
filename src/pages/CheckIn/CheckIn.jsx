@@ -55,6 +55,24 @@ const CheckIn = () => {
     const [searchParams] = useSearchParams();
     const resIdParam = searchParams.get('resId');
 
+    // --- RESERVATION CHECK-IN ---
+    const handleOpenResModal = useCallback(async (res, roomsList = null) => {
+        setSelectedReservation(res);
+        setResCheckInRoomId('');
+        const sourceRooms = roomsList || allRooms;
+        const availableAll = sourceRooms.filter(r => r.status === 'AVAILABLE');
+        const filtered = availableAll.filter(r => {
+            const rTypeId = r.roomType?.id ?? r.roomTypeId;
+            return Number(rTypeId) === Number(res.roomTypeId);
+        });
+        
+        if (filtered.length === 0 && res.roomTypeId) {
+            console.warn(`No rooms found for RoomType ID: ${res.roomTypeId}. Falling back to all available rooms.`);
+        }
+        setAvailableRooms(filtered.length > 0 ? filtered : availableAll);
+        setShowReservationModal(true);
+    }, [allRooms]);
+
     const fetchAllData = useCallback(async () => {
         setLoading(true);
         try {
@@ -98,23 +116,6 @@ const CheckIn = () => {
         return t ? t.name : `Type #${id}`;
     };
 
-    // --- RESERVATION CHECK-IN ---
-    const handleOpenResModal = useCallback(async (res, roomsList = null) => {
-        setSelectedReservation(res);
-        setResCheckInRoomId('');
-        const sourceRooms = roomsList || allRooms;
-        const availableAll = sourceRooms.filter(r => r.status === 'AVAILABLE');
-        const filtered = availableAll.filter(r => {
-            const rTypeId = r.roomType?.id ?? r.roomTypeId;
-            return Number(rTypeId) === Number(res.roomTypeId);
-        });
-        
-        if (filtered.length === 0 && res.roomTypeId) {
-            console.warn(`No rooms found for RoomType ID: ${res.roomTypeId}. Falling back to all available rooms.`);
-        }
-        setAvailableRooms(filtered.length > 0 ? filtered : availableAll);
-        setShowReservationModal(true);
-    }, [allRooms]);
 
     const handleResCheckIn = async (e) => {
         e.preventDefault();
