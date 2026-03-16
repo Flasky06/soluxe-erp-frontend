@@ -266,8 +266,52 @@ const CheckIn = () => {
                 </button>
             </div>
 
-            {/* RESERVATIONS LIST */}
+            {/* ACTIVE STAYS LIST */}
             <div className="premium-card overflow-x-auto">
+                <div className="px-6 py-4 border-b border-border-gray flex justify-between items-center bg-green-50/30">
+                    <h2 className="text-lg font-bold text-text-dark">Active Stays</h2>
+                    <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                        Currently in House
+                    </span>
+                </div>
+                {loading ? (
+                    <div className="text-center py-20 text-text-slate animate-pulse">Loading active stays...</div>
+                ) : activeStays.length === 0 ? (
+                    <div className="text-center py-20 text-text-slate italic">No active stays currently.</div>
+                ) : (
+                    <table className="management-table">
+                        <thead>
+                            <tr>
+                                <th>Guest</th>
+                                <th>Room</th>
+                                <th>Check-in Date</th>
+                                <th>Exp. Checkout</th>
+                                <th>Occupancy</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {activeStays.map(stay => (
+                                <tr key={stay.id}>
+                                    <td><span className="font-bold text-text-dark">{getGuestName(stay.guestId)}</span></td>
+                                    <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-bold">Room {stay.roomId}</span></td>
+                                    <td className="text-xs">{stay.dateIn ? new Date(stay.dateIn).toLocaleDateString() : '—'}</td>
+                                    <td className="text-xs">{stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : '—'}</td>
+                                    <td className="text-xs">{stay.adults} Adults, {stay.children || 0} Children</td>
+                                    <td>
+                                        <span className={`status-badge ${stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-booked'}`}>
+                                            {stay.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+
+            {/* RESERVATIONS LIST */}
+            <div className="premium-card overflow-x-auto mt-12">
                 <div className="px-6 py-4 border-b border-border-gray flex justify-between items-center">
                     <h2 className="text-lg font-bold text-text-dark">Pending Arrivals</h2>
                     <span className="bg-maroon/10 text-maroon text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -307,50 +351,6 @@ const CheckIn = () => {
                                                 Check In
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </div>
-
-            {/* ACTIVE STAYS LIST */}
-            <div className="premium-card overflow-x-auto mt-12">
-                <div className="px-6 py-4 border-b border-border-gray flex justify-between items-center bg-green-50/30">
-                    <h2 className="text-lg font-bold text-text-dark">Active Stays</h2>
-                    <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                        Currently in House
-                    </span>
-                </div>
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading active stays...</div>
-                ) : activeStays.length === 0 ? (
-                    <div className="text-center py-20 text-text-slate italic">No active stays currently.</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th>Guest</th>
-                                <th>Room</th>
-                                <th>Check-in Date</th>
-                                <th>Exp. Checkout</th>
-                                <th>Occupancy</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {activeStays.map(stay => (
-                                <tr key={stay.id}>
-                                    <td><span className="font-bold text-text-dark">{getGuestName(stay.guestId)}</span></td>
-                                    <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-bold">Room {stay.roomId}</span></td>
-                                    <td className="text-xs">{stay.dateIn ? new Date(stay.dateIn).toLocaleDateString() : '—'}</td>
-                                    <td className="text-xs">{stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : '—'}</td>
-                                    <td className="text-xs">{stay.adults} Adults, {stay.children || 0} Children</td>
-                                    <td>
-                                        <span className={`status-badge ${stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-booked'}`}>
-                                            {stay.status}
-                                        </span>
                                     </td>
                                 </tr>
                             ))}
