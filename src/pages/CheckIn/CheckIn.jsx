@@ -170,7 +170,7 @@ const CheckIn = () => {
         setWalkInSuccess(null);
         setWalkInError(null);
         try {
-            const res = await api.post('/stays/walk-in', {
+            const res = await api.post('/stays/direct', {
                 guestId: parseInt(walkInData.guestId),
                 roomId: parseInt(walkInData.roomId),
                 adults: parseInt(walkInData.adults) || 1,
@@ -183,7 +183,7 @@ const CheckIn = () => {
                 notes: walkInData.notes,
                 userId: user?.id || 1,
             });
-            setWalkInSuccess(`Walk-in successful. Stay #${res.data.id} is now ACTIVE.`);
+            setWalkInSuccess(`Check-in successful. Stay #${res.data.id} is now ACTIVE.`);
             setWalkInData({ 
                 guestId: '', 
                 roomId: '', 

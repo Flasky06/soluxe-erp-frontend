@@ -150,7 +150,7 @@ const Dashboard = () => {
                                         <div className="w-8 h-8 rounded-full bg-maroon/5 flex items-center justify-center text-maroon font-bold text-xs uppercase">
                                             {arr.guestName?.substring(0, 2)}
                                         </div>
-                                        <span className="font-bold text-slate-700">{arr.guestName || 'Walk-in Guest'}</span>
+                                        <span className="font-bold text-slate-700">{arr.guestName || 'Direct Guest'}</span>
                                     </div>
                                     <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-widest">Room {arr.roomNumber || 'TBD'}</span>
                                 </div>

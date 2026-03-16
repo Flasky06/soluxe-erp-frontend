@@ -70,7 +70,7 @@ const POS = () => {
         try {
             // 1. Create a table-less Dining Session
             const sessionPayload = {
-                guestName: guestName || (checkoutMode === 'PAY_NOW' ? 'Walk-in' : 'Room Guest'),
+                guestName: guestName || (checkoutMode === 'PAY_NOW' ? 'Direct Guest' : 'Room Guest'),
                 paxCount: 1,
                 billingType: checkoutMode,
                 stayId: checkoutMode === 'CHARGE_TO_ROOM' ? parseInt(selectedStayId) : null,
@@ -220,7 +220,7 @@ const POS = () => {
                                     className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                     onClick={() => setCheckoutMode('PAY_NOW')}
                                 >
-                                    <CreditCard size={18} /> Pay Now (Walk-in)
+                                    <CreditCard size={18} /> Immediate Payment (Direct)
                                 </button>
                                 <button 
                                     disabled={cart.length === 0}

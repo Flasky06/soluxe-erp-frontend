@@ -255,7 +255,7 @@ const Restaurant = () => {
                                                 <td>
                                                     {activeSessionForTable ? (
                                                         <div className="flex flex-col gap-0.5">
-                                                            <span className="font-bold text-slate-800">{activeSessionForTable.guestName || 'Walk-in'}</span>
+                                                            <span className="font-bold text-slate-800">{activeSessionForTable.guestName || 'Direct Guest'}</span>
                                                             <div className="flex items-center gap-3 text-[11px] font-bold text-slate-500">
                                                                 <span className="text-maroon">KSh {parseFloat(activeSessionForTable.totalAmount || 0).toLocaleString()}</span>
                                                                 <span className="flex items-center gap-1">
@@ -393,7 +393,7 @@ const Restaurant = () => {
                                         type="text"
                                         value={sessionFormData.guestName}
                                         onChange={(e) => setSessionFormData({...sessionFormData, guestName: e.target.value})}
-                                        placeholder="Enter guest name or leave blank for Walk-in"
+                                        placeholder="Enter guest name or leave blank for Direct Guest"
                                     />
                                 </div>
                                 <div className="form-group">
@@ -449,7 +449,7 @@ const Restaurant = () => {
                     <div className="modal-content premium-card !w-[95%] !max-w-[1400px]">
                         <div className="modal-header">
                             <div>
-                                <h2 className="text-xl font-bold text-primary">🧾 {selectedTable?.tableName} — {activeSession.guestName || 'Walk-in'}</h2>
+                                <h2 className="text-xl font-bold text-primary">🧾 {selectedTable?.tableName} — {activeSession.guestName || 'Direct Guest'}</h2>
                                 <p className="text-sm text-text-slate mt-0.5">
                                     Session opened at {new Date(activeSession.openedAt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} · {activeSession.paxCount} pax
                                 </p>
