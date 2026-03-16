@@ -178,7 +178,8 @@ const Folio = () => {
     }, []);
 
     return (
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="flex flex-col gap-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                 <h1 className="text-xl font-bold text-slate-800">Folio & Billing</h1>
                 <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
                     <button className="flex-1 sm:flex-none px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors flex items-center justify-center gap-2" onClick={() => navigate('/charge-types')}>
@@ -224,63 +225,64 @@ const Folio = () => {
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="management-table min-w-[900px]">
-                        <thead>
-                            <tr>
-                                <th>Folio ID</th>
-                                <th>Type</th>
-                                <th>Opened At</th>
-                                <th>Status</th>
-                                <th>Total Balance</th>
-                                <th className="text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {folios.filter(f => {
-                                const matchesSearch = f.id.toString().includes(searchQuery) || f.folioType.toLowerCase().includes(searchQuery.toLowerCase());
-                                const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
-                                return matchesSearch && matchesStatus;
-                            }).length > 0 ? (
-                                folios
-                                    .filter(f => {
-                                        const matchesSearch = f.id.toString().includes(searchQuery) || f.folioType.toLowerCase().includes(searchQuery.toLowerCase());
-                                        const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
-                                        return matchesSearch && matchesStatus;
-                                    })
-                                    .map((folio) => (
-                                    <tr key={folio.id} className="hover:bg-slate-50 transition-colors">
-                                        <td className="font-bold text-slate-700">#{folio.id.toString().padStart(5, '0')}</td>
-                                        <td>{folio.folioType}</td>
-                                        <td>{new Date(folio.openedAt).toLocaleDateString()}</td>
-                                        <td>
-                                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${
-                                                folio.status === 'OPEN' ? 'bg-blue-50 text-blue-600' : 
-                                                folio.status === 'CLOSED' ? 'bg-slate-100 text-slate-600' : 'bg-red-50 text-red-600'
-                                            }`}>
-                                                {folio.status}
-                                            </span>
-                                        </td>
-                                        <td className="font-bold text-primary">$ {folio.totalAmount.toLocaleString()}</td>
-                                        <td>
-                                            <div className="flex justify-end gap-2">
-                                                <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleOpenChargeModal(folio.id)}>Post Charge</button>
-                                                {folio.status === 'OPEN' && (
-                                                    <button className="btn-primary-outline px-3 py-1.5 text-[11px] font-bold" onClick={() => handleOpenPaymentModal(folio.id, folio.totalAmount)}>Record Payment</button>
-                                                )}
-                                                <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleViewReceipts(folio.id)}>Receipts</button>
-                                                {folio.status === 'OPEN' && folio.totalAmount <= 0 && (
-                                                    <button className="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded text-[11px] font-bold shadow-sm transition-all" onClick={() => handleCloseFolio(folio.id)}>Settle & Close</button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
+                            <thead>
                                 <tr>
-                                    <td colSpan="6" className="text-center py-20 text-text-slate">No active folios found.</td>
+                                    <th>Folio ID</th>
+                                    <th>Type</th>
+                                    <th>Opened At</th>
+                                    <th>Status</th>
+                                    <th>Total Balance</th>
+                                    <th className="text-right">Actions</th>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {folios.filter(f => {
+                                    const matchesSearch = f.id.toString().includes(searchQuery) || f.folioType.toLowerCase().includes(searchQuery.toLowerCase());
+                                    const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
+                                    return matchesSearch && matchesStatus;
+                                }).length > 0 ? (
+                                    folios
+                                        .filter(f => {
+                                            const matchesSearch = f.id.toString().includes(searchQuery) || f.folioType.toLowerCase().includes(searchQuery.toLowerCase());
+                                            const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
+                                            return matchesSearch && matchesStatus;
+                                        })
+                                        .map((folio) => (
+                                        <tr key={folio.id} className="hover:bg-slate-50 transition-colors">
+                                            <td className="font-bold text-slate-700">#{folio.id.toString().padStart(5, '0')}</td>
+                                            <td>{folio.folioType}</td>
+                                            <td>{new Date(folio.openedAt).toLocaleDateString()}</td>
+                                            <td>
+                                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${
+                                                    folio.status === 'OPEN' ? 'bg-blue-50 text-blue-600' : 
+                                                    folio.status === 'CLOSED' ? 'bg-slate-100 text-slate-600' : 'bg-red-50 text-red-600'
+                                                }`}>
+                                                    {folio.status}
+                                                </span>
+                                            </td>
+                                            <td className="font-bold text-primary">$ {folio.totalAmount.toLocaleString()}</td>
+                                            <td>
+                                                <div className="flex justify-end gap-2">
+                                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleOpenChargeModal(folio.id)}>Post Charge</button>
+                                                    {folio.status === 'OPEN' && (
+                                                        <button className="btn-primary-outline px-3 py-1.5 text-[11px] font-bold" onClick={() => handleOpenPaymentModal(folio.id, folio.totalAmount)}>Record Payment</button>
+                                                    )}
+                                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleViewReceipts(folio.id)}>Receipts</button>
+                                                    {folio.status === 'OPEN' && folio.totalAmount <= 0 && (
+                                                        <button className="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded text-[11px] font-bold shadow-sm transition-all" onClick={() => handleCloseFolio(folio.id)}>Settle & Close</button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className="text-center py-20 text-text-slate">No active folios found.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 
