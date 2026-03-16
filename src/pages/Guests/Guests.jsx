@@ -131,6 +131,16 @@ const Guests = () => {
                                     </td>
                                     <td>
                                         <div className="table-actions">
+                                            <a 
+                                                href={`/check-in?guestId=${guest.id}`} 
+                                                className="btn-secondary !py-1 !px-3 text-xs"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    window.location.href = `/check-in?guestId=${guest.id}`;
+                                                }}
+                                            >
+                                                Check In
+                                            </a>
                                             <button className="view-btn" onClick={() => handleOpenModal(guest)}>Edit</button>
                                         </div>
                                     </td>
