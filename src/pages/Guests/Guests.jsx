@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { User, Search } from 'lucide-react';
 import GuestForm from '../../components/GuestForm/GuestForm';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Guests = () => {
     const [guests, setGuests] = useState([]);
@@ -11,6 +12,8 @@ const Guests = () => {
     const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'history'
     const [stayHistory, setStayHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
 
     const refreshData = async () => {
         try {
@@ -68,6 +71,16 @@ const Guests = () => {
         g.idNumber?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredGuests.length / PAGE_SIZE);
+    const paginatedGuests = filteredGuests.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="table-tools">
@@ -101,7 +114,7 @@ const Guests = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredGuests.length > 0 ? filteredGuests.map((guest) => (
+                            {paginatedGuests.length > 0 ? paginatedGuests.map((guest) => (
                                 <tr key={guest.id}>
                                     <td>
                                         <div className="flex items-center gap-3">
@@ -173,6 +186,15 @@ const Guests = () => {
                     </table>
                 )}
             </div>
+            {!loading && filteredGuests.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredGuests.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             {showModal && (
                 <div className="modal-overlay">

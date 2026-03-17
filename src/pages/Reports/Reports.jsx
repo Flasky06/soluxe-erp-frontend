@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { FileText } from 'lucide-react';
+import Pagination from '../../components/Pagination/Pagination';
 
 // ─── Section Tab Button ───────────────────────────────────────────────────────
 const TabBtn = ({ label, active, onClick }) => (
@@ -63,6 +64,8 @@ const Reports = () => {
     const [venueBookings, setVenueBookings] = useState([]);
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
 
     const today = new Date().toISOString().split('T')[0];
 
@@ -136,7 +139,8 @@ const Reports = () => {
             }
         };
         fetchAll();
-    }, [startDate, endDate]);
+        setCurrentPage(1);
+    }, [startDate, endDate, activeTab]);
 
     // ─── Derived stats ─────────────────────────────────────────────────────────
     const totalRooms = rooms.length;
@@ -329,7 +333,7 @@ const Reports = () => {
                                 <tbody>
                                     {loading ? <LoadingRow /> : reservations.length === 0
                                         ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No reservations found.</td></tr>
-                                        : reservations.map(r => {
+                                        : reservations.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(r => {
                                             const g = guests.find(g => g.id === r.guestId);
                                             const nights = r.dateIn && r.dateOut
                                                 ? Math.round((new Date(r.dateOut) - new Date(r.dateIn)) / 86400000)
@@ -348,6 +352,17 @@ const Reports = () => {
                                         })}
                                 </tbody>
                             </table>
+                            {!loading && reservations.length > 0 && (
+                                <div className="p-4 border-t border-slate-100">
+                                    <Pagination 
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(reservations.length / PAGE_SIZE)}
+                                        onPageChange={setCurrentPage}
+                                        totalItems={reservations.length}
+                                        pageSize={PAGE_SIZE}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Section>
                 )}
@@ -372,7 +387,7 @@ const Reports = () => {
                                 <tbody>
                                     {loading ? <LoadingRow /> : guests.length === 0
                                         ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No guests found.</td></tr>
-                                        : guests.map(g => (
+                                        : guests.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(g => (
                                             <tr key={g.id}>
                                                 <td className="text-slate-400 text-xs">{g.id}</td>
                                                 <td className="font-bold text-text-dark">{g.fullName}</td>
@@ -385,6 +400,17 @@ const Reports = () => {
                                         ))}
                                 </tbody>
                             </table>
+                            {!loading && guests.length > 0 && (
+                                <div className="p-4 border-t border-slate-100">
+                                    <Pagination 
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(guests.length / PAGE_SIZE)}
+                                        onPageChange={setCurrentPage}
+                                        totalItems={guests.length}
+                                        pageSize={PAGE_SIZE}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Section>
                 )}
@@ -431,7 +457,7 @@ const Reports = () => {
                                     <tbody>
                                         {loading ? <LoadingRow /> : employees.length === 0
                                             ? <tr><td colSpan="5" className="py-16 text-center text-slate-400 italic">No employees found.</td></tr>
-                                            : employees.map(e => (
+                                            : employees.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(e => (
                                                 <tr key={e.id}>
                                                     <td className="font-bold text-text-dark">{e.firstName} {e.lastName}</td>
                                                     <td><span className="status-badge info text-[11px]">{e.department || e.departmentName || '—'}</span></td>
@@ -442,6 +468,17 @@ const Reports = () => {
                                             ))}
                                     </tbody>
                                 </table>
+                                {!loading && employees.length > 0 && (
+                                    <div className="p-4 border-t border-slate-100">
+                                        <Pagination 
+                                            currentPage={currentPage}
+                                            totalPages={Math.ceil(employees.length / PAGE_SIZE)}
+                                            onPageChange={setCurrentPage}
+                                            totalItems={employees.length}
+                                            pageSize={PAGE_SIZE}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </Section>
@@ -468,7 +505,7 @@ const Reports = () => {
                                 <tbody>
                                     {loading ? <LoadingRow /> : diningOrders.length === 0
                                         ? <tr><td colSpan="6" className="py-16 text-center text-slate-400 italic">No dining orders found.</td></tr>
-                                        : diningOrders.map(o => (
+                                        : diningOrders.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(o => (
                                             <tr key={o.id}>
                                                 <td className="text-slate-400 text-xs">{o.id}</td>
                                                 <td className="text-sm text-slate-600">{o.sessionId || '—'}</td>
@@ -480,6 +517,17 @@ const Reports = () => {
                                         ))}
                                 </tbody>
                             </table>
+                            {!loading && diningOrders.length > 0 && (
+                                <div className="p-4 border-t border-slate-100">
+                                    <Pagination 
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(diningOrders.length / PAGE_SIZE)}
+                                        onPageChange={setCurrentPage}
+                                        totalItems={diningOrders.length}
+                                        pageSize={PAGE_SIZE}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Section>
                 )}
@@ -505,7 +553,7 @@ const Reports = () => {
                                 <tbody>
                                     {loading ? <LoadingRow /> : venueBookings.length === 0
                                         ? <tr><td colSpan="9" className="py-16 text-center text-slate-400 italic">No venue bookings found.</td></tr>
-                                        : venueBookings.map(b => (
+                                        : venueBookings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(b => (
                                             <tr key={b.id}>
                                                 <td className="text-slate-400 text-xs">{b.id}</td>
                                                 <td className="font-bold text-text-dark">{b.clientName}<br /><span className="text-[11px] text-slate-400 font-normal">{b.clientCompany}</span></td>
@@ -522,6 +570,17 @@ const Reports = () => {
                                         ))}
                                 </tbody>
                             </table>
+                            {!loading && venueBookings.length > 0 && (
+                                <div className="p-4 border-t border-slate-100">
+                                    <Pagination 
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(venueBookings.length / PAGE_SIZE)}
+                                        onPageChange={setCurrentPage}
+                                        totalItems={venueBookings.length}
+                                        pageSize={PAGE_SIZE}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Section>
                 )}
@@ -547,7 +606,7 @@ const Reports = () => {
                                 <tbody>
                                     {loading ? <LoadingRow /> : maintenance.length === 0
                                         ? <tr><td colSpan="6" className="py-16 text-center text-slate-400 italic">No maintenance tickets found.</td></tr>
-                                        : maintenance.map(m => (
+                                        : maintenance.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(m => (
                                             <tr key={m.id}>
                                                 <td className="text-slate-400 text-xs">{m.id}</td>
                                                 <td className="font-semibold text-text-dark">{m.issueType || m.description || '—'}</td>
@@ -567,6 +626,17 @@ const Reports = () => {
                                         ))}
                                 </tbody>
                             </table>
+                            {!loading && maintenance.length > 0 && (
+                                <div className="p-4 border-t border-slate-100">
+                                    <Pagination 
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(maintenance.length / PAGE_SIZE)}
+                                        onPageChange={setCurrentPage}
+                                        totalItems={maintenance.length}
+                                        pageSize={PAGE_SIZE}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Section>
                 )}
@@ -592,7 +662,7 @@ const Reports = () => {
                                 <tbody>
                                     {loading ? <LoadingRow /> : inventory.length === 0
                                         ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No inventory items found.</td></tr>
-                                        : inventory.map(item => {
+                                        : inventory.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(item => {
                                             const isLow = item.quantity != null && item.reorderLevel != null && item.quantity <= item.reorderLevel;
                                             const isOut = item.quantity === 0;
                                             return (
@@ -613,6 +683,17 @@ const Reports = () => {
                                         })}
                                 </tbody>
                             </table>
+                            {!loading && inventory.length > 0 && (
+                                <div className="p-4 border-t border-slate-100">
+                                    <Pagination 
+                                        currentPage={currentPage}
+                                        totalPages={Math.ceil(inventory.length / PAGE_SIZE)}
+                                        onPageChange={setCurrentPage}
+                                        totalItems={inventory.length}
+                                        pageSize={PAGE_SIZE}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Section>
                 )}

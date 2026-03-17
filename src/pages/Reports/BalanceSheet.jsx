@@ -64,7 +64,6 @@ const BalanceSheet = () => {
                 <div className="premium-card p-8 bg-white border-t-8 border-t-emerald-500 shadow-xl min-h-[700px]">
                     <div className="flex justify-between items-center mb-10 pb-4 border-b border-slate-100">
                         <h2 className="text-xl font-black text-slate-800 uppercase tracking-widest">ASSETS</h2>
-                        <ArrowUpCircle className="text-emerald-500" />
                     </div>
 
                     <div className="space-y-6">
@@ -99,7 +98,6 @@ const BalanceSheet = () => {
                     <div className="premium-card p-8 bg-white border-t-8 border-t-red-500 shadow-xl flex-1">
                         <div className="flex justify-between items-center mb-10 pb-4 border-b border-slate-100">
                             <h2 className="text-xl font-black text-slate-800 uppercase tracking-widest">LIABILITIES</h2>
-                            <ArrowDownCircle className="text-red-500" />
                         </div>
 
                         <div className="space-y-6">
@@ -116,7 +114,6 @@ const BalanceSheet = () => {
                     <div className="premium-card p-8 bg-white border-t-8 border-t-indigo-500 shadow-xl flex-1">
                         <div className="flex justify-between items-center mb-10 pb-4 border-b border-slate-100">
                             <h2 className="text-xl font-black text-slate-800 uppercase tracking-widest">EQUITY</h2>
-                            <ShieldCheck className="text-indigo-500" />
                         </div>
 
                         <div className="space-y-6">

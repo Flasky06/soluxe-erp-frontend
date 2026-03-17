@@ -78,8 +78,8 @@ const PettyCash = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="premium-card p-6 border-l-4 border-l-primary">
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Available Reserve</span>
-                    <div className="text-2xl font-black text-slate-800 mt-1">$ 15,000</div>
-                    <p className="text-[10px] text-slate-400 mt-1 italic">Replenished weekly</p>
+                    <div className="text-2xl font-black text-slate-800 mt-1">$ 0.00</div>
+                    <p className="text-[10px] text-slate-400 mt-1 italic">Balance to be synced with accounts</p>
                 </div>
                 <div className="premium-card p-6">
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Spent Today</span>
@@ -136,7 +136,7 @@ const PettyCash = () => {
 
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
                             <h2 className="text-xl font-black text-slate-800 tracking-tight">New Petty Cash Voucher</h2>
                             <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>

@@ -8,6 +8,7 @@ import {
     Plus, Receipt, Loader2
 } from 'lucide-react';
 import GuestForm from '../../components/GuestForm/GuestForm';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Reservations = () => {
     const navigate = useNavigate();
@@ -20,6 +21,8 @@ const Reservations = () => {
     // Filters & Search
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
 
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [showQuickGuestModal, setShowQuickGuestModal] = useState(false);
@@ -82,6 +85,10 @@ const Reservations = () => {
     };
 
     useEffect(() => { fetchAllData(); }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter]);
 
     const handleGuestChange = (guestId) => {
         const guest = guests.find(g => g.id === parseInt(guestId));
@@ -289,6 +296,12 @@ const Reservations = () => {
         inHouse: reservations.filter(r => r.status === 'CHECKED_IN').length,
     };
 
+    const totalPages = Math.ceil(filteredReservations.length / PAGE_SIZE);
+    const paginatedReservations = filteredReservations.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col gap-6">
             {/* Header & New Action */}
@@ -382,8 +395,8 @@ const Reservations = () => {
                                         </td>
                                     </tr>
                                 ))
-                            ) : filteredReservations.length > 0 ? (
-                                filteredReservations.map((res) => {
+                            ) : paginatedReservations.length > 0 ? (
+                                paginatedReservations.map((res) => {
                                     const guest = getGuest(res.guestId);
                                     const sInfo = getStatusInfo(res.status);
                                     return (
@@ -479,6 +492,15 @@ const Reservations = () => {
                         </tbody>
                     </table>
                 </div>
+                {!loading && filteredReservations.length > 0 && (
+                    <Pagination 
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        totalItems={filteredReservations.length}
+                        pageSize={PAGE_SIZE}
+                    />
+                )}
             </div>
 
             {/* Booking Modal */}
@@ -624,71 +646,102 @@ const Reservations = () => {
 
             {/* Payment Modal */}
             {showPaymentModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content !w-[95%] !max-w-[450px]">
-                        <div className="modal-header">
-                            <h2 className="flex items-center gap-2">
-                                <Wallet className="text-maroon" /> Record Payment
+                <div className="modal-overlay z-[1100]">
+                    <div className="modal-content !max-w-[650px] !p-0 overflow-hidden">
+                        <div className="modal-header !p-6 border-b border-slate-100">
+                            <h2 className="flex items-center gap-3 text-xl font-bold text-slate-800 m-0">
+                                <div className="bg-maroon/10 p-2 rounded-lg">
+                                    <Wallet className="text-maroon" size={20} />
+                                </div>
+                                Record Reservation Payment
                             </h2>
-                            <button className="close-modal-btn" onClick={() => setShowPaymentModal(false)}>&times;</button>
+                            <button className="close-modal-btn !top-6 !right-6" onClick={() => setShowPaymentModal(false)}>&times;</button>
                         </div>
-                        <div className="p-4 bg-maroon/5 rounded-xl mb-6">
-                            <p className="text-[11px] font-bold text-maroon uppercase tracking-widest">Reservation For</p>
-                            <p className="text-lg font-black text-text-dark">{getGuest(selectedReservation?.guestId).fullName}</p>
-                            <div className="flex justify-between mt-2 pt-2 border-t border-maroon/10">
-                                <span className="text-xs font-bold text-slate-500 uppercase">Current Balance</span>
-                                <span className="text-sm font-black text-slate-900">$ {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
-                            </div>
-                        </div>
-                        <form onSubmit={handleRecordPayment}>
-                            <div className="flex flex-col gap-4">
-                                <div className="form-group">
-                                    <label>Amount to Pay ($)</label>
-                                    <input 
-                                        type="number" 
-                                        required 
-                                        autoFocus
-                                        value={paymentData.amount} 
-                                        onChange={(e) => setPaymentData({...paymentData, amount: e.target.value})}
-                                        placeholder="0.00"
-                                    />
+                        
+                        <div className="p-8">
+                            {/* Summary Card */}
+                            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8 flex items-center justify-between shadow-sm">
+                                <div className="flex flex-col">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Reservation For</p>
+                                    <p className="text-xl font-black text-slate-900 leading-tight">{getGuest(selectedReservation?.guestId).fullName}</p>
+                                    <p className="text-xs text-slate-500 font-medium">Folio #{activeFolio?.id.toString().padStart(5, '0')}</p>
                                 </div>
-                                <div className="form-group">
-                                    <label>Payment Method</label>
-                                    <select 
-                                        required 
-                                        value={paymentData.paymentMethodId} 
-                                        onChange={(e) => setPaymentData({...paymentData, paymentMethodId: e.target.value})}
+                                <div className="bg-white px-6 py-4 rounded-xl border border-slate-200 text-right shadow-sm">
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Current Balance</span>
+                                    <span className="text-2xl font-black text-maroon">$ {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleRecordPayment} className="space-y-6">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="form-group">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block text-left">Amount to Pay ($)</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+                                            <input 
+                                                type="number" step="0.01" required autoFocus
+                                                className="w-full !pl-8 !py-3 !rounded-xl !border-slate-200 !text-lg font-black text-slate-900"
+                                                value={paymentData.amount} 
+                                                onChange={e => setPaymentData({...paymentData, amount: e.target.value})}
+                                                placeholder="0.00"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="form-group text-left">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Payment Method</label>
+                                        <select 
+                                            required 
+                                            className="w-full !py-3 !px-4 !rounded-xl !border-slate-200 font-bold text-slate-700 h-[50px] bg-slate-50"
+                                            value={paymentData.paymentMethodId} 
+                                            onChange={e => setPaymentData({...paymentData, paymentMethodId: e.target.value})}
+                                        >
+                                            {paymentMethods.map(m => (
+                                                <option key={m.id} value={m.id}>{m.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="form-group text-left">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Reference Code</label>
+                                        <input 
+                                            type="text" 
+                                            className="w-full !py-3 !px-4 !rounded-xl !border-slate-200 font-semibold"
+                                            value={paymentData.reference} 
+                                            onChange={e => setPaymentData({...paymentData, reference: e.target.value})} 
+                                            placeholder="Receipt / TXN ID" 
+                                        />
+                                    </div>
+                                    <div className="form-group text-left">
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Internal Notes</label>
+                                        <input 
+                                            type="text" 
+                                            className="w-full !py-3 !px-4 !rounded-xl !border-slate-200 font-semibold"
+                                            value={paymentData.notes} 
+                                            onChange={e => setPaymentData({...paymentData, notes: e.target.value})} 
+                                            placeholder="Optional comments..." 
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4 pt-4">
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowPaymentModal(false)} 
+                                        className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-xl transition-all"
                                     >
-                                        {paymentMethods.map(m => (
-                                            <option key={m.id} value={m.id}>{m.name}</option>
-                                        ))}
-                                    </select>
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="flex-[2] bg-maroon hover:bg-[#6b0f11] text-white font-black text-lg py-4 rounded-xl shadow-lg shadow-maroon/20 transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <Wallet size={18} /> Confirm Payment
+                                    </button>
                                 </div>
-                                <div className="form-group">
-                                    <label>Reference (Receipt/Transaction ID)</label>
-                                    <input 
-                                        type="text" 
-                                        value={paymentData.reference} 
-                                        onChange={(e) => setPaymentData({...paymentData, reference: e.target.value})}
-                                        placeholder="Optional reference"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Notes</label>
-                                    <textarea 
-                                        value={paymentData.notes} 
-                                        onChange={(e) => setPaymentData({...paymentData, notes: e.target.value})}
-                                        className="min-h-[60px]"
-                                        placeholder="Additional details..."
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer !mt-8">
-                                <button type="button" onClick={() => setShowPaymentModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary flex-1">Record Payment</button>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}
@@ -696,7 +749,7 @@ const Reservations = () => {
             {/* Manage Action Modal */}
             {showActionModal && actionReservation && (
                 <div className="modal-overlay z-[2000]">
-                    <div className="modal-content !w-[90%] !max-w-[400px]">
+                    <div className="modal-content !w-[90%] !max-w-[500px]">
                         <div className="modal-header border-b border-slate-100 pb-4 mb-4">
                             <div>
                                 <h2 className="text-lg font-black text-slate-800">Manage Booking</h2>

@@ -232,7 +232,7 @@ const MenuItems = () => {
             {/* Quick Category Modal */}
             {showQuickCatModal && (
                 <div className="modal-overlay z-[1000]">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">Quick Add Category</h2>
                             <button className="close-modal-btn" onClick={() => setShowQuickCatModal(false)}>&times;</button>

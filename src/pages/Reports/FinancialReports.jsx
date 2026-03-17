@@ -87,7 +87,6 @@ const FinancialReports = () => {
                     label="Billed Revenue" 
                     value={`$ ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
                     desc="Total invoices generated"
-                    icon={FileText}
                     color="text-primary"
                     bg="bg-primary/5"
                 />
@@ -95,7 +94,6 @@ const FinancialReports = () => {
                     label="Cash Collected" 
                     value={`$ ${parseFloat(financeData?.totalPayments || 0).toLocaleString()}`} 
                     desc="Actual payments received"
-                    icon={CreditCard}
                     color="text-green-600"
                     bg="bg-green-50"
                 />
@@ -103,7 +101,6 @@ const FinancialReports = () => {
                     label="Total Expenses" 
                     value={`$ ${parseFloat(financeData?.totalExpenses || 0).toLocaleString()}`} 
                     desc="Operational expenditures"
-                    icon={ArrowDownRight}
                     color="text-red-600"
                     bg="bg-red-50"
                 />
@@ -111,7 +108,6 @@ const FinancialReports = () => {
                     label="Net Collections" 
                     value={`$ ${ (parseFloat(financeData?.totalPayments || 0) - parseFloat(financeData?.operationalExpenses || 0)).toLocaleString()}`} 
                     desc="Collections - OpEx"
-                    icon={DollarSign}
                     color="text-blue-600"
                     bg="bg-blue-50"
                 />
@@ -119,7 +115,6 @@ const FinancialReports = () => {
                     label="Petty Cash" 
                     value={`$ ${parseFloat(financeData?.pettyCash || 0).toLocaleString()}`} 
                     desc="Daily cash spend"
-                    icon={Zap}
                     color="text-orange-600"
                     bg="bg-orange-50"
                 />
@@ -127,7 +122,6 @@ const FinancialReports = () => {
                     label="Billed Revenue" 
                     value={`$ ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
                     desc="Total invoices generated"
-                    icon={FileText}
                     color="text-primary"
                     bg="bg-primary/5"
                 />
@@ -165,7 +159,6 @@ const FinancialReports = () => {
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
                         <span>Treasury Audit</span>
-                        <ShieldCheck className="w-4 h-4 text-indigo-500" />
                     </h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
@@ -229,7 +222,6 @@ const FinancialReports = () => {
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
                         <span>Debtor Tracking</span>
-                        <Search className="w-4 h-4 text-slate-500" />
                     </h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center p-3 rounded-xl bg-red-50/50 border border-red-100">
@@ -256,7 +248,6 @@ const FinancialReports = () => {
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
                         <span>Liquidity Summary</span>
-                        <Zap className="w-4 h-4 text-amber-500" />
                     </h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center p-3 rounded-xl bg-orange-50/50 border border-orange-100">
@@ -348,13 +339,9 @@ const FinancialReports = () => {
     );
 };
 
-const StatCard = ({ label, value, desc, icon: _Icon, color, bg }) => {
-    const Icon = _Icon;
+const StatCard = ({ label, value, desc, color }) => {
     return (
         <div className="premium-card p-6 flex items-start gap-4">
-            <div className={`p-3 rounded-xl ${bg} ${color}`}>
-                <Icon size={24} />
-            </div>
             <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
                 <div className={`text-2xl font-black mt-1 ${color}`}>{value}</div>

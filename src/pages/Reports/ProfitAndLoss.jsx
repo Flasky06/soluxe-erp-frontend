@@ -68,30 +68,21 @@ const ProfitAndLoss = () => {
                 <SummaryCard 
                     label="Gross Revenue" 
                     value={data?.totalRevenue} 
-                    icon={TrendingUp} 
                     color="text-emerald-600" 
-                    bg="bg-emerald-50" 
                 />
                 <SummaryCard 
                     label="Total OpEx" 
                     value={data?.totalOperatingExpenses} 
-                    icon={PieChart} 
                     color="text-red-600" 
-                    bg="bg-red-50" 
                 />
                 <SummaryCard 
                     label="Net Profit" 
                     value={data?.netProfit} 
-                    icon={BarChart3} 
                     color="text-blue-600" 
-                    bg="bg-blue-50" 
                 />
             </div>
 
             <div className="premium-card p-10 bg-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-8 opacity-5">
-                    <TrendingUp size={200} />
-                </div>
                 
                 <div className="mb-10 text-center border-b border-slate-100 pb-10">
                     <h2 className="text-3xl font-black text-slate-800 uppercase tracking-widest">Soluxe Club Hotel Limited</h2>
@@ -138,7 +129,6 @@ const ProfitAndLoss = () => {
                         <h4 className="text-xs font-bold uppercase tracking-widest opacity-80">Net Profit for the Period</h4>
                         <div className="flex items-center gap-2 mt-1 font-bold italic opacity-60 text-[10px]">
                             <span>Margin: {data?.operatingMargin}%</span>
-                            <ArrowRight size={10} />
                         </div>
                     </div>
                     <span className="text-4xl font-black tracking-tighter">$ {parseFloat(data?.netProfit || 0).toLocaleString()}</span>
@@ -148,16 +138,12 @@ const ProfitAndLoss = () => {
     );
 };
 
-const SummaryCard = ({ label, value, icon: _Icon, color, bg }) => {
-    const Icon = _Icon;
+const SummaryCard = ({ label, value, color }) => {
     return (
         <div className="premium-card p-6 flex items-center justify-between">
             <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{label}</span>
                 <div className={`text-2xl font-black mt-1 ${color}`}>$ {parseFloat(value || 0).toLocaleString()}</div>
-            </div>
-            <div className={`p-3 rounded-2xl ${bg} ${color}`}>
-                <Icon size={24} />
             </div>
         </div>
     );

@@ -43,9 +43,6 @@ const Debtors = () => {
                 {/* Accounts Receivable Card */}
                 <div className="premium-card p-6 border-l-4 border-l-blue-500">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
-                            <Users size={24} />
-                        </div>
                         <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded uppercase">Assets</span>
                     </div>
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Accounts Receivable (AR)</span>
@@ -58,9 +55,6 @@ const Debtors = () => {
                 {/* Accounts Payable Card */}
                 <div className="premium-card p-6 border-l-4 border-l-red-500">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-red-50 rounded-xl text-red-600">
-                            <Truck size={24} />
-                        </div>
                         <span className="text-[10px] font-black text-red-600 bg-red-50 px-2 py-1 rounded uppercase">Liabilities</span>
                     </div>
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Accounts Payable (AP)</span>
@@ -76,7 +70,6 @@ const Debtors = () => {
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
                         <span>Top Guest Debtors</span>
-                        <ChevronRight className="w-4 h-4 text-slate-400" />
                     </h3>
                     <div className="flex flex-col items-center justify-center py-10 text-slate-400 italic text-sm">
                         Detailed guest debtor list coming soon...
@@ -86,7 +79,6 @@ const Debtors = () => {
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
                         <span>Top Supplier Payables</span>
-                        <ChevronRight className="w-4 h-4 text-slate-400" />
                     </h3>
                     <div className="flex flex-col items-center justify-center py-10 text-slate-400 italic text-sm">
                         Detailed supplier payable list coming soon...

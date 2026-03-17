@@ -76,23 +76,17 @@ const CashMovements = () => {
                 <EquityCard 
                     label="Total Drawings" 
                     value={movements.filter(m => m.type === 'DRAWING').reduce((acc, curr) => acc + curr.amount, 0)}
-                    icon={ArrowDownRight}
                     color="text-amber-600"
-                    bg="bg-amber-50"
                 />
                 <EquityCard 
                     label="Total Savings" 
                     value={movements.filter(m => m.type === 'SAVING').reduce((acc, curr) => acc + curr.amount, 0)}
-                    icon={TrendingUp}
                     color="text-emerald-600"
-                    bg="bg-emerald-50"
                 />
                 <EquityCard 
                     label="Capital Injected" 
                     value={movements.filter(m => m.type === 'CAPITAL_INJECTION').reduce((acc, curr) => acc + curr.amount, 0)}
-                    icon={ArrowUpRight}
                     color="text-indigo-600"
-                    bg="bg-indigo-50"
                 />
             </div>
 
@@ -198,13 +192,9 @@ const CashMovements = () => {
     );
 };
 
-const EquityCard = ({ label, value, icon: _Icon, color, bg }) => {
-    const Icon = _Icon;
+const EquityCard = ({ label, value, color }) => {
     return (
         <div className="premium-card p-6 flex items-start gap-4">
-            <div className={`p-3 rounded-xl ${bg} ${color}`}>
-                <Icon size={24} />
-            </div>
             <div>
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{label}</span>
                 <div className={`text-2xl font-black mt-1 ${color}`}>$ {value.toLocaleString()}</div>

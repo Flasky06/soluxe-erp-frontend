@@ -139,7 +139,7 @@ const PaymentMethods = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[400px]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingMethod ? 'Edit Payment Method' : 'Register New Method'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>

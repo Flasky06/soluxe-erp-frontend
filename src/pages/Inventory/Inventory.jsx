@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Inventory = () => {
     const [items, setItems] = useState([]);
@@ -9,6 +10,8 @@ const Inventory = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [units, setUnits] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const [formData, setFormData] = useState({
         name: '',
         categoryId: '',
@@ -151,6 +154,16 @@ const Inventory = () => {
         getCategoryName(item.categoryId).toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredItems.length / PAGE_SIZE);
+    const paginatedItems = filteredItems.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="table-tools">
@@ -204,7 +217,7 @@ const Inventory = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredItems.length > 0 ? filteredItems.map((item) => (
+                                {paginatedItems.length > 0 ? paginatedItems.map((item) => (
                                     <tr key={item.id}>
                                         <td>
                                             <span className="font-bold text-text-dark">{item.name || '-'}</span>
@@ -239,6 +252,15 @@ const Inventory = () => {
                         </table>
                     )}
                 </div>
+                {!loading && filteredItems.length > 0 && (
+                    <Pagination 
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        totalItems={filteredItems.length}
+                        pageSize={PAGE_SIZE}
+                    />
+                )}
             </div>
 
             {showModal && (
@@ -316,7 +338,7 @@ const Inventory = () => {
             {/* Quick Category Modal */}
             {showQuickCatModal && (
                 <div className="modal-overlay z-[1000]">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">Quick Add Category</h2>
                             <button className="close-modal-btn" onClick={() => setShowQuickCatModal(false)}>&times;</button>
@@ -346,7 +368,7 @@ const Inventory = () => {
             {/* Quick Unit Modal */}
             {showUnitModal && (
                 <div className="modal-overlay z-[1001]">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">Add Inventory Unit</h2>
                             <button className="close-modal-btn" onClick={() => setShowUnitModal(false)}>&times;</button>

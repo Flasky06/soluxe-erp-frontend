@@ -131,7 +131,7 @@ const ExpenseTypes = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[400px]">
+                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Expense Category' : 'New Expense Category'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>

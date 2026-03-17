@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Expenses = () => {
     const [expenses, setExpenses] = useState([]);
@@ -9,6 +10,8 @@ const Expenses = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingExpense, setEditingExpense] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const [formData, setFormData] = useState({
         description: '',
         amount: '',
@@ -131,6 +134,16 @@ const Expenses = () => {
         exp.expenseType?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredExpenses.length / PAGE_SIZE);
+    const paginatedExpenses = filteredExpenses.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="table-tools">
@@ -166,7 +179,7 @@ const Expenses = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredExpenses.length > 0 ? filteredExpenses.map((exp) => (
+                            {paginatedExpenses.length > 0 ? paginatedExpenses.map((exp) => (
                                 <tr key={exp.id}>
                                     <td>
                                         <span className="font-medium text-text-slate">{exp.expenseDate}</span>
@@ -204,6 +217,15 @@ const Expenses = () => {
                     </table>
                 )}
             </div>
+            {!loading && filteredExpenses.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredExpenses.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             {showModal && (
                 <div className="modal-overlay">
@@ -272,7 +294,7 @@ const Expenses = () => {
 
             {showTypeModal && (
                 <div className="modal-overlay !z-[1100]">
-                    <div className="modal-content premium-card !max-w-[400px]">
+                    <div className="modal-content premium-card !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-lg font-bold">Quick-Add Category</h2>
                             <button className="close-modal-btn" onClick={() => setShowTypeModal(false)}>&times;</button>

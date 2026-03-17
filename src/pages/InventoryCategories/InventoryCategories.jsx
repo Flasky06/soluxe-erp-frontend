@@ -110,7 +110,7 @@ const InventoryCategories = () => {
 
             {showModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[70%] !max-w-[400px]">
+                    <div className="modal-content premium-card !w-[70%] !max-w-[500px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-primary">{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>
                             <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
