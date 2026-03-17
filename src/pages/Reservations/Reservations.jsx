@@ -647,7 +647,7 @@ const Reservations = () => {
             {/* Payment Modal */}
             {showPaymentModal && (
                 <div className="modal-overlay z-[1100]">
-                    <div className="modal-content !max-w-[650px] !p-0 overflow-hidden">
+                    <div className="modal-content !max-w-[750px] !p-0 overflow-hidden">
                         <div className="modal-header !p-6 border-b border-slate-100">
                             <h2 className="flex items-center gap-3 text-xl font-bold text-slate-800 m-0">
                                 <div className="bg-maroon/10 p-2 rounded-lg">
@@ -749,7 +749,7 @@ const Reservations = () => {
             {/* Manage Action Modal */}
             {showActionModal && actionReservation && (
                 <div className="modal-overlay z-[2000]">
-                    <div className="modal-content !w-[90%] !max-w-[500px]">
+                    <div className="modal-content !w-[90%] !max-w-[600px]">
                         <div className="modal-header border-b border-slate-100 pb-4 mb-4">
                             <div>
                                 <h2 className="text-lg font-black text-slate-800">Manage Booking</h2>

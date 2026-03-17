@@ -383,7 +383,7 @@ const CheckIn = () => {
             {/* GUEST CHECK-IN MODAL */}
             {showDirectCheckInModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
+                    <div className="modal-content premium-card !w-[85%] !max-w-[800px]">
                         <div className="modal-header">
                             <h2 className="text-xl font-bold text-text-dark">Guest Check-in</h2>
                             <button className="close-modal-btn" onClick={() => setShowDirectCheckInModal(false)}>&times;</button>
@@ -511,7 +511,7 @@ const CheckIn = () => {
             {/* Reservation Check-in Room Selection Modal */}
             {showReservationModal && selectedReservation && (
                 <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[80%] !max-w-[600px]">
+                    <div className="modal-content premium-card !w-[80%] !max-w-[700px]">
                         <div className="modal-header">
                             <h2>Assign Room — Check-in</h2>
                             <button className="close-modal-btn" onClick={() => setShowReservationModal(false)}>&times;</button>
@@ -567,7 +567,7 @@ const CheckIn = () => {
             {/* Payment Modal */}
             {showPaymentModal && (
                 <div className="modal-overlay z-[1100]">
-                    <div className="modal-content !max-w-[650px] !p-0 overflow-hidden">
+                    <div className="modal-content !max-w-[750px] !p-0 overflow-hidden">
                         <div className="modal-header !p-6 border-b border-slate-100">
                             <h2 className="flex items-center gap-3 text-xl font-bold text-slate-800 m-0">
                                 <div className="bg-maroon/10 p-2 rounded-lg">

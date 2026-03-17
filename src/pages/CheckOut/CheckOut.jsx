@@ -675,7 +675,7 @@ const CheckOut = () => {
             {/* Extension Modal */}
             {showExtensionModal && (
                 <div className="modal-overlay z-[1100]">
-                    <div className="modal-content !max-w-[500px]">
+                    <div className="modal-content !max-w-[600px]">
                         <div className="modal-header">
                             <h2 className="flex items-center gap-2">
                                 <FileText className="text-indigo-600" /> Extend Stay
