@@ -254,6 +254,8 @@ const Reservations = () => {
         switch(status?.toUpperCase()) {
             case 'BOOKED': return { icon: null, class: 'booked', label: 'Confirmed' };
             case 'CHECKED_IN': return { icon: null, class: 'checked_in', label: 'In-House' };
+            case 'DUE_CHECKOUT': return { icon: null, class: 'due_checkout', label: 'Due Checkout' };
+            case 'OVERSTAY': return { icon: null, class: 'overstay', label: 'Overstay' };
             case 'CHECKED_OUT': return { icon: null, class: 'checked_out', label: 'Completed' };
             case 'CANCELLED': return { icon: null, class: 'cancelled', label: 'Cancelled' };
             default: return { icon: null, class: '', label: status || 'UNKNOWN' };

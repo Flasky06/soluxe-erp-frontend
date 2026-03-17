@@ -228,6 +228,7 @@ const Folio = () => {
                             <thead>
                                 <tr>
                                     <th>Folio ID</th>
+                                    <th>Guest / Details</th>
                                     <th>Type</th>
                                     <th>Opened At</th>
                                     <th>Status</th>
@@ -237,20 +238,44 @@ const Folio = () => {
                             </thead>
                             <tbody>
                                 {folios.filter(f => {
-                                    const matchesSearch = f.id.toString().includes(searchQuery) || f.folioType.toLowerCase().includes(searchQuery.toLowerCase());
+                                    const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
+                                    const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+                                    const matchesSearch = f.id.toString().includes(searchQuery) || 
+                                                         f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                         guestMatch || roomMatch;
                                     const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
                                     return matchesSearch && matchesStatus;
                                 }).length > 0 ? (
                                     folios
                                         .filter(f => {
-                                            const matchesSearch = f.id.toString().includes(searchQuery) || f.folioType.toLowerCase().includes(searchQuery.toLowerCase());
+                                            const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
+                                            const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+                                            const matchesSearch = f.id.toString().includes(searchQuery) || 
+                                                                 f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                                 guestMatch || roomMatch;
                                             const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
                                             return matchesSearch && matchesStatus;
                                         })
                                         .map((folio) => (
                                         <tr key={folio.id} className="hover:bg-slate-50 transition-colors">
                                             <td className="font-bold text-slate-700">#{folio.id.toString().padStart(5, '0')}</td>
-                                            <td>{folio.folioType}</td>
+                                            <td>
+                                                <div className="flex flex-col">
+                                                    <span className="font-semibold text-slate-900">{folio.guestName || 'Internal / Other'}</span>
+                                                    {folio.roomNumber && (
+                                                        <span className="text-[10px] text-slate-500 font-medium">Room {folio.roomNumber}</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                                                    folio.folioType === 'STAY' ? 'bg-indigo-50 text-indigo-600' :
+                                                    folio.folioType === 'RESERVATION' ? 'bg-amber-50 text-amber-600' :
+                                                    'bg-slate-100 text-slate-600'
+                                                }`}>
+                                                    {folio.folioType}
+                                                </span>
+                                            </td>
                                             <td>{new Date(folio.openedAt).toLocaleDateString()}</td>
                                             <td>
                                                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${

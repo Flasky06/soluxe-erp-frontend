@@ -224,12 +224,17 @@ const CheckOut = () => {
                                                         Overdue
                                                     </span>
                                                 )}
+                                                {stay.status === 'DUE_CHECKOUT' && (
+                                                    <span className="bg-amber-100 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded w-fit uppercase tracking-wider mt-1">
+                                                        Due Today
+                                                    </span>
+                                                )}
                                             </div>
                                         </td>
                                         <td>{formatDate(stay.dateIn)}</td>
                                         <td>
                                             <div className="flex flex-col">
-                                                <span className={stay.status === 'OVERSTAY' ? 'text-red-600 font-bold' : ''}>
+                                                <span className={stay.status === 'OVERSTAY' ? 'text-red-600 font-bold' : stay.status === 'DUE_CHECKOUT' ? 'text-amber-600 font-bold' : ''}>
                                                     {formatDate(stay.dateOut)}
                                                 </span>
                                             </div>
