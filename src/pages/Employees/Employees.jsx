@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const Employees = () => {
     const [employees, setEmployees] = useState([]);
@@ -182,21 +183,22 @@ const Employees = () => {
                 </div>
             </div>
 
-            <div className="table-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading staff directory...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Department & Role</th>
-                                <th>Salary & Joining</th>
-                                <th>Identity</th>
-                                <th>Languages</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse">Loading staff directory...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '900px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Department & Role</th>
+                                    <th>Salary & Joining</th>
+                                    <th>Identity</th>
+                                    <th>Languages</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {filteredEmployees.length > 0 ? filteredEmployees.map((emp) => (
                                 <tr key={emp.id}>
@@ -250,115 +252,111 @@ const Employees = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[1200px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingEmployee ? 'Edit Employee Details' : 'Register New Staff Member'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        {serverErrors.error && (
-                            <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
-                                {serverErrors.error}
-                            </div>
-                        )}
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-grid">
-                                <div className="form-group">
-                                    <label>Full Name</label>
-                                    <input type="text" required value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} placeholder="Jane Smith" />
-                                    {serverErrors.fullName && <p className="text-red-500 text-xs mt-1">{serverErrors.fullName}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label>Email Address</label>
-                                    <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="jane.s@hotel.com" />
-                                    {serverErrors.email && <p className="text-red-500 text-xs mt-1">{serverErrors.email}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label>Phone Number</label>
-                                    <input type="text" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="+1 555 1234" />
-                                    {serverErrors.phone && <p className="text-red-500 text-xs mt-1">{serverErrors.phone}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label>Department</label>
-                                    <select required value={formData.departmentId} onChange={(e) => setFormData({...formData, departmentId: e.target.value})}>
-                                        <option value="">Select Department</option>
-                                        {departments.map(dept => (
-                                            <option key={dept.id} value={dept.id}>{dept.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Designation</label>
-                                    <input type="text" required value={formData.designation} onChange={(e) => setFormData({...formData, designation: e.target.value})} placeholder="e.g. Senior Receptionist" />
-                                    {serverErrors.designation && <p className="text-red-500 text-xs mt-1">{serverErrors.designation}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label>Basic Salary ($)</label>
-                                    <input type="number" required value={formData.basicSalary} onChange={(e) => setFormData({...formData, basicSalary: e.target.value})} placeholder="3500" />
-                                </div>
-                                <div className="form-group">
-                                    <label>Date of Joining</label>
-                                    <input type="date" required value={formData.dateOfJoining} onChange={(e) => setFormData({...formData, dateOfJoining: e.target.value})} />
-                                </div>
-                                <div className="form-group">
-                                    <label>Nationality</label>
-                                    <input type="text" required value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} placeholder="e.g. Kenyan" />
-                                </div>
-                                <div className="form-group">
-                                    <label>ID Type</label>
-                                    <select required value={formData.idTypeId} onChange={(e) => setFormData({...formData, idTypeId: e.target.value})}>
-                                        {idTypes.map(type => (
-                                            <option key={type.id} value={type.id}>{type.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>Passport / ID Number</label>
-                                    <input type="text" required value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="A12345678" />
-                                    {serverErrors.idNumber && <p className="text-red-500 text-xs mt-1">{serverErrors.idNumber}</p>}
-                                </div>
-                                <div className="form-group">
-                                    <label>KRA PIN (Optional)</label>
-                                    <input type="text" value={formData.kraPin} onChange={(e) => setFormData({...formData, kraPin: e.target.value})} placeholder="A000000000Z" />
-                                </div>
-                                <div className="form-group full-width">
-                                    <label>Languages Spoken (comma separated)</label>
-                                    <input type="text" value={formData.languagesSpoken} onChange={(e) => setFormData({...formData, languagesSpoken: e.target.value})} placeholder="English, French, Mandarin" />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10" disabled={isSaving}>
-                                    {isSaving ? 'Saving...' : editingEmployee ? 'Save Changes' : 'Add Employee'}
-                                </button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingEmployee ? 'Edit Employee Details' : 'Register New Staff Member'}
+                size="xl"
+            >
+                {serverErrors.error && (
+                    <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                        {serverErrors.error}
                     </div>
-                </div>
-            )}
-            {showDeptModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Add Department</h2>
-                            <button className="close-modal-btn" onClick={() => setShowDeptModal(false)}>&times;</button>
+                )}
+                <form onSubmit={handleSubmit}>
+                    <div className="form-grid">
+                        <div className="form-group">
+                            <label>Full Name</label>
+                            <input type="text" required value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} placeholder="Jane Smith" />
+                            {serverErrors.fullName && <p className="text-red-500 text-xs mt-1">{serverErrors.fullName}</p>}
                         </div>
-                        <form onSubmit={handleCreateDept} className="form-grid !grid-cols-1">
-                            <div className="form-group">
-                                <label>Department Name</label>
-                                <input type="text" required value={deptFormData.name} onChange={e => setDeptFormData({...deptFormData, name: e.target.value})} placeholder="e.g. Housekeeping, Kitchen" />
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowDeptModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Create Department</button>
-                            </div>
-                        </form>
+                        <div className="form-group">
+                            <label>Email Address</label>
+                            <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="jane.s@hotel.com" />
+                            {serverErrors.email && <p className="text-red-500 text-xs mt-1">{serverErrors.email}</p>}
+                        </div>
+                        <div className="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="+1 555 1234" />
+                            {serverErrors.phone && <p className="text-red-500 text-xs mt-1">{serverErrors.phone}</p>}
+                        </div>
+                        <div className="form-group">
+                            <label>Department</label>
+                            <select required value={formData.departmentId} onChange={(e) => setFormData({...formData, departmentId: e.target.value})}>
+                                <option value="">Select Department</option>
+                                {departments.map(dept => (
+                                    <option key={dept.id} value={dept.id}>{dept.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Designation</label>
+                            <input type="text" required value={formData.designation} onChange={(e) => setFormData({...formData, designation: e.target.value})} placeholder="e.g. Senior Receptionist" />
+                            {serverErrors.designation && <p className="text-red-500 text-xs mt-1">{serverErrors.designation}</p>}
+                        </div>
+                        <div className="form-group">
+                            <label>Basic Salary ($)</label>
+                            <input type="number" required value={formData.basicSalary} onChange={(e) => setFormData({...formData, basicSalary: e.target.value})} placeholder="3500" />
+                        </div>
+                        <div className="form-group">
+                            <label>Date of Joining</label>
+                            <input type="date" required value={formData.dateOfJoining} onChange={(e) => setFormData({...formData, dateOfJoining: e.target.value})} />
+                        </div>
+                        <div className="form-group">
+                            <label>Nationality</label>
+                            <input type="text" required value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} placeholder="e.g. Kenyan" />
+                        </div>
+                        <div className="form-group">
+                            <label>ID Type</label>
+                            <select required value={formData.idTypeId} onChange={(e) => setFormData({...formData, idTypeId: e.target.value})}>
+                                {idTypes.map(type => (
+                                    <option key={type.id} value={type.id}>{type.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Passport / ID Number</label>
+                            <input type="text" required value={formData.idNumber} onChange={(e) => setFormData({...formData, idNumber: e.target.value})} placeholder="A12345678" />
+                            {serverErrors.idNumber && <p className="text-red-500 text-xs mt-1">{serverErrors.idNumber}</p>}
+                        </div>
+                        <div className="form-group">
+                            <label>KRA PIN (Optional)</label>
+                            <input type="text" value={formData.kraPin} onChange={(e) => setFormData({...formData, kraPin: e.target.value})} placeholder="A000000000Z" />
+                        </div>
+                        <div className="form-group full-width">
+                            <label>Languages Spoken (comma separated)</label>
+                            <input type="text" value={formData.languagesSpoken} onChange={(e) => setFormData({...formData, languagesSpoken: e.target.value})} placeholder="English, French, Mandarin" />
+                        </div>
                     </div>
-                </div>
-            )}
+                    <div className="modal-footer">
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                        <button type="submit" className="btn-primary !px-10" disabled={isSaving}>
+                            {isSaving ? 'Saving...' : editingEmployee ? 'Save Changes' : 'Add Employee'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+            
+            <Modal
+                isOpen={showDeptModal}
+                onClose={() => setShowDeptModal(false)}
+                title="Add Department"
+                size="sm"
+            >
+                <form onSubmit={handleCreateDept} className="form-grid !grid-cols-1">
+                    <div className="form-group">
+                        <label>Department Name</label>
+                        <input type="text" required value={deptFormData.name} onChange={e => setDeptFormData({...deptFormData, name: e.target.value})} placeholder="e.g. Housekeeping, Kitchen" />
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" onClick={() => setShowDeptModal(false)} className="btn-secondary">Cancel</button>
+                        <button type="submit" className="btn-primary">Create Department</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

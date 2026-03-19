@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import Modal from '../../components/Modal/Modal';
 
 const Tables = () => {
     const [tables, setTables] = useState([]);
@@ -97,11 +98,12 @@ const Tables = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Table</button>
             </div>
 
-            <div className="table-card overflow-x-auto">
+            <div className="table-card">
+                <div className="overflow-x-auto w-full">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse">Loading tables...</div>
                 ) : (
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '800px' }}>
                         <thead>
                             <tr>
                                 <th>Table Name</th>
@@ -109,7 +111,7 @@ const Tables = () => {
                                 <th>Location</th>
                                 <th>Type</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -150,16 +152,17 @@ const Tables = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[80%] !max-w-[1000px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingTable ? 'Edit Table' : 'Add New Table'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingTable ? 'Edit Table' : 'Add New Table'}
+                size="lg"
+                customClasses="!w-[80%] !max-w-[1000px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Table Name / Number</label>
@@ -233,9 +236,7 @@ const Tables = () => {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

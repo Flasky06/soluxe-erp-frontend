@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const ExpenseTypes = () => {
     const [types, setTypes] = useState([]);
@@ -93,15 +94,16 @@ const ExpenseTypes = () => {
                 </button>
             </div>
 
-            <div className="table-card overflow-x-auto">
+            <div className="table-card">
+                <div className="overflow-x-auto w-full">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse font-medium italic">Loading expense types...</div>
                 ) : (
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
-                                <th style={{ width: '85%' }}>Category Name</th>
-                                <th style={{ width: '15%' }}>Actions</th>
+                                <th>Category Name</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,16 +129,17 @@ const ExpenseTypes = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Expense Category' : 'New Expense Category'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingType ? 'Edit Expense Category' : 'New Expense Category'}
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid !grid-cols-1">
                                 <div className="form-group">
                                     <label>Category Name</label>
@@ -148,9 +151,7 @@ const ExpenseTypes = () => {
                                 <button type="submit" className="btn-primary">{editingType ? 'Save Changes' : 'Create Category'}</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

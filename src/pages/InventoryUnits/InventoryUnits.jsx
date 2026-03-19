@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Box } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const InventoryUnits = () => {
     const [units, setUnits] = useState([]);
@@ -91,16 +92,17 @@ const InventoryUnits = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Unit</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading stock units...</div>
                 ) : (
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
-                                <th style={{ width: '30%' }}>Unit Name</th>
-                                <th style={{ width: '55%' }}>Description</th>
-                                <th style={{ width: '15%' }}>Actions</th>
+                                <th>Unit Name</th>
+                                <th>Description</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -129,16 +131,17 @@ const InventoryUnits = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingUnit ? 'Edit Unit' : 'Add Stock Unit'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingUnit ? 'Edit Unit' : 'Add Stock Unit'}
+                size="sm"
+                customClasses="!w-[85%] !max-w-[500px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-6 p-7">
                                 <div className="form-group">
                                     <label>Unit Name</label>
@@ -165,9 +168,7 @@ const InventoryUnits = () => {
                                 <button type="submit" className="btn-primary !px-10">Save Unit</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Search, FileText, CheckCircle, Printer, X, Wallet } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
+
 const CheckOut = () => {
     const { user } = useAuthStore();
     const [stays, setStays] = useState([]);
@@ -192,20 +194,21 @@ const CheckOut = () => {
                 </div>
             </div>
 
-            <div className="table-card">
+            <div className="table-card overflow-hidden">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading active stays...</div>
                 ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '25%' }}>Room</th>
-                                <th style={{ width: '30%' }}>Guest</th>
-                                <th style={{ width: '15%' }}>Date In</th>
-                                <th style={{ width: '15%' }}>Expected Out</th>
-                                <th style={{ width: '15%' }}>Actions</th>
-                            </tr>
-                        </thead>
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table" style={{ minWidth: '800px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Guest</th>
+                                    <th>Date In</th>
+                                    <th>Expected Out</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {filteredStays.length > 0 ? (
                                 filteredStays.map((stay) => (
@@ -261,13 +264,19 @@ const CheckOut = () => {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 )}
             </div>
 
             {/* Invoice Folio Modal */}
-            {showInvoiceModal && selectedStay && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[95%] !max-w-[800px] print:!max-w-[100%] print:!mx-auto print:shadow-none print:p-0 print:border-none print:bg-white text-slate-800">
+            <Modal
+                isOpen={showInvoiceModal && !!selectedStay}
+                onClose={() => setShowInvoiceModal(false)}
+                size="none"
+                customClasses="!w-[95%] !max-w-[800px] print:!max-w-[100%] print:!mx-auto print:shadow-none print:p-0 print:border-none print:bg-white text-slate-800"
+            >
+                {selectedStay && (
+                    <>
                         <div className="modal-header print:hidden pb-4 mb-4 border-b border-slate-200">
                             <div>
                                 <h2 className="text-xl font-bold text-slate-800">Folio & Check-out</h2>
@@ -281,9 +290,12 @@ const CheckOut = () => {
                         {invoiceLoading ? (
                             <div className="text-center py-20 text-slate-500 animate-pulse">Loading Folio details...</div>
                         ) : !folio ? (
-                            <div className="text-center py-20 text-red-500">
-                                <p>Error compiling Folio for this stay.</p>
-                                <button className="mt-4 btn-primary" onClick={() => setShowInvoiceModal(false)}>Close</button>
+                            <div className="flex-1 flex flex-col items-center justify-center py-20 text-slate-400">
+                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                                    <FileText size={32} className="opacity-20" />
+                                </div>
+                                <p className="font-semibold">Error compiling Folio for this stay.</p>
+                                <button className="mt-6 btn-secondary" onClick={() => setShowInvoiceModal(false)}>Close</button>
                             </div>
                         ) : (
                             <div className="flex flex-col h-full max-h-[70vh] print:max-h-none overflow-hidden pb-4">
@@ -549,17 +561,17 @@ const CheckOut = () => {
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3">
                                             {new Date(selectedStay.dateOut) > new Date() && (
                                                 <button 
-                                                    className="bg-amber-100 text-amber-700 hover:bg-amber-200 px-4 py-3 rounded-xl font-bold text-[13px] transition-all"
+                                                    className="bg-amber-50 text-amber-700 hover:bg-amber-100 px-4 py-3 rounded-xl font-bold text-[13px] transition-all border border-amber-100"
                                                     onClick={() => handleCheckOut(selectedStay.id, true)}
                                                 >
                                                     Approve Early Checkout Adjustment
                                                 </button>
                                             )}
                                             <button 
-                                                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold tracking-wide shadow-sm transition-all flex items-center gap-2"
+                                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold tracking-wide shadow-sm transition-all flex items-center gap-2"
                                                 onClick={() => handleCheckOut(selectedStay.id)}
                                             >
                                                 Confirm Check-out
@@ -568,7 +580,7 @@ const CheckOut = () => {
                                     )}
                                     
                                     <button 
-                                        className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-4 py-3 rounded-xl font-bold text-[13px] transition-all flex items-center gap-2"
+                                        className="bg-slate-50 text-maroon hover:bg-maroon hover:text-white px-4 py-3 rounded-xl font-bold text-[13px] transition-all flex items-center gap-2 border border-slate-200"
                                         onClick={() => {
                                             setExtensionDate(selectedStay.dateOut.split('T')[0]);
                                             setShowExtensionModal(true);
@@ -579,14 +591,20 @@ const CheckOut = () => {
                                 </div>
                             </div>
                         )}
-                    </div>
-                </div>
-            )}
+                    </>
+                )}
+            </Modal>
 
             {/* Payment Modal */}
-            {showPaymentModal && (
-                <div className="modal-overlay z-[1100]">
-                    <div className="modal-content !max-w-[650px] !p-0 overflow-hidden">
+            <Modal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                size="none"
+                customClasses="!max-w-[650px] !p-0 overflow-hidden"
+                overlayClasses="z-[1100]"
+            >
+                {selectedStay && (
+                    <>
                         <div className="modal-header !p-6 border-b border-slate-100">
                             <h2 className="flex items-center gap-3 text-xl font-bold text-slate-800 m-0">
                                 <div className="bg-maroon/10 p-2 rounded-lg">
@@ -599,20 +617,25 @@ const CheckOut = () => {
                         
                         <div className="p-8">
                             {/* Summary Card */}
-                            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8 flex items-center justify-between shadow-sm">
-                                <div className="flex flex-col">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Guest Portfolio</p>
-                                    <p className="text-xl font-black text-slate-900 leading-tight">{getGuestName(selectedStay?.guestId)}</p>
-                                    <p className="text-xs text-slate-500 font-medium">Room {getRoomNumber(selectedStay?.roomId)} • Folio #{folio?.id.toString().padStart(5, '0')}</p>
+                            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 mb-8 flex items-center justify-between shadow-xl relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-maroon/20 blur-[60px] rounded-full -mr-10 -mt-10"></div>
+                                <div className="flex flex-col relative z-10">
+                                    <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-2">Guest Portfolio</p>
+                                    <p className="text-2xl font-black text-white leading-none">{getGuestName(selectedStay?.guestId)}</p>
+                                    <p className="text-[11px] text-white/60 font-medium mt-2 flex items-center gap-2">
+                                        <span className="bg-white/10 px-2 py-0.5 rounded">Room {getRoomNumber(selectedStay?.roomId)}</span>
+                                        <span className="opacity-40">•</span>
+                                        <span>Folio #{folio?.id.toString().padStart(5, '0')}</span>
+                                    </p>
                                 </div>
-                                <div className="bg-white px-6 py-4 rounded-xl border border-slate-200 text-right shadow-sm">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Outstanding Balance</span>
-                                    <span className="text-2xl font-black text-maroon">$ {parseFloat(folio?.totalAmount || 0).toLocaleString()}</span>
+                                <div className="bg-white/5 backdrop-blur-md px-8 py-5 rounded-2xl border border-white/10 text-right relative z-10">
+                                    <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] block mb-1">Outstanding Balance</span>
+                                    <span className="text-3xl font-black text-white">$ {parseFloat(folio?.totalAmount || 0).toLocaleString()}</span>
                                 </div>
                             </div>
 
                             <form onSubmit={handleRecordPayment} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="form-group">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block text-left">Payment Amount ($)</label>
                                         <div className="relative">
@@ -668,46 +691,91 @@ const CheckOut = () => {
                                 </div>
                             </form>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </>
+                )}
+            </Modal>
 
             {/* Extension Modal */}
-            {showExtensionModal && (
-                <div className="modal-overlay z-[1100]">
-                    <div className="modal-content !max-w-[600px]">
+            <Modal
+                isOpen={showExtensionModal}
+                onClose={() => setShowExtensionModal(false)}
+                size="none"
+                customClasses="!max-w-[600px]"
+                overlayClasses="z-[1100]"
+            >
+                {selectedStay && (
+                    <>
                         <div className="modal-header">
                             <h2 className="flex items-center gap-2">
-                                <FileText className="text-indigo-600" /> Extend Stay
+                                <FileText className="text-maroon" /> Extend Stay
                             </h2>
                             <button className="close-modal-btn" onClick={() => setShowExtensionModal(false)}>&times;</button>
                         </div>
-                        <div className="p-4 bg-indigo-50 rounded-xl mb-6">
-                            <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Current Check-out</p>
-                            <p className="text-lg font-black text-slate-800">{new Date(selectedStay.dateOut).toLocaleDateString()}</p>
+                        <div className="p-8">
+                            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 mb-8 flex items-center justify-between shadow-xl relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-maroon/20 blur-[60px] rounded-full -mr-10 -mt-10"></div>
+                                <div className="flex flex-col relative z-10">
+                                    <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-2">Current Check-out</p>
+                                    <p className="text-3xl font-black text-white leading-none">{new Date(selectedStay.dateOut).toLocaleDateString()}</p>
+                                    <p className="text-[11px] text-white/60 font-medium mt-3">Room {getRoomNumber(selectedStay.roomId)} • {getGuestName(selectedStay.guestId)}</p>
+                                </div>
+                                <div className="w-16 h-16 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex items-center justify-center relative z-10">
+                                    <FileText className="text-maroon-light" size={28} />
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleExtendStay} className="space-y-8">
+                                <div className="form-group">
+                                    <label className="text-xs font-bold text-slate-500 uppercase tracking-[0.15em] mb-3 block">New Departure Date</label>
+                                    <div className="relative">
+                                        <input 
+                                            type="date" 
+                                            required
+                                            min={selectedStay.dateOut.split('T')[0]}
+                                            className="w-full !py-4 !px-6 !rounded-2xl !border-slate-200 !text-lg font-black text-slate-900 focus:!border-maroon transition-all shadow-sm"
+                                            value={extensionDate}
+                                            onChange={e => setExtensionDate(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="flex items-start gap-3 mt-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                        <div className="w-5 h-5 bg-maroon/10 rounded-full flex items-center justify-center text-maroon shrink-0 mt-0.5">
+                                            <span className="font-bold text-[10px]">i</span>
+                                        </div>
+                                        <p className="text-[11px] leading-relaxed text-slate-500 font-medium">
+                                            Extending the stay will automatically post room charges for the added nights based on the current nightly rate.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setShowExtensionModal(false)} 
+                                        className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-2xl transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="flex-[2] bg-maroon hover:bg-[#6b0f11] text-white font-black text-lg py-4 rounded-2xl shadow-lg shadow-maroon/20 transition-all flex items-center justify-center gap-2"
+                                        disabled={extensionLoading}
+                                    >
+                                        {extensionLoading ? (
+                                            <span className="flex items-center gap-2">
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                Processing...
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-2">
+                                                <CheckCircle size={20} /> Confirm Extension
+                                            </span>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        <form onSubmit={handleExtendStay}>
-                            <div className="form-group">
-                                <label>New Departure Date</label>
-                                <input 
-                                    type="date" 
-                                    required
-                                    min={selectedStay.dateOut.split('T')[0]}
-                                    value={extensionDate}
-                                    onChange={e => setExtensionDate(e.target.value)}
-                                />
-                                <p className="text-[10px] text-slate-500 mt-2 italic">Additional nights will be automatically posted to the folio.</p>
-                            </div>
-                            <div className="modal-footer !mt-8">
-                                <button type="button" onClick={() => setShowExtensionModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary flex-1 !bg-indigo-600 hover:!bg-indigo-700" disabled={extensionLoading}>
-                                    {extensionLoading ? 'Extending...' : 'Confirm Extension'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+                    </>
+                )}
+            </Modal>
         </div>
     );
 };

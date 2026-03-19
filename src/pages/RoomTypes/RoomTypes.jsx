@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import Modal from '../../components/Modal/Modal';
 
 const RoomTypes = () => {
     const [roomTypes, setRoomTypes] = useState([]);
@@ -91,19 +92,20 @@ const RoomTypes = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Room Type</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading room directory...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '40%' }}>Type Name</th>
-                                <th style={{ width: '20%' }}>Setup</th>
-                                <th style={{ width: '25%' }}>Rate</th>
-                                <th style={{ width: '15%' }}>Actions</th>
-                            </tr>
-                        </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading room directory...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '600px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Type Name</th>
+                                    <th>Setup</th>
+                                    <th>Rate</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {roomTypes.length > 0 ? roomTypes.map((type) => (
                                 <tr key={type.id}>
@@ -134,71 +136,71 @@ const RoomTypes = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
             {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Room Type' : 'Register New Type'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingType ? 'Edit Room Type' : 'Register New Type'}
+                size="sm"
+            >
+                <form onSubmit={handleSubmit}>
+                    <div className="form-grid !grid-cols-1">
+                        <div className="form-group">
+                            <label>Room Category Name</label>
+                            <input 
+                                type="text" 
+                                required 
+                                value={formData.name} 
+                                onChange={(e) => setFormData({...formData, name: e.target.value})} 
+                                placeholder="e.g. Executive Queen Suite"
+                            />
                         </div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-grid !grid-cols-1">
-                                <div className="form-group">
-                                    <label>Room Category Name</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        value={formData.name} 
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                                        placeholder="e.g. Executive Queen Suite"
-                                    />
-                                </div>
-                                
-                                <div className="form-group">
-                                    <label>Max Occupancy</label>
-                                    <input 
-                                        type="number" 
-                                        required 
-                                        min="1"
-                                        value={formData.capacity} 
-                                        onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value) || 1})} 
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Bed Configuration</label>
-                                    <select 
-                                        value={formData.bedType} 
-                                        onChange={(e) => setFormData({...formData, bedType: e.target.value})}
-                                    >
-                                        <option value="Single">Single Bed</option>
-                                        <option value="Double">Double Bed</option>
-                                        <option value="Twin">Twin Beds</option>
-                                        <option value="Queen">Queen Size</option>
-                                        <option value="King">King Size</option>
-                                    </select>
-                                </div>
+                        
+                        <div className="form-group">
+                            <label>Max Occupancy</label>
+                            <input 
+                                type="number" 
+                                required 
+                                min="1"
+                                value={formData.capacity} 
+                                onChange={(e) => setFormData({...formData, capacity: parseInt(e.target.value) || 1})} 
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Bed Configuration</label>
+                            <select 
+                                value={formData.bedType} 
+                                onChange={(e) => setFormData({...formData, bedType: e.target.value})}
+                            >
+                                <option value="Single">Single Bed</option>
+                                <option value="Double">Double Bed</option>
+                                <option value="Twin">Twin Beds</option>
+                                <option value="Queen">Queen Size</option>
+                                <option value="King">King Size</option>
+                            </select>
+                        </div>
 
-                                <div className="form-group">
-                                    <label>Room Rate ($ per Night)</label>
-                                    <input 
-                                        type="number" 
-                                        required 
-                                        value={formData.defaultRate} 
-                                        onChange={(e) => setFormData({...formData, defaultRate: e.target.value})} 
-                                        placeholder="0.00"
-                                        className="!text-lg !font-bold text-primary"
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">Save Settings</button>
-                            </div>
-                        </form>
+                        <div className="form-group">
+                            <label>Room Rate ($ per Night)</label>
+                            <input 
+                                type="number" 
+                                required 
+                                value={formData.defaultRate} 
+                                onChange={(e) => setFormData({...formData, defaultRate: e.target.value})} 
+                                placeholder="0.00"
+                                className="!text-lg !font-bold text-primary"
+                            />
+                        </div>
                     </div>
-                </div>
+                    <div className="modal-footer">
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                        <button type="submit" className="btn-primary !px-10">Save Settings</button>
+                    </div>
+                </form>
+            </Modal>
             )}
         </div>
     );

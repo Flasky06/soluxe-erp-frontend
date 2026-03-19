@@ -170,6 +170,11 @@ const GuestForm = ({ initialData, onSuccess, onCancel, isSaving: externalIsSavin
 
     return (
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[80vh]">
+            {serverErrors.error && (
+                <div className="mb-6 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                    {serverErrors.error}
+                </div>
+            )}
             <div className="form-grid">
                 {/* Profile Image Row */}
                 <div className="col-span-full border-b border-slate-100 pb-6 mb-2">

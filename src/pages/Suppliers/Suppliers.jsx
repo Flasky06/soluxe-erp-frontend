@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const Suppliers = () => {
     const [suppliers, setSuppliers] = useState([]);
@@ -119,20 +120,21 @@ const Suppliers = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Supplier</button>
             </div>
 
-            <div className="table-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading suppliers...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th>Supplier Name</th>
-                                <th>Contact Person</th>
-                                <th>Phone & Email</th>
-                                <th>Category</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse">Loading suppliers...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '800px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Supplier Name</th>
+                                    <th>Contact Person</th>
+                                    <th>Phone & Email</th>
+                                    <th>Category</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {filteredSuppliers.length > 0 ? filteredSuppliers.map((supplier) => (
                                 <tr key={supplier.id}>
@@ -162,15 +164,17 @@ const Suppliers = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[80%] !max-w-[1000px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingSupplier ? 'Edit Supplier' : 'Add New Supplier'}
+                size="lg"
+                customClasses="!w-[80%] !max-w-[1000px]"
+            >
+                <div>
                         {serverErrors.error && (
                             <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
                                 {serverErrors.error}
@@ -221,9 +225,8 @@ const Suppliers = () => {
                                 </button>
                             </div>
                         </form>
-                    </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 };

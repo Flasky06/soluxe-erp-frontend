@@ -87,43 +87,43 @@ const PettyCash = () => {
                 </div>
             </div>
 
-            <div className="premium-card overflow-hidden">
-                <table className="w-full">
-                    <thead className="bg-slate-50 border-b border-slate-100">
-                        <tr className="text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                            <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4">Category</th>
-                            <th className="px-6 py-4">Description</th>
-                            <th className="px-6 py-4">Issued To</th>
-                            <th className="px-6 py-4 text-right">Amount ($)</th>
-                            <th className="px-6 py-4 text-center">Actions</th>
+<div className="premium-card overflow-x-auto">
+                <table className="management-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Issued To</th>
+                            <th className="text-right">Amount ($)</th>
+                            <th className="text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
+                    <tbody>
                         {pettyCashEntries.map((e) => (
                             <tr key={e.id} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="px-6 py-4 text-sm text-slate-600 font-medium">
+                                <td className="text-sm text-slate-600 font-medium">
                                     <div className="flex items-center gap-2">
                                         <Calendar size={14} className="text-slate-400" />
                                         {e.expenseDate}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4">
+                                <td>
                                     <span className="status-badge info text-[10px]">
                                         {e.category}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 text-sm text-slate-700">{e.description}</td>
-                                <td className="px-6 py-4 text-sm text-slate-600">
+                                <td className="text-sm text-slate-700">{e.description}</td>
+                                <td className="text-sm text-slate-600">
                                     <div className="flex items-center gap-2">
                                         <User size={14} className="text-slate-400" />
                                         {e.issuedTo || 'N/A'}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 text-right font-bold text-slate-900">
+                                <td className="text-right font-bold text-slate-900">
                                     {parseFloat(e.amount).toLocaleString()}
                                 </td>
-                                <td className="px-6 py-4 text-center">
+                                <td className="text-center">
                                     <button onClick={() => handleDelete(e.id)} className="text-red-400 hover:text-red-600 transition-colors">
                                         <Trash2 size={16} />
                                     </button>

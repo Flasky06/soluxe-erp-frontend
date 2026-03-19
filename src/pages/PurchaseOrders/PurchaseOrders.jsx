@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { ShoppingCart, Plus, Calendar, User, Search, Filter, CheckCircle, Clock, Truck, MoreVertical } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const PurchaseOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -172,14 +173,14 @@ const PurchaseOrders = () => {
             </div>
 
             {/* Application Modal */}
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">New Purchase Order</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-4">
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title="New Purchase Order"
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+            >
+                <form onSubmit={handleSubmit} className="p-4">
                             <div className="flex flex-col gap-6">
                                 <div className="form-group">
                                     <label>Preferred Supplier</label>
@@ -212,9 +213,7 @@ const PurchaseOrders = () => {
                                 <button type="submit" className="btn-primary !px-12">Submit Order</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

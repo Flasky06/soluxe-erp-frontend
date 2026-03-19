@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import Modal from '../../components/Modal/Modal';
 
 const Venues = () => {
     const [venues, setVenues] = useState([]);
@@ -94,11 +95,12 @@ const Venues = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Venue</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse">Loading venues...</div>
                 ) : (
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '900px' }}>
                         <thead>
                             <tr>
                                 <th>Venue Name</th>
@@ -106,7 +108,7 @@ const Venues = () => {
                                 <th>Capacity</th>
                                 <th>Hourly Rate</th>
                                 <th>Daily Rate</th>
-                                <th>Actions</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -140,16 +142,17 @@ const Venues = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[1000px]">
-                        <div className="modal-header">
-                            <h2>{editingVenue ? 'Edit Venue' : 'Add New Venue'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingVenue ? 'Edit Venue' : 'Add New Venue'}
+                size="lg"
+                customClasses="!max-w-[1000px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Venue Name</label>
@@ -214,9 +217,7 @@ const Venues = () => {
                                 <button type="submit" className="btn-primary !px-10">{editingVenue ? 'Update Venue' : 'Create Venue'}</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

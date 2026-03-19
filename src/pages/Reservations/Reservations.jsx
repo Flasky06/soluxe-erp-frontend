@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import GuestForm from '../../components/GuestForm/GuestForm';
 import Pagination from '../../components/Pagination/Pagination';
+import Modal from '../../components/Modal/Modal';
 
 const Reservations = () => {
     const navigate = useNavigate();
@@ -374,9 +375,9 @@ const Reservations = () => {
             </div>
 
             {/* Main Table */}
-            <div className="premium-card overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[800px]">
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    <table className="management-table" style={{ minWidth: '1000px' }}>
                         <thead>
                             <tr className="bg-slate-50/50">
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Guest</th>
@@ -504,14 +505,14 @@ const Reservations = () => {
             </div>
 
             {/* Booking Modal */}
-            {showBookingModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content !w-[95%] !max-w-[1000px] !p-0">
-                        <div className="modal-header">
-                            <h2>{selectedReservation ? 'Modify Reservation' : 'Create New Booking'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowBookingModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmitBooking}>
+            <Modal
+                isOpen={showBookingModal}
+                onClose={() => setShowBookingModal(false)}
+                title={selectedReservation ? 'Modify Reservation' : 'Create New Booking'}
+                size="xl"
+                customClasses="!max-w-[1000px] !p-0"
+            >
+                <form onSubmit={handleSubmitBooking}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <div className="flex justify-between items-center mb-1">
@@ -566,7 +567,7 @@ const Reservations = () => {
                                         </div>
                                         <div className="form-group">
                                             <label>Occupancy (Adults / Kids)</label>
-                                            <div className="grid grid-cols-2 gap-2">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                 <input type="number" min="1" required value={formData.adults} onChange={(e) => setFormData({...formData, adults: e.target.value})} />
                                                 <input type="number" min="0" value={formData.children} onChange={(e) => setFormData({...formData, children: e.target.value})} />
                                             </div>
@@ -621,33 +622,36 @@ const Reservations = () => {
                                 <button type="submit" className="btn-primary !px-12">{selectedReservation ? 'Update Booking' : 'Confirm Reservation'}</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
             {/* Quick Guest Registration Modal */}
-            {showQuickGuestModal && (
-                <div className="modal-overlay z-[2000]">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[1000px] !p-0">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-text-dark leading-tight">Quick Register Guest</h2>
-                            <button className="close-modal-btn" onClick={() => setShowQuickGuestModal(false)}>&times;</button>
-                        </div>
-                        <GuestForm 
+            <Modal
+                isOpen={showQuickGuestModal}
+                onClose={() => setShowQuickGuestModal(false)}
+                title="Quick Register Guest"
+                size="lg"
+                customClasses="!max-w-[1000px] !p-0"
+                overlayClasses="z-[2000]"
+            >
+                <GuestForm 
                             onSuccess={(newGuest) => {
                                 setGuests(prev => [...prev, newGuest]);
                                 setFormData(prev => ({ ...prev, guestId: newGuest.id }));
                                 setShowQuickGuestModal(false);
                             }} 
-                            onCancel={() => setShowQuickGuestModal(false)} 
-                        />
-                    </div>
-                </div>
-            )}
+                    onCancel={() => setShowQuickGuestModal(false)} 
+                />
+            </Modal>
 
             {/* Payment Modal */}
-            {showPaymentModal && (
-                <div className="modal-overlay z-[1100]">
-                    <div className="modal-content !max-w-[750px] !p-0 overflow-hidden">
+            <Modal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                size="none"
+                customClasses="!max-w-[750px] !p-0 overflow-hidden"
+                overlayClasses="z-[1100]"
+            >
+                {selectedReservation && (
+                    <>
                         <div className="modal-header !p-6 border-b border-slate-100">
                             <h2 className="flex items-center gap-3 text-xl font-bold text-slate-800 m-0">
                                 <div className="bg-maroon/10 p-2 rounded-lg">
@@ -660,20 +664,27 @@ const Reservations = () => {
                         
                         <div className="p-8">
                             {/* Summary Card */}
-                            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8 flex items-center justify-between shadow-sm">
-                                <div className="flex flex-col">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Reservation For</p>
-                                    <p className="text-xl font-black text-slate-900 leading-tight">{getGuest(selectedReservation?.guestId).fullName}</p>
-                                    <p className="text-xs text-slate-500 font-medium">Folio #{activeFolio?.id.toString().padStart(5, '0')}</p>
+                            {selectedReservation && (
+                                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 mb-8 flex items-center justify-between shadow-xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-maroon/20 blur-[60px] rounded-full -mr-10 -mt-10"></div>
+                                    <div className="flex flex-col relative z-10">
+                                        <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-2">Guest Portfolio</p>
+                                        <p className="text-2xl font-black text-white leading-none">{getGuest(selectedReservation.guestId)?.fullName || 'Direct Guest'}</p>
+                                        <p className="text-[11px] text-white/60 font-medium mt-2 flex items-center gap-2">
+                                            <span className="bg-white/10 px-2 py-0.5 rounded">Room {selectedReservation.roomNumber || 'TBD'}</span>
+                                            <span className="opacity-40">•</span>
+                                            <span>Folio #{activeFolio?.id.toString().padStart(5, '0')}</span>
+                                        </p>
+                                    </div>
+                                    <div className="bg-white/5 backdrop-blur-md px-8 py-5 rounded-2xl border border-white/10 text-right relative z-10">
+                                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] block mb-1">Outstanding Balance</span>
+                                        <span className="text-3xl font-black text-white">$ {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
+                                    </div>
                                 </div>
-                                <div className="bg-white px-6 py-4 rounded-xl border border-slate-200 text-right shadow-sm">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Current Balance</span>
-                                    <span className="text-2xl font-black text-maroon">$ {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
-                                </div>
-                            </div>
+                            )}
 
                             <form onSubmit={handleRecordPayment} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="form-group">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block text-left">Amount to Pay ($)</label>
                                         <div className="relative">
@@ -702,7 +713,7 @@ const Reservations = () => {
                                     </div>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="form-group text-left">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Reference Code</label>
                                         <input 
@@ -742,18 +753,24 @@ const Reservations = () => {
                                 </div>
                             </form>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </>
+                )}
+            </Modal>
 
             {/* Manage Action Modal */}
-            {showActionModal && actionReservation && (
-                <div className="modal-overlay z-[2000]">
-                    <div className="modal-content !w-[90%] !max-w-[600px]">
+            <Modal
+                isOpen={showActionModal && !!actionReservation}
+                onClose={() => setShowActionModal(false)}
+                size="md"
+                customClasses="!w-[90%] !max-w-[600px]"
+                overlayClasses="z-[2000]"
+            >
+                {actionReservation && (
+                    <>
                         <div className="modal-header border-b border-slate-100 pb-4 mb-4">
                             <div>
                                 <h2 className="text-lg font-black text-slate-800">Manage Booking</h2>
-                                <p className="text-xs font-bold text-slate-400">Guest: {getGuest(actionReservation.guestId).fullName}</p>
+                                <p className="text-xs font-bold text-slate-400">Guest: {getGuest(actionReservation.guestId)?.fullName || 'Guest'}</p>
                             </div>
                             <button className="close-modal-btn bg-slate-50 hover:bg-slate-100 rounded-full p-2 transition-colors" onClick={() => setShowActionModal(false)}>&times;</button>
                         </div>
@@ -854,9 +871,9 @@ const Reservations = () => {
                                 <ChevronRight size={18} className="text-slate-300 group-hover:text-red-500 transition-colors" />
                             </button>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </>
+                )}
+            </Modal>
 
         </div>
     );

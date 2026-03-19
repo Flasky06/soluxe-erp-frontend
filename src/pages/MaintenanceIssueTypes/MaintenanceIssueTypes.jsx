@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Wrench } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const MaintenanceIssueTypes = () => {
     const [issueTypes, setIssueTypes] = useState([]);
@@ -88,52 +89,54 @@ const MaintenanceIssueTypes = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Category</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse font-bold tracking-wider uppercase text-xs">Loading maintenance directory...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '85%' }}>Category Name</th>
-                                <th style={{ width: '15%' }}>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredTypes.length > 0 ? filteredTypes.map((t) => (
-                                <tr key={t.id}>
-                                    <td>
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-bold text-slate-800">{t.name}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="table-actions">
-                                            <button className="view-btn" onClick={() => handleOpenModal(t)}>Edit</button>
-                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleDelete(t.id)}>Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )) : (
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse font-bold tracking-wider uppercase text-xs">Loading maintenance directory...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '400px' }}>
+                            <thead>
                                 <tr>
-                                    <td colSpan="2" className="text-center py-20 text-slate-400 italic">
-                                        {searchTerm ? 'No categories match your search.' : 'Define your first maintenance category.'}
-                                    </td>
+                                    <th>Category Name</th>
+                                    <th className="text-right">Actions</th>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
-                )}
+                            </thead>
+                            <tbody>
+                                {filteredTypes.length > 0 ? filteredTypes.map((t) => (
+                                    <tr key={t.id}>
+                                        <td>
+                                            <div className="flex items-center gap-3">
+                                                <span className="font-bold text-slate-800">{t.name}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="table-actions">
+                                                <button className="view-btn" onClick={() => handleOpenModal(t)}>Edit</button>
+                                                <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleDelete(t.id)}>Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan="2" className="text-center py-20 text-slate-400 italic">
+                                            {searchTerm ? 'No categories match your search.' : 'Define your first maintenance category.'}
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Category' : 'New Issue Category'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingType ? 'Edit Category' : 'New Issue Category'}
+                size="sm"
+                customClasses="!w-[85%] !max-w-[500px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-6 p-7">
                                 <div className="form-group">
                                     <label>Category Label</label>
@@ -151,9 +154,7 @@ const MaintenanceIssueTypes = () => {
                                 <button type="submit" className="btn-primary !px-10">Save Category</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

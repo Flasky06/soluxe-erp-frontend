@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import Modal from '../../components/Modal/Modal';
 
 const MenuItems = () => {
     const [items, setItems] = useState([]);
@@ -14,6 +15,7 @@ const MenuItems = () => {
         available: true,
         prepTimeMins: 15
     });
+    const [serverErrors, setServerErrors] = useState({});
 
     // Quick Category Add
     const [showQuickCatModal, setShowQuickCatModal] = useState(false);
@@ -84,11 +86,13 @@ const MenuItems = () => {
                 prepTimeMins: 15
             });
         }
+        setServerErrors({});
         setShowModal(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerErrors({});
         try {
             const payload = {
                 ...formData,
@@ -105,7 +109,11 @@ const MenuItems = () => {
             fetchData();
         } catch (err) {
             console.error('Failed to save menu item:', err);
-            alert('Failed to save menu item.');
+            if (err.response && (err.response.status === 400 || err.response.status === 409)) {
+                setServerErrors(err.response.data);
+            } else {
+                alert('Failed to save menu item. Please try again.');
+            }
         }
     };
 
@@ -133,11 +141,12 @@ const MenuItems = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Menu Item</button>
             </div>
 
-            <div className="table-card overflow-x-auto">
+            <div className="table-card">
+                <div className="overflow-x-auto w-full">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse">Loading menu...</div>
                 ) : (
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '800px' }}>
                         <thead>
                             <tr>
                                 <th>Item Name</th>
@@ -145,7 +154,7 @@ const MenuItems = () => {
                                 <th>Prep Time</th>
                                 <th>Price</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -181,20 +190,27 @@ const MenuItems = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[80%] !max-w-[900px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingItem ? 'Edit Menu Item' : 'Add New Menu Item'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingItem ? 'Edit Menu Item' : 'Add New Menu Item'}
+                size="md"
+                customClasses="!w-[80%] !max-w-[900px]"
+            >
+                {serverErrors.error && (
+                    <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                        {serverErrors.error}
+                    </div>
+                )}
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Item Name</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Grilled Salmon" />
+                                    {serverErrors.name && <p className="text-red-500 text-[10px] mt-1">{serverErrors.name}</p>}
                                 </div>
                                 <div className="form-group">
                                     <div className="flex justify-between items-center mb-1">
@@ -206,14 +222,17 @@ const MenuItems = () => {
                                             <option key={cat.id} value={cat.id}>{cat.name}</option>
                                         ))}
                                     </select>
+                                    {serverErrors.categoryId && <p className="text-red-500 text-[10px] mt-1">{serverErrors.categoryId}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Price ($)</label>
                                     <input type="number" step="0.01" required value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
+                                    {serverErrors.price && <p className="text-red-500 text-[10px] mt-1">{serverErrors.price}</p>}
                                 </div>
                                 <div className="form-group">
                                     <label>Prep Time (Minutes)</label>
                                     <input type="number" required value={formData.prepTimeMins} onChange={(e) => setFormData({...formData, prepTimeMins: parseInt(e.target.value)})} />
+                                    {serverErrors.prepTimeMins && <p className="text-red-500 text-[10px] mt-1">{serverErrors.prepTimeMins}</p>}
                                 </div>
                                 <div className="flex items-center gap-2.5 mt-6">
                                     <input type="checkbox" id="available" checked={formData.available} onChange={(e) => setFormData({...formData, available: e.target.checked})} className="w-4 h-4" />
@@ -225,19 +244,18 @@ const MenuItems = () => {
                                 <button type="submit" className="btn-primary !px-10">{editingItem ? 'Save Changes' : 'Save Item'}</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
             {/* Quick Category Modal */}
-            {showQuickCatModal && (
-                <div className="modal-overlay z-[1000]">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Quick Add Category</h2>
-                            <button className="close-modal-btn" onClick={() => setShowQuickCatModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleQuickAddCategory} className="p-4">
+            <Modal
+                isOpen={showQuickCatModal}
+                onClose={() => setShowQuickCatModal(false)}
+                title="Quick Add Category"
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+                overlayClasses="z-[1000]"
+            >
+                <form onSubmit={handleQuickAddCategory} className="p-4">
                             <div className="form-group full-width">
                                 <label>Category Name</label>
                                 <input 
@@ -256,9 +274,7 @@ const MenuItems = () => {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

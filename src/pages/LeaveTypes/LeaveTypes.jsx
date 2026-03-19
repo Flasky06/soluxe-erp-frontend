@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Calendar } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const LeaveTypes = () => {
     const [leaveTypes, setLeaveTypes] = useState([]);
@@ -88,15 +89,16 @@ const LeaveTypes = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Leave Type</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse font-medium">Syncing HR records...</div>
                 ) : (
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
-                                <th style={{ width: '85%' }}>Policy Name</th>
-                                <th style={{ width: '15%' }}>Actions</th>
+                                <th>Policy Name</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,36 +126,34 @@ const LeaveTypes = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Leave Type' : 'Create HR Policy'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingType ? 'Edit Leave Type' : 'Create HR Policy'}
+                size="sm"
+            >
+                <form onSubmit={handleSubmit}>
+                    <div className="flex flex-col gap-6 p-7">
+                        <div className="form-group">
+                            <label>Policy Name</label>
+                            <input 
+                                type="text" 
+                                required 
+                                value={formData.name} 
+                                onChange={(e) => setFormData({...formData, name: e.target.value})} 
+                                placeholder="e.g. Annual Leave, Sick Leave"
+                            />
                         </div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="flex flex-col gap-6 p-7">
-                                <div className="form-group">
-                                    <label>Policy Name</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        value={formData.name} 
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                                        placeholder="e.g. Annual Leave, Sick Leave"
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">Save Policy</button>
-                            </div>
-                        </form>
                     </div>
-                </div>
-            )}
+                    <div className="modal-footer">
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                        <button type="submit" className="btn-primary !px-10">Save Policy</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

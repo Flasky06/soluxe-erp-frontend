@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Calendar, Plus, Clock, CheckCircle, XCircle, FileText, Search, User } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const LeaveRequests = () => {
     const { user } = useAuthStore();
@@ -103,7 +104,7 @@ const LeaveRequests = () => {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <div className="xl:col-span-2 premium-card overflow-hidden">
+                <div className="xl:col-span-2 premium-card">
                     <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Leave History</span>
                         <div className="flex items-center gap-2">
@@ -112,8 +113,8 @@ const LeaveRequests = () => {
                         </div>
                     </div>
                     
-                    <div className="overflow-x-auto">
-                        <table className="management-table">
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
                                     <th>Type</th>
@@ -198,14 +199,14 @@ const LeaveRequests = () => {
             </div>
 
             {/* Application Modal */}
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">New Leave Request</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-4">
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title="New Leave Request"
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+            >
+                <form onSubmit={handleSubmit} className="p-4">
                             <div className="flex flex-col gap-6">
                                 <div className="form-group">
                                     <label>Leave Category</label>
@@ -245,9 +246,7 @@ const LeaveRequests = () => {
                                 <button type="submit" className="btn-primary !px-12">Submit Request</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

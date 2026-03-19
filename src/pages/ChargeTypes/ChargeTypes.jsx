@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const ChargeTypes = () => {
     const [chargeTypes, setChargeTypes] = useState([]);
@@ -11,6 +12,7 @@ const ChargeTypes = () => {
         name: '',
         active: true
     });
+    const [serverErrors, setServerErrors] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchChargeTypes = async () => {
@@ -42,11 +44,13 @@ const ChargeTypes = () => {
                 active: true
             });
         }
+        setServerErrors({});
         setShowModal(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerErrors({});
         try {
             if (editingType) {
                 await api.put(`/charge-types/${editingType.id}`, formData);
@@ -57,7 +61,11 @@ const ChargeTypes = () => {
             fetchChargeTypes();
         } catch (err) {
             console.error('Failed to save charge type:', err);
-            alert('Failed to save charge type.');
+            if (err.response && (err.response.status === 400 || err.response.status === 409)) {
+                setServerErrors(err.response.data);
+            } else {
+                alert('Failed to save charge type. Please try again.');
+            }
         }
     };
 
@@ -93,16 +101,17 @@ const ChargeTypes = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Charge Type</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading charge types...</div>
                 ) : (
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
-                                <th style={{ width: '75%' }}>Name</th>
-                                <th style={{ width: '10%' }}>Status</th>
-                                <th style={{ width: '15%' }}>Actions</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -110,8 +119,8 @@ const ChargeTypes = () => {
                                 <tr key={type.id}>
                                     <td><span className="font-bold text-slate-800">{type.name}</span></td>
                                     <td>
-                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${type.active ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                                            {type.active ? 'Active' : 'Inactive'}
+                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${(type.isActive ?? type.active) ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                            {(type.isActive ?? type.active) ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                     <td>
@@ -131,45 +140,49 @@ const ChargeTypes = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingType ? 'Edit Charge Type' : 'Add New Charge Type'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-grid">
-                                <div className="form-group full-width">
-                                    <label>Type Name</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        value={formData.name} 
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                                        placeholder="e.g. Laundry, Spa, Extra Bed"
-                                    />
-                                </div>
-                                <div className="form-group flex items-center gap-2 mt-4">
-                                    <input 
-                                        type="checkbox" 
-                                        id="activeStatus"
-                                        checked={formData.active} 
-                                        onChange={(e) => setFormData({...formData, active: e.target.checked})} 
-                                    />
-                                    <label htmlFor="activeStatus" className="m-0 cursor-pointer text-sm font-semibold text-slate-700">Set as Active</label>
-                                </div>
-                            </div>
-                            <div className="modal-footer mt-6">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">Save Charge Type</button>
-                            </div>
-                        </form>
+            <Modal 
+                isOpen={showModal} 
+                onClose={() => setShowModal(false)} 
+                title={editingType ? 'Edit Charge Type' : 'Add New Charge Type'}
+                size="sm"
+            >
+                {serverErrors.error && (
+                    <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                        {serverErrors.error}
                     </div>
-                </div>
-            )}
+                )}
+                <form onSubmit={handleSubmit}>
+                    <div className="form-grid p-6">
+                        <div className="form-group full-width">
+                            <label>Type Name</label>
+                            <input 
+                                type="text" 
+                                required 
+                                value={formData.name} 
+                                onChange={(e) => setFormData({...formData, name: e.target.value})} 
+                                placeholder="e.g. Laundry, Spa, Extra Bed"
+                            />
+                            {serverErrors.name && <p className="text-red-500 text-[10px] mt-1">{serverErrors.name}</p>}
+                        </div>
+                        <div className="form-group flex items-center gap-2 mt-4">
+                            <input 
+                                type="checkbox" 
+                                id="activeStatus"
+                                checked={formData.active} 
+                                onChange={(e) => setFormData({...formData, active: e.target.checked})} 
+                            />
+                            <label htmlFor="activeStatus" className="m-0 cursor-pointer text-sm font-semibold text-slate-700">Set as Active</label>
+                        </div>
+                    </div>
+                    <div className="modal-footer mt-6">
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                        <button type="submit" className="btn-primary !px-10">Save Charge Type</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

@@ -15,6 +15,7 @@ import {
     Table as TableIcon,
     Coffee
 } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const Restaurant = () => {
     const [tables, setTables] = useState([]);
@@ -197,17 +198,17 @@ const Restaurant = () => {
                     </h3>
                 </div>
 
-                <div className="premium-card overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="management-table">
+                <div className="premium-card">
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table" style={{ minWidth: '900px' }}>
                             <thead>
                                 <tr>
-                                    <th className="w-[15%]">Table</th>
-                                    <th className="w-[15%]">Location</th>
-                                    <th className="w-[10%]">Pax</th>
-                                    <th className="w-[15%]">Status</th>
-                                    <th className="w-[20%]">Current Guest</th>
-                                    <th className="w-[25%] text-right pr-6">Management</th>
+                                    <th>Table</th>
+                                    <th>Location</th>
+                                    <th>Pax</th>
+                                    <th>Status</th>
+                                    <th>Current Guest</th>
+                                    <th className="text-right pr-6">Management</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -314,15 +315,15 @@ const Restaurant = () => {
                     </h3>
                 </div>
 
-                <div className="premium-card overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="management-table">
+                <div className="premium-card">
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table" style={{ minWidth: '600px' }}>
                             <thead>
                                 <tr>
-                                    <th className="w-[40%]">Item Name</th>
-                                    <th className="w-[20%]">Category</th>
-                                    <th className="w-[20%]">Price</th>
-                                    <th className="w-[20%] text-right pr-6">Action</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th className="text-right pr-6">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -375,17 +376,20 @@ const Restaurant = () => {
 
 
             {/* Open Table / Session Modal */}
-            {showSessionModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[70%] !max-w-[600px]">
-                        <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">Open Table: {selectedTable?.tableName}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">Start a new dining session for this table.</p>
-                            </div>
-                            <button className="close-modal-btn" onClick={() => setShowSessionModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSessionSubmit}>
+            <Modal
+                isOpen={showSessionModal}
+                onClose={() => setShowSessionModal(false)}
+                size="md"
+                customClasses="!w-[70%] !max-w-[600px]"
+            >
+                <div className="modal-header">
+                    <div>
+                        <h2 className="text-xl font-bold text-primary">Open Table: {selectedTable?.tableName}</h2>
+                        <p className="text-sm text-text-slate mt-0.5">Start a new dining session for this table.</p>
+                    </div>
+                    <button className="close-modal-btn" onClick={() => setShowSessionModal(false)}>&times;</button>
+                </div>
+                <form onSubmit={handleSessionSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Guest Name (Optional)</label>
@@ -439,25 +443,26 @@ const Restaurant = () => {
                                 <button type="submit" className="btn-primary !px-10">Start Session</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
             {/* Order Management Modal */}
-            {showOrderModal && activeSession && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[95%] !max-w-[1400px]">
-                        <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">🧾 {selectedTable?.tableName} — {activeSession.guestName || 'Direct Guest'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">
-                                    Session opened at {new Date(activeSession.openedAt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})} · {activeSession.paxCount} pax
-                                </p>
-                            </div>
-                            <button className="close-modal-btn" onClick={() => setShowOrderModal(false)}>&times;</button>
-                        </div>
+            <Modal
+                isOpen={showOrderModal}
+                onClose={() => setShowOrderModal(false)}
+                size="none"
+                customClasses="!w-[95%] !max-w-[1400px]"
+            >
+                <div className="modal-header">
+                    <div>
+                        <h2 className="text-xl font-bold text-primary">🧾 {selectedTable?.tableName} — {activeSession?.guestName || 'Direct Guest'}</h2>
+                        <p className="text-sm text-text-slate mt-0.5">
+                            Session opened at {activeSession ? new Date(activeSession.openedAt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : ''} · {activeSession?.paxCount} pax
+                        </p>
+                    </div>
+                    <button className="close-modal-btn" onClick={() => setShowOrderModal(false)}>&times;</button>
+                </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-7 overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-7 overflow-hidden">
                             {/* Left: Current Orders */}
                             <div className="flex flex-col overflow-hidden bg-slate-50 rounded-xl p-5 border border-slate-200">
                                 <h3 className="text-xs uppercase font-bold text-slate-500 tracking-wider mb-4">Current Order</h3>
@@ -514,9 +519,7 @@ const Restaurant = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

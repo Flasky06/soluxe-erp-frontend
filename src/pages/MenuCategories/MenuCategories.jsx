@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import Modal from '../../components/Modal/Modal';
 
 const MenuCategories = () => {
     const [categories, setCategories] = useState([]);
@@ -80,19 +81,20 @@ const MenuCategories = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Category</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading categories...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '60%' }}>Category Name</th>
-                                <th style={{ width: '15%' }}>Sort Order</th>
-                                <th style={{ width: '10%' }}>Status</th>
-                                <th style={{ width: '15%' }}>Actions</th>
-                            </tr>
-                        </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse">Loading categories...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '500px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Category Name</th>
+                                    <th>Sort Order</th>
+                                    <th>Status</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {categories.length > 0 ? categories.map((cat) => (
                                 <tr key={cat.id}>
@@ -120,16 +122,17 @@ const MenuCategories = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[70%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingCategory ? 'Edit Category' : 'Add New Category'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingCategory ? 'Edit Category' : 'Add New Category'}
+                size="md"
+                customClasses="!w-[70%] !max-w-[500px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Category Name</label>
@@ -149,9 +152,7 @@ const MenuCategories = () => {
                                 <button type="submit" className="btn-primary !px-10">{editingCategory ? 'Save Changes' : 'Create Category'}</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

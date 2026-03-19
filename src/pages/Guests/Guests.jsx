@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { User, Search } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 import GuestForm from '../../components/GuestForm/GuestForm';
 import Pagination from '../../components/Pagination/Pagination';
 
@@ -99,20 +100,21 @@ const Guests = () => {
                 </div>
             </div>
 
-            <div className="table-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading guests...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th>Guest</th>
-                                <th>Contact</th>
-                                <th>ID Info</th>
-                                <th>Nationality</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse">Loading guests...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '900px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Guest</th>
+                                    <th>Contact</th>
+                                    <th>ID Info</th>
+                                    <th>Nationality</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {paginatedGuests.length > 0 ? paginatedGuests.map((guest) => (
                                 <tr key={guest.id}>
@@ -185,6 +187,7 @@ const Guests = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
             {!loading && filteredGuests.length > 0 && (
                 <Pagination 
@@ -196,83 +199,83 @@ const Guests = () => {
                 />
             )}
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[80%] !max-w-[1000px] !p-0">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-text-dark leading-tight">{editingGuest ? 'Guest Profile' : 'Register New Guest'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <div className="flex border-b border-border-gray px-6">
-                            <button 
-                                className={`px-6 py-3 font-bold text-sm transition-all ${activeTab === 'profile' ? 'border-b-2 border-primary text-primary' : 'text-text-slate hover:text-primary'}`}
-                                onClick={() => setActiveTab('profile')}
-                            >
-                                Profile Details
-                            </button>
-                            {editingGuest && (
-                                <button 
-                                    className={`px-6 py-3 font-bold text-sm transition-all ${activeTab === 'history' ? 'border-b-2 border-primary text-primary' : 'text-text-slate hover:text-primary'}`}
-                                    onClick={() => {
-                                        setActiveTab('history');
-                                        if (stayHistory.length === 0) fetchStayHistory(editingGuest.id);
-                                    }}
-                                >
-                                    Stay History
-                                </button>
-                            )}
-                        </div>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingGuest ? 'Guest Profile' : 'Register New Guest'}
+                size="lg"
+                customClasses="!max-w-[1000px] !p-0"
+            >
+                <div className="flex border-b border-border-gray px-6">
+                    <button 
+                        className={`px-6 py-3 font-bold text-sm transition-all ${activeTab === 'profile' ? 'border-b-2 border-primary text-primary' : 'text-text-slate hover:text-primary'}`}
+                        onClick={() => setActiveTab('profile')}
+                    >
+                        Profile Details
+                    </button>
+                    {editingGuest && (
+                        <button 
+                            className={`px-6 py-3 font-bold text-sm transition-all ${activeTab === 'history' ? 'border-b-2 border-primary text-primary' : 'text-text-slate hover:text-primary'}`}
+                            onClick={() => {
+                                setActiveTab('history');
+                                if (stayHistory.length === 0) fetchStayHistory(editingGuest.id);
+                            }}
+                        >
+                            Stay History
+                        </button>
+                    )}
+                </div>
 
-                        {activeTab === 'profile' ? (
-                            <GuestForm 
-                                initialData={editingGuest} 
-                                onSuccess={() => {
-                                    setShowModal(false);
-                                    refreshData();
-                                }}
-                                onCancel={() => setShowModal(false)}
-                            />
+                {activeTab === 'profile' ? (
+                    <GuestForm 
+                        initialData={editingGuest} 
+                        onSuccess={() => {
+                            setShowModal(false);
+                            refreshData();
+                        }}
+                        onCancel={() => setShowModal(false)}
+                    />
+                ) : (
+                    <div className="p-6 overflow-y-auto max-h-[80vh]">
+                        {historyLoading ? (
+                            <div className="text-center py-10 animate-pulse text-text-slate">Loading history...</div>
+                        ) : stayHistory.length > 0 ? (
+                        <div className="overflow-x-auto w-full">
+                            <table className="management-table" style={{ minWidth: '600px' }}>
+                                <thead>
+                                    <tr>
+                                        <th>Room</th>
+                                        <th>Dates</th>
+                                        <th>Duration</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {stayHistory.map(stay => (
+                                        <tr key={stay.id}>
+                                            <td><span className="font-bold text-text-dark">Room {stay.roomId}</span></td>
+                                            <td className="text-xs">
+                                                {new Date(stay.dateIn).toLocaleDateString()} — {stay.actualDateOut ? new Date(stay.actualDateOut).toLocaleDateString() : (stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : 'Active')}
+                                            </td>
+                                            <td className="text-xs font-medium">
+                                                {Math.ceil((new Date(stay.actualDateOut || stay.dateOut || new Date()) - new Date(stay.dateIn)) / (1000 * 60 * 60 * 24))} Night(s)
+                                            </td>
+                                            <td>
+                                                <span className={`status-badge ${stay.status === 'ACTIVE' ? 'status-booked' : stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-completed'}`}>
+                                                    {stay.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                         ) : (
-                            <div className="p-6 overflow-y-auto max-h-[80vh]">
-                                {historyLoading ? (
-                                    <div className="text-center py-10 animate-pulse text-text-slate">Loading history...</div>
-                                ) : stayHistory.length > 0 ? (
-                                    <table className="management-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Room</th>
-                                                <th>Dates</th>
-                                                <th>Duration</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {stayHistory.map(stay => (
-                                                <tr key={stay.id}>
-                                                    <td><span className="font-bold text-text-dark">Room {stay.roomId}</span></td>
-                                                    <td className="text-xs">
-                                                        {new Date(stay.dateIn).toLocaleDateString()} — {stay.actualDateOut ? new Date(stay.actualDateOut).toLocaleDateString() : (stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : 'Active')}
-                                                    </td>
-                                                    <td className="text-xs font-medium">
-                                                        {Math.ceil((new Date(stay.actualDateOut || stay.dateOut || new Date()) - new Date(stay.dateIn)) / (1000 * 60 * 60 * 24))} Night(s)
-                                                    </td>
-                                                    <td>
-                                                        <span className={`status-badge ${stay.status === 'ACTIVE' ? 'status-booked' : stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-completed'}`}>
-                                                            {stay.status}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                ) : (
-                                    <div className="text-center py-20 text-text-slate italic">No past stays recorded for this guest.</div>
-                                )}
-                            </div>
+                            <div className="text-center py-20 text-text-slate italic">No past stays recorded for this guest.</div>
                         )}
                     </div>
-                </div>
-            )}
+                )}
+            </Modal>
         </div>
     );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import Modal from '../../components/Modal/Modal';
 
 const Rooms = () => {
     const [rooms, setRooms] = useState([]);
@@ -153,21 +154,22 @@ const Rooms = () => {
                 </div>
             </div>
 
-            <div className="table-card">
-                {loading && rooms.length === 0 ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading rooms...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '20%' }}>Room Number</th>
-                                <th style={{ width: '20%' }}>Type</th>
-                                <th style={{ width: '15%' }}>Floor</th>
-                                <th style={{ width: '15%' }}>Status</th>
-                                <th style={{ width: '15%' }}>Housekeeping</th>
-                                <th style={{ width: '15%' }}>Actions</th>
-                            </tr>
-                        </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading && rooms.length === 0 ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading rooms...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '800px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Room Number</th>
+                                    <th>Type</th>
+                                    <th>Floor</th>
+                                    <th>Status</th>
+                                    <th>Housekeeping</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {filteredRooms.length > 0 ? (
                                 filteredRooms.map((room) => (
@@ -209,16 +211,17 @@ const Rooms = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[70%] !max-w-[800px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingRoom ? 'Edit Room' : 'Add New Room'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingRoom ? 'Edit Room' : 'Add New Room'}
+                size="md"
+                customClasses="!w-[70%] !max-w-[800px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Room Number</label>
@@ -257,18 +260,15 @@ const Rooms = () => {
                                 <button type="submit" className="btn-primary !px-10">{editingRoom ? 'Save Changes' : 'Save Room'}</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
-            {showTypeModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Add Room Category</h2>
-                            <button className="close-modal-btn" onClick={() => setShowTypeModal(false)}>&times;</button>
-                        </div>
-
-                        <form onSubmit={handleCreateType} className="form-grid">
+            </Modal>
+            <Modal
+                isOpen={showTypeModal}
+                onClose={() => setShowTypeModal(false)}
+                title="Add Room Category"
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+            >
+                <form onSubmit={handleCreateType} className="form-grid">
                             <div className="form-group full-width">
                                 <label>Category Name</label>
                                 <input type="text" required value={typeFormData.name} onChange={e => setTypeFormData({...typeFormData, name: e.target.value})} placeholder="e.g. Deluxe Suite" />
@@ -286,10 +286,7 @@ const Rooms = () => {
                                 <button type="submit" className="btn-primary">Create Category</button>
                             </div>
                         </form>
-
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

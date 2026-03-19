@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../../services/api';
 import { Pencil, Trash2, Plus, Info } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const Settings = () => {
     const [activeTab, setActiveTab] = useState('users');
@@ -205,11 +206,12 @@ const Settings = () => {
                     <div className="flex justify-end mb-6">
                         <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add New User</button>
                     </div>
-                    <div className="premium-card overflow-hidden">
+                    <div className="premium-card">
+                        <div className="overflow-x-auto w-full">
                         {loading ? (
                             <div className="text-center py-20 text-text-slate animate-pulse text-lg">Loading user accounts...</div>
                         ) : (
-                            <table className="management-table">
+                            <table className="management-table" style={{ minWidth: '800px' }}>
                                 <thead>
                                     <tr>
                                         <th>User</th>
@@ -264,6 +266,7 @@ const Settings = () => {
                                 </tbody>
                             </table>
                         )}
+                        </div>
                     </div>
                 </>
             )}
@@ -373,13 +376,14 @@ const Settings = () => {
                         </div>
 
                         <div className="premium-card min-h-[400px]">
+                            <div className="overflow-x-auto w-full">
                             {defLoading ? (
                                 <div className="flex flex-col items-center justify-center h-[400px] text-slate-400 gap-3">
                                     <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                                     <span className="font-bold text-sm tracking-wide">Syncing entries...</span>
                                 </div>
                             ) : definitions.length > 0 ? (
-                                <table className="management-table">
+                                <table className="management-table" style={{ minWidth: '500px' }}>
                                     <thead>
                                         <tr>
                                             <th>Name</th>
@@ -413,153 +417,150 @@ const Settings = () => {
                                     <button className="text-primary font-bold text-xs mt-2 hover:underline" onClick={() => handleOpenDefModal()}>Click here to add your first record</button>
                                 </div>
                             )}
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
             {/* User Modal */}
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[800px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingUser ? 'Edit User Profile' : 'Create New User Account'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingUser ? 'Edit User Profile' : 'Create New User Account'}
+                size="md"
+            >
+                <form onSubmit={handleSubmit}>
+                    {/* ... same as before */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-7">
+                        <div className="form-group">
+                            <label>Username</label>
+                            <input 
+                                type="text" 
+                                required 
+                                disabled={!!editingUser}
+                                value={formData.username} 
+                                onChange={(e) => setFormData({...formData, username: e.target.value})} 
+                                placeholder="Identification name"
+                            />
                         </div>
-                        <form onSubmit={handleSubmit}>
-                            {/* ... same as before */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-7">
-                                <div className="form-group">
-                                    <label>Username</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        disabled={!!editingUser}
-                                        value={formData.username} 
-                                        onChange={(e) => setFormData({...formData, username: e.target.value})} 
-                                        placeholder="Identification name"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Full Name</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        value={formData.fullName} 
-                                        onChange={(e) => setFormData({...formData, fullName: e.target.value})} 
-                                        placeholder="e.g. John Doe"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Email Address</label>
-                                    <input 
-                                        type="email" 
-                                        required 
-                                        value={formData.email} 
-                                        onChange={(e) => setFormData({...formData, email: e.target.value})} 
-                                        placeholder="user@soluxe.com"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Phone Number</label>
-                                    <input 
-                                        type="text" 
-                                        value={formData.phoneNumber} 
-                                        onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})} 
-                                        placeholder="+254..."
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Security Role</label>
-                                    <select 
-                                        value={formData.role} 
-                                        onChange={(e) => setFormData({...formData, role: e.target.value})}
-                                    >
-                                        <option value="HOTEL_ADMIN">Hotel Admin</option>
-                                        <option value="MANAGER">Manager</option>
-                                        <option value="RECEPTIONIST">Receptionist</option>
-                                        <option value="ACCOUNTANT">Accountant</option>
-                                        <option value="HOUSEKEEPING">Housekeeping</option>
-                                        <option value="MAINTENANCE">Maintenance</option>
-                                        <option value="CHEF">Chef</option>
-                                        <option value="STORE_KEEPER">Store Keeper</option>
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label>{editingUser ? 'New Password (Optional)' : 'Account Password'}</label>
-                                    <input 
-                                        type="password" 
-                                        required={!editingUser}
-                                        value={formData.password} 
-                                        onChange={(e) => setFormData({...formData, password: e.target.value})} 
-                                        placeholder="••••••••"
-                                    />
-                                </div>
-                                <div className="md:col-span-2">
-                                    <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                                        <input 
-                                            type="checkbox" 
-                                            id="isActive"
-                                            checked={formData.isActive} 
-                                            onChange={(e) => setFormData({...formData, isActive: e.target.checked})} 
-                                            className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary"
-                                        />
-                                        <label htmlFor="isActive" className="mb-0 font-medium text-slate-700">Account is Active (Allow login and system access)</label>
-                                    </div>
-                                </div>
+                        <div className="form-group">
+                            <label>Full Name</label>
+                            <input 
+                                type="text" 
+                                required 
+                                value={formData.fullName} 
+                                onChange={(e) => setFormData({...formData, fullName: e.target.value})} 
+                                placeholder="e.g. John Doe"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Email Address</label>
+                            <input 
+                                type="email" 
+                                required 
+                                value={formData.email} 
+                                onChange={(e) => setFormData({...formData, email: e.target.value})} 
+                                placeholder="user@soluxe.com"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Phone Number</label>
+                            <input 
+                                type="text" 
+                                value={formData.phoneNumber} 
+                                onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})} 
+                                placeholder="+254..."
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Security Role</label>
+                            <select 
+                                value={formData.role} 
+                                onChange={(e) => setFormData({...formData, role: e.target.value})}
+                            >
+                                <option value="HOTEL_ADMIN">Hotel Admin</option>
+                                <option value="MANAGER">Manager</option>
+                                <option value="RECEPTIONIST">Receptionist</option>
+                                <option value="ACCOUNTANT">Accountant</option>
+                                <option value="HOUSEKEEPING">Housekeeping</option>
+                                <option value="MAINTENANCE">Maintenance</option>
+                                <option value="CHEF">Chef</option>
+                                <option value="STORE_KEEPER">Store Keeper</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>{editingUser ? 'New Password (Optional)' : 'Account Password'}</label>
+                            <input 
+                                type="password" 
+                                required={!editingUser}
+                                value={formData.password} 
+                                onChange={(e) => setFormData({...formData, password: e.target.value})} 
+                                placeholder="••••••••"
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                                <input 
+                                    type="checkbox" 
+                                    id="isActive"
+                                    checked={formData.isActive} 
+                                    onChange={(e) => setFormData({...formData, isActive: e.target.checked})} 
+                                    className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary"
+                                />
+                                <label htmlFor="isActive" className="mb-0 font-medium text-slate-700">Account is Active (Allow login and system access)</label>
                             </div>
-
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">{editingUser ? 'Save Updates' : 'Create Account'}</button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
-            )}
+
+                    <div className="modal-footer">
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
+                        <button type="submit" className="btn-primary !px-10">{editingUser ? 'Save Updates' : 'Create Account'}</button>
+                    </div>
+                </form>
+            </Modal>
 
             {/* Global Def Modal */}
-            {showDefModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <div>
-                                <h2 className="text-xl font-bold text-primary">{editingDef ? 'Edit Definition' : 'Add New Entry'}</h2>
-                                <p className="text-sm text-text-slate mt-0.5">{defTypes.find(t => t.id === activeDefType)?.name}</p>
-                            </div>
-                            <button className="close-modal-btn" onClick={() => setShowDefModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleDefSubmit}>
-                            <div className="flex flex-col gap-6 p-7">
-                                <div className="form-group">
-                                    <label>Display Name</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        value={defFormData.name} 
-                                        onChange={(e) => setDefFormData({...defFormData, name: e.target.value})} 
-                                        placeholder="e.g. Passport, Kgs, Dinner"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Description (Optional)</label>
-                                    <textarea 
-                                        rows="3"
-                                        value={defFormData.description} 
-                                        onChange={(e) => setDefFormData({...defFormData, description: e.target.value})} 
-                                        placeholder="Brief details about this entry..."
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowDefModal(false)} className="btn-secondary !px-8">Cancel</button>
-                                <button type="submit" className="btn-primary !px-8">{editingDef ? 'Update Entry' : 'Create Entry'}</button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showDefModal}
+                onClose={() => setShowDefModal(false)}
+                title={(
+                    <div className="flex flex-col">
+                        <span>{editingDef ? 'Edit Definition' : 'Add New Entry'}</span>
+                        <span className="text-sm font-medium text-slate-500 mt-1">{defTypes.find(t => t.id === activeDefType)?.name}</span>
                     </div>
-                </div>
-            )}
+                )}
+                size="sm"
+            >
+                <form onSubmit={handleDefSubmit}>
+                    <div className="flex flex-col gap-6 p-7">
+                        <div className="form-group">
+                            <label>Display Name</label>
+                            <input 
+                                type="text" 
+                                required 
+                                value={defFormData.name} 
+                                onChange={(e) => setDefFormData({...defFormData, name: e.target.value})} 
+                                placeholder="e.g. Passport, Kgs, Dinner"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Description (Optional)</label>
+                            <textarea 
+                                rows="3"
+                                value={defFormData.description} 
+                                onChange={(e) => setDefFormData({...defFormData, description: e.target.value})} 
+                                placeholder="Brief details about this entry..."
+                            />
+                        </div>
+                    </div>
+
+                    <div className="modal-footer">
+                        <button type="button" onClick={() => setShowDefModal(false)} className="btn-secondary !px-8">Cancel</button>
+                        <button type="submit" className="btn-primary !px-8">{editingDef ? 'Update Entry' : 'Create Entry'}</button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

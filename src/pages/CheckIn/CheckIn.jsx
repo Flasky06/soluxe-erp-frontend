@@ -4,6 +4,7 @@ import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import GuestForm from '../../components/GuestForm/GuestForm';
 import { Wallet } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const CheckIn = () => {
     const { user } = useAuthStore();
@@ -279,7 +280,7 @@ const CheckIn = () => {
             </div>
 
             {/* ACTIVE STAYS LIST */}
-            <div className="premium-card overflow-x-auto">
+            <div className="premium-card">
                 <div className="px-6 py-4 border-b border-border-gray flex justify-between items-center bg-green-50/30">
                     <h2 className="text-lg font-bold text-text-dark">Active Stays</h2>
                     <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -291,48 +292,50 @@ const CheckIn = () => {
                 ) : activeStays.length === 0 ? (
                     <div className="text-center py-20 text-text-slate italic">No active stays currently.</div>
                 ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th>Guest</th>
-                                <th>Room</th>
-                                <th>Check-in Date</th>
-                                <th>Exp. Checkout</th>
-                                <th>Occupancy</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {activeStays.map(stay => (
-                                <tr key={stay.id}>
-                                    <td><span className="font-bold text-text-dark">{getGuestName(stay.guestId)}</span></td>
-                                    <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-bold">Room {stay.roomId}</span></td>
-                                    <td className="text-xs">{stay.dateIn ? new Date(stay.dateIn).toLocaleDateString() : '—'}</td>
-                                    <td className="text-xs">{stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : '—'}</td>
-                                    <td className="text-xs">{stay.adults} Adults, {stay.children || 0} Children</td>
-                                    <td>
-                                        <span className={`status-badge ${stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-booked'}`}>
-                                            {stay.status}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button 
-                                            className="btn-secondary !py-1 !px-3 text-[10px] !bg-slate-50 !text-slate-500 !border-slate-200 hover:!bg-slate-100"
-                                            onClick={() => handleVoidStay(stay.id)}
-                                        >
-                                            Void
-                                        </button>
-                                    </td>
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table" style={{ minWidth: '900px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Guest</th>
+                                    <th>Room</th>
+                                    <th>Check-in Date</th>
+                                    <th>Exp. Checkout</th>
+                                    <th>Occupancy</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {activeStays.map(stay => (
+                                    <tr key={stay.id}>
+                                        <td><span className="font-bold text-text-dark">{getGuestName(stay.guestId)}</span></td>
+                                        <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-bold">Room {stay.roomId}</span></td>
+                                        <td className="text-xs">{stay.dateIn ? new Date(stay.dateIn).toLocaleDateString() : '—'}</td>
+                                        <td className="text-xs">{stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : '—'}</td>
+                                        <td className="text-xs">{stay.adults} Adults, {stay.children || 0} Children</td>
+                                        <td>
+                                            <span className={`status-badge ${stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-booked'}`}>
+                                                {stay.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button 
+                                                className="btn-secondary !py-1 !px-3 text-[10px] !bg-slate-50 !text-slate-500 !border-slate-200 hover:!bg-slate-100"
+                                                onClick={() => handleVoidStay(stay.id)}
+                                            >
+                                                Void
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 
             {/* RESERVATIONS LIST */}
-            <div className="premium-card overflow-x-auto mt-12">
+            <div className="premium-card mt-12">
                 <div className="px-6 py-4 border-b border-border-gray flex justify-between items-center">
                     <h2 className="text-lg font-bold text-text-dark">Pending Arrivals</h2>
                     <span className="bg-maroon/10 text-maroon text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -344,50 +347,51 @@ const CheckIn = () => {
                 ) : reservations.length === 0 ? (
                     <div className="text-center py-20 text-text-slate italic">No pending arrivals to check in.</div>
                 ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th>Guest</th>
-                                <th>Room Category</th>
-                                <th>Check-in Date</th>
-                                <th>Check-out Date</th>
-                                <th>Occupancy</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {reservations.map(res => (
-                                <tr key={res.id}>
-                                    <td><span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span></td>
-                                    <td>{getRoomTypeName(res.roomTypeId)}</td>
-                                    <td>{res.dateIn ? new Date(res.dateIn).toLocaleDateString() : '—'}</td>
-                                    <td>{res.dateOut ? new Date(res.dateOut).toLocaleDateString() : '—'}</td>
-                                    <td>{res.adults} Adults, {res.children || 0} Children</td>
-                                    <td>
-                                        <div className="table-actions">
-                                            <button className="btn-secondary !py-1 !px-3 flex items-center gap-1.5" onClick={() => handleOpenPaymentModal(res)}>
-                                                <Wallet size={12} /> Pay
-                                            </button>
-                                            <button className="view-btn" onClick={() => handleOpenResModal(res)}>
-                                                Check In
-                                            </button>
-                                        </div>
-                                    </td>
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table" style={{ minWidth: '800px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Guest</th>
+                                    <th>Room Category</th>
+                                    <th>Check-in Date</th>
+                                    <th>Check-out Date</th>
+                                    <th>Occupancy</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {reservations.map(res => (
+                                    <tr key={res.id}>
+                                        <td><span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span></td>
+                                        <td>{getRoomTypeName(res.roomTypeId)}</td>
+                                        <td>{res.dateIn ? new Date(res.dateIn).toLocaleDateString() : '—'}</td>
+                                        <td>{res.dateOut ? new Date(res.dateOut).toLocaleDateString() : '—'}</td>
+                                        <td>{res.adults} Adults, {res.children || 0} Children</td>
+                                        <td>
+                                            <div className="table-actions">
+                                                <button className="btn-secondary !py-1 !px-3 flex items-center gap-1.5" onClick={() => handleOpenPaymentModal(res)}>
+                                                    <Wallet size={12} /> Pay
+                                                </button>
+                                                <button className="view-btn" onClick={() => handleOpenResModal(res)}>
+                                                    Check In
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
             </div>
 
             {/* GUEST CHECK-IN MODAL */}
-            {showDirectCheckInModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[800px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-text-dark">Guest Check-in</h2>
-                            <button className="close-modal-btn" onClick={() => setShowDirectCheckInModal(false)}>&times;</button>
-                        </div>
+            <Modal
+                isOpen={showDirectCheckInModal}
+                onClose={() => setShowDirectCheckInModal(false)}
+                title="Guest Check-in"
+                size="md"
+            >
                         
                         {directCheckInSuccess && (
                             <div className="m-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm font-medium animate-pulse">{directCheckInSuccess}</div>
@@ -504,79 +508,80 @@ const CheckIn = () => {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
             {/* Reservation Check-in Room Selection Modal */}
-            {showReservationModal && selectedReservation && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[80%] !max-w-[700px]">
-                        <div className="modal-header">
-                            <h2>Assign Room — Check-in</h2>
-                            <button className="close-modal-btn" onClick={() => setShowReservationModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleResCheckIn}>
-                            <div className="bg-slate-50 p-5 rounded-xl border border-border-gray mb-6 flex flex-col gap-2">
-                                <p className="text-text-dark"><strong>Guest:</strong> {getGuestName(selectedReservation.guestId)}</p>
-                                <p className="text-text-dark"><strong>Category:</strong> {getRoomTypeName(selectedReservation.roomTypeId)}</p>
-                                <p className="text-text-dark"><strong>Dates:</strong> {new Date(selectedReservation.dateIn).toLocaleDateString()} → {new Date(selectedReservation.dateOut).toLocaleDateString()}</p>
-                            </div>
-                            <div className="form-group full-width">
-                                <label>Available Rooms</label>
-                                {availableRooms.length === 0 ? (
-                                    <p className="text-red-500 text-sm font-medium mt-1">No available rooms match this category.</p>
-                                ) : (
-                                    <select
-                                        required
-                                        value={resCheckInRoomId}
-                                        onChange={e => setResCheckInRoomId(e.target.value)}
-                                    >
-                                        <option value="">-- Select Room Number --</option>
-                                        {availableRooms.map(room => (
-                                            <option key={room.id} value={room.id}>Room {room.roomNumber} — Floor {room.floor}</option>
-                                        ))}
-                                    </select>
-                                )}
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" onClick={() => setShowReservationModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary" disabled={!resCheckInRoomId || availableRooms.length === 0 || resCheckInLoading}>
-                                    {resCheckInLoading ? 'Checking In...' : 'Complete Check-in'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-            {/* Quick Guest Registration Modal */}
-            {showQuickGuestModal && (
-                <div className="modal-overlay z-[2000]">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[800px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Quick Register Guest</h2>
-                            <button className="close-modal-btn" onClick={() => setShowQuickGuestModal(false)}>&times;</button>
-                        </div>
-                        <GuestForm 
-                            onSuccess={handleQuickGuestSuccess} 
-                            onCancel={() => setShowQuickGuestModal(false)} 
-                        />
-                    </div>
-                </div>
-            )}
-            {/* Payment Modal */}
-            {showPaymentModal && (
-                <div className="modal-overlay z-[1100]">
-                    <div className="modal-content !max-w-[750px] !p-0 overflow-hidden">
-                        <div className="modal-header !p-6 border-b border-slate-100">
-                            <h2 className="flex items-center gap-3 text-xl font-bold text-slate-800 m-0">
-                                <div className="bg-maroon/10 p-2 rounded-lg">
-                                    <Wallet className="text-maroon" size={20} />
+            <Modal
+                isOpen={showReservationModal && !!selectedReservation}
+                onClose={() => setShowReservationModal(false)}
+                title="Assign Room — Check-in"
+                size="md"
+                customClasses="!w-[80%] !max-w-[700px]"
+            >
+                {selectedReservation && (
+                    <form onSubmit={handleResCheckIn}>
+                                <div className="bg-slate-50 p-5 rounded-xl border border-border-gray mb-6 flex flex-col gap-2">
+                                    <p className="text-text-dark"><strong>Guest:</strong> {getGuestName(selectedReservation.guestId)}</p>
+                                    <p className="text-text-dark"><strong>Category:</strong> {getRoomTypeName(selectedReservation.roomTypeId)}</p>
+                                    <p className="text-text-dark"><strong>Dates:</strong> {new Date(selectedReservation.dateIn).toLocaleDateString()} → {new Date(selectedReservation.dateOut).toLocaleDateString()}</p>
                                 </div>
-                                Record Arrival Payment
-                            </h2>
-                            <button className="close-modal-btn !top-6 !right-6" onClick={() => setShowPaymentModal(false)}>&times;</button>
+                                <div className="form-group full-width">
+                                    <label>Available Rooms</label>
+                                    {availableRooms.length === 0 ? (
+                                        <p className="text-red-500 text-sm font-medium mt-1">No available rooms match this category.</p>
+                                    ) : (
+                                        <select
+                                            required
+                                            value={resCheckInRoomId}
+                                            onChange={e => setResCheckInRoomId(e.target.value)}
+                                        >
+                                            <option value="">-- Select Room Number --</option>
+                                            {availableRooms.map(room => (
+                                                <option key={room.id} value={room.id}>Room {room.roomNumber} — Floor {room.floor}</option>
+                                            ))}
+                                        </select>
+                                    )}
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" onClick={() => setShowReservationModal(false)} className="btn-secondary">Cancel</button>
+                                    <button type="submit" className="btn-primary" disabled={!resCheckInRoomId || availableRooms.length === 0 || resCheckInLoading}>
+                                        {resCheckInLoading ? 'Checking In...' : 'Complete Check-in'}
+                                    </button>
+                                </div>
+                        </form>
+                )}
+            </Modal>
+            {/* Quick Guest Registration Modal */}
+            <Modal
+                isOpen={showQuickGuestModal}
+                onClose={() => setShowQuickGuestModal(false)}
+                title="Quick Register Guest"
+                size="md"
+                customClasses="!w-[90%] !max-w-[800px]"
+                overlayClasses="z-[2000]"
+            >
+                <GuestForm 
+                            onSuccess={handleQuickGuestSuccess} 
+                    onCancel={() => setShowQuickGuestModal(false)} 
+                />
+            </Modal>
+            {/* Payment Modal */}
+            <Modal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                size="none"
+                customClasses="!max-w-[750px] !p-0 overflow-hidden"
+                overlayClasses="z-[1100]"
+            >
+                <div className="modal-header !p-6 border-b border-slate-100">
+                    <h2 className="flex items-center gap-3 text-xl font-bold text-slate-800 m-0">
+                        <div className="bg-maroon/10 p-2 rounded-lg">
+                            <Wallet className="text-maroon" size={20} />
                         </div>
+                        Record Arrival Payment
+                    </h2>
+                    <button className="close-modal-btn !top-6 !right-6" onClick={() => setShowPaymentModal(false)}>&times;</button>
+                </div>
                         
                         <div className="p-8">
                             {/* Summary Card */}
@@ -593,7 +598,7 @@ const CheckIn = () => {
                             </div>
 
                             <form onSubmit={handleRecordPayment} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="form-group">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block text-left">Amount to Pay ($)</label>
                                         <div className="relative">
@@ -622,7 +627,7 @@ const CheckIn = () => {
                                     </div>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="form-group text-left">
                                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Reference Code</label>
                                         <input 
@@ -662,9 +667,7 @@ const CheckIn = () => {
                                 </div>
                             </form>
                         </div>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

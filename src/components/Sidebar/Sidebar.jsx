@@ -183,8 +183,17 @@ const Sidebar = ({ isOpen, onClose }) => {
     };
 
     return (
-        <aside className={`w-[var(--sidebar-width)] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100] transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
-            <div className="px-6 mb-10 flex items-center justify-between lg:justify-start gap-4">
+        <>
+            {/* Backdrop Overlay for Mobile */}
+            {isOpen && (
+                <div 
+                    className="fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] z-[90] lg:hidden transition-opacity duration-300"
+                    onClick={onClose}
+                />
+            )}
+            
+            <aside className={`w-[90%] max-w-[300px] lg:w-[260px] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100] transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+                <div className="px-6 mb-10 flex items-center justify-between lg:justify-start gap-4">
                 <div className="flex items-center gap-4">
                     <img src="/logo/soluxe-logo.jpeg" alt="Soluxe Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg border border-white/20" />
                     <span className="text-xl font-extrabold -tracking-tight text-white uppercase tracking-tighter">Soluxe <span className="text-yellow">Club Hotel</span></span>
@@ -260,6 +269,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </button>
             </div>
         </aside>
+        </>
     );
 };
 

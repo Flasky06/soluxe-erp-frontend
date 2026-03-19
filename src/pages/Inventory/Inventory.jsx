@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
 import Pagination from '../../components/Pagination/Pagination';
+import Modal from '../../components/Modal/Modal';
 
 const Inventory = () => {
     const [items, setItems] = useState([]);
@@ -202,20 +203,21 @@ const Inventory = () => {
                     </div>
                 </div>
 
-                <div className="table-card overflow-x-auto">
-                    {loading ? (
-                        <div className="text-center py-20 text-text-slate animate-pulse">Loading inventory...</div>
-                    ) : (
-                        <table className="management-table">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Stock Level</th>
-                                    <th>Category</th>
-                                    <th>Unit</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
+                <div className="premium-card">
+                    <div className="overflow-x-auto w-full">
+                        {loading ? (
+                            <div className="text-center py-20 text-text-slate animate-pulse">Loading inventory...</div>
+                        ) : (
+                            <table className="management-table" style={{ minWidth: '700px' }}>
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Stock Level</th>
+                                        <th>Category</th>
+                                        <th>Unit</th>
+                                        <th className="text-right">Actions</th>
+                                    </tr>
+                                </thead>
                             <tbody>
                                 {paginatedItems.length > 0 ? paginatedItems.map((item) => (
                                     <tr key={item.id}>
@@ -251,6 +253,7 @@ const Inventory = () => {
                             </tbody>
                         </table>
                     )}
+                    </div>
                 </div>
                 {!loading && filteredItems.length > 0 && (
                     <Pagination 
@@ -263,14 +266,14 @@ const Inventory = () => {
                 )}
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[1000px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingItem ? 'Edit Inventory Item' : 'Add New Inventory Item'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingItem ? 'Edit Inventory Item' : 'Add New Inventory Item'}
+                size="lg"
+                customClasses="!w-[90%] !max-w-[1000px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Item Name</label>
@@ -331,19 +334,18 @@ const Inventory = () => {
                                 <button type="submit" className="btn-primary !px-10">Update Inventory</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
             {/* Quick Category Modal */}
-            {showQuickCatModal && (
-                <div className="modal-overlay z-[1000]">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Quick Add Category</h2>
-                            <button className="close-modal-btn" onClick={() => setShowQuickCatModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleQuickAddCategory} className="p-4">
+            <Modal
+                isOpen={showQuickCatModal}
+                onClose={() => setShowQuickCatModal(false)}
+                title="Quick Add Category"
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+                overlayClasses="z-[1000]"
+            >
+                <form onSubmit={handleQuickAddCategory} className="p-4">
                             <div className="form-group full-width">
                                 <label>Category Name</label>
                                 <input 
@@ -362,18 +364,17 @@ const Inventory = () => {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
             {/* Quick Unit Modal */}
-            {showUnitModal && (
-                <div className="modal-overlay z-[1001]">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Add Inventory Unit</h2>
-                            <button className="close-modal-btn" onClick={() => setShowUnitModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleCreateUnit} className="p-4">
+            <Modal
+                isOpen={showUnitModal}
+                onClose={() => setShowUnitModal(false)}
+                title="Add Inventory Unit"
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+                overlayClasses="z-[1001]"
+            >
+                <form onSubmit={handleCreateUnit} className="p-4">
                             <div className="form-group">
                                 <label>Unit Name</label>
                                 <input name="name" type="text" required placeholder="e.g. Kg, Pcs, Box" />
@@ -387,9 +388,7 @@ const Inventory = () => {
                                 <button type="submit" className="btn-primary">Create Unit</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

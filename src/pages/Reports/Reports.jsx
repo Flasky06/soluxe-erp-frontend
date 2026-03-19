@@ -257,39 +257,45 @@ const Reports = () => {
                                 {Object.keys(revenueByType).length === 0 ? (
                                     <p className="py-10 text-center text-slate-400 italic text-sm">No charges recorded for this period.</p>
                                 ) : (
-                                    <table className="w-full">
-                                        <thead><tr className="border-b border-slate-100">
-                                            <th className="text-left text-[11px] font-bold text-slate-400 uppercase pb-2">Charge Type</th>
-                                            <th className="text-right text-[11px] font-bold text-slate-400 uppercase pb-2">Amount ($)</th>
-                                            <th className="text-right text-[11px] font-bold text-slate-400 uppercase pb-2">Share</th>
-                                        </tr></thead>
-                                        <tbody>
-                                            {(() => {
-                                                const total = Object.values(revenueByType).reduce((s, v) => s + parseFloat(v), 0);
-                                                return Object.entries(revenueByType)
-                                                    .sort(([, a], [, b]) => parseFloat(b) - parseFloat(a))
-                                                    .map(([type, amount]) => (
-                                                        <tr key={type} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                            <td className="py-3 text-sm font-semibold text-slate-600 capitalize">{type.replace(/_/g, ' ').toLowerCase()}</td>
-                                                            <td className="py-3 text-right font-bold text-slate-800 text-sm">{parseFloat(amount).toLocaleString()}</td>
-                                                            <td className="py-3 text-right"><span className="status-badge info text-[11px]">{total > 0 ? Math.round((parseFloat(amount) / total) * 100) : 0}%</span></td>
-                                                        </tr>
-                                                    ));
-                                            })()}
-                                        </tbody>
-                                        <tfoot><tr className="border-t-2 border-slate-200">
-                                            <td className="pt-3 text-sm font-extrabold text-slate-700">Total</td>
-                                            <td className="pt-3 text-right font-extrabold text-primary">{Object.values(revenueByType).reduce((s, v) => s + parseFloat(v), 0).toLocaleString()}</td>
-                                            <td className="pt-3 text-right"><span className="status-badge checked-in text-[11px]">100%</span></td>
-                                        </tr></tfoot>
-                                    </table>
+                                    <div className="overflow-x-auto w-full">
+                                        <table className="management-table" style={{ minWidth: '600px' }}>
+                                            <thead>
+                                                <tr>
+                                                    <th>Charge Type</th>
+                                                    <th className="text-right">Amount ($)</th>
+                                                    <th className="text-right">Share</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {(() => {
+                                                    const total = Object.values(revenueByType).reduce((s, v) => s + parseFloat(v), 0);
+                                                    return Object.entries(revenueByType)
+                                                        .sort(([, a], [, b]) => parseFloat(b) - parseFloat(a))
+                                                        .map(([type, amount]) => (
+                                                            <tr key={type}>
+                                                                <td className="capitalize">{type.replace(/_/g, ' ').toLowerCase()}</td>
+                                                                <td className="text-right font-bold text-slate-800">{parseFloat(amount).toLocaleString()}</td>
+                                                                <td className="text-right"><span className="status-badge info text-[11px]">{total > 0 ? Math.round((parseFloat(amount) / total) * 100) : 0}%</span></td>
+                                                            </tr>
+                                                        ));
+                                                })()}
+                                            </tbody>
+                                            <tfoot>
+                                                <tr className="border-t-2 border-slate-200">
+                                                    <td className="pt-3 text-sm font-extrabold text-slate-700">Total</td>
+                                                    <td className="pt-3 text-right font-extrabold text-primary">{Object.values(revenueByType).reduce((s, v) => s + parseFloat(v), 0).toLocaleString()}</td>
+                                                    <td className="pt-3 text-right"><span className="status-badge checked-in text-[11px]">100%</span></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 )}
                             </div>
 
                             {/* Folio Summary */}
                             <div className="premium-card p-6">
                                 <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">Folio Summary</h3>
-                                <div className="grid grid-cols-3 gap-4 mb-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center">
                                         <div className="text-2xl font-extrabold text-orange-600">{folios.filter(f => f.status === 'OPEN').length}</div>
                                         <div className="text-[11px] font-bold text-orange-400 uppercase mt-1">Open</div>
@@ -324,12 +330,13 @@ const Reports = () => {
                             <StatCard label="Cancelled" value={reservations.filter(r => r.status === 'CANCELLED').length} accent="border-l-red-400" />
                         </div>
 
-                        <div className="premium-card overflow-x-auto">
+                        <div className="premium-card">
                             <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Reservations</div>
-                            <table className="management-table">
-                                <thead><tr>
-                                    <th>#</th><th>Guest</th><th>Type</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Nights</th>
-                                </tr></thead>
+                            <div className="overflow-x-auto w-full">
+                                <table className="management-table" style={{ minWidth: '900px' }}>
+                                    <thead><tr>
+                                        <th>#</th><th>Guest</th><th>Type</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Nights</th>
+                                    </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : reservations.length === 0
                                         ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No reservations found.</td></tr>
@@ -352,6 +359,7 @@ const Reports = () => {
                                         })}
                                 </tbody>
                             </table>
+                            </div>
                             {!loading && reservations.length > 0 && (
                                 <div className="p-4 border-t border-slate-100">
                                     <Pagination 
@@ -378,12 +386,13 @@ const Reports = () => {
                             <StatCard label="New Arrivals Today" value={arrivalsToday} sub="Booked, checking in today" accent="border-l-blue-500" />
                         </div>
 
-                        <div className="premium-card overflow-x-auto">
+                        <div className="premium-card">
                             <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Registered Guests</div>
-                            <table className="management-table">
-                                <thead><tr>
-                                    <th>#</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Nationality</th><th>ID Type</th><th>ID Number</th>
-                                </tr></thead>
+                            <div className="overflow-x-auto w-full">
+                                <table className="management-table" style={{ minWidth: '900px' }}>
+                                    <thead><tr>
+                                        <th>#</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Nationality</th><th>ID Type</th><th>ID Number</th>
+                                    </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : guests.length === 0
                                         ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No guests found.</td></tr>
@@ -400,6 +409,7 @@ const Reports = () => {
                                         ))}
                                 </tbody>
                             </table>
+                            </div>
                             {!loading && guests.length > 0 && (
                                 <div className="p-4 border-t border-slate-100">
                                     <Pagination 
@@ -432,28 +442,33 @@ const Reports = () => {
                                 <h3 className="text-base font-bold text-slate-700 mb-4 pb-3 border-b border-slate-100">By Department</h3>
                                 {Object.keys(byDept).length === 0
                                     ? <p className="py-8 text-center text-slate-400 italic text-sm">No department data.</p>
-                                    : <table className="w-full">
-                                        <thead><tr className="border-b border-slate-100">
-                                            <th className="text-left text-[11px] font-bold text-slate-400 uppercase pb-2">Department</th>
-                                            <th className="text-right text-[11px] font-bold text-slate-400 uppercase pb-2">Count</th>
-                                        </tr></thead>
-                                        <tbody>
-                                            {Object.entries(byDept).sort(([, a], [, b]) => b - a).map(([dept, count]) => (
-                                                <tr key={dept} className="border-b border-slate-50 hover:bg-slate-50">
-                                                    <td className="py-3 text-sm font-semibold text-slate-600">{dept}</td>
-                                                    <td className="py-3 text-right font-extrabold text-primary text-lg">{count}</td>
+                                    : <div className="overflow-x-auto w-full">
+                                        <table className="management-table" style={{ minWidth: '400px' }}>
+                                            <thead>
+                                                <tr>
+                                                    <th>Department</th>
+                                                    <th className="text-right">Count</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {Object.entries(byDept).sort(([, a], [, b]) => b - a).map(([dept, count]) => (
+                                                    <tr key={dept}>
+                                                        <td className="font-semibold text-slate-600">{dept}</td>
+                                                        <td className="text-right font-extrabold text-primary text-lg">{count}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 }
                             </div>
 
                             {/* Employee list */}
-                            <div className="premium-card overflow-x-auto">
+                            <div className="premium-card">
                                 <div className="p-5 border-b border-slate-100 font-bold text-slate-700">Employee Directory</div>
-                                <table className="management-table">
-                                    <thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Phone</th><th>Email</th></tr></thead>
+                                <div className="overflow-x-auto w-full">
+                                    <table className="management-table" style={{ minWidth: '800px' }}>
+                                        <thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Phone</th><th>Email</th></tr></thead>
                                     <tbody>
                                         {loading ? <LoadingRow /> : employees.length === 0
                                             ? <tr><td colSpan="5" className="py-16 text-center text-slate-400 italic">No employees found.</td></tr>
@@ -468,6 +483,7 @@ const Reports = () => {
                                             ))}
                                     </tbody>
                                 </table>
+                                </div>
                                 {!loading && employees.length > 0 && (
                                     <div className="p-4 border-t border-slate-100">
                                         <Pagination 
@@ -496,12 +512,13 @@ const Reports = () => {
                             <StatCard label="Total POS Revenue" value={`$ ${posTotal.toLocaleString()}`} accent="border-l-green-500" />
                         </div>
 
-                        <div className="premium-card overflow-x-auto">
+                        <div className="premium-card">
                             <div className="p-5 border-b border-slate-100 font-bold text-slate-700">Dining Orders</div>
-                            <table className="management-table">
-                                <thead><tr>
-                                    <th>#</th><th>Session</th><th>Table</th><th>Items</th><th>Total ($)</th><th>Status</th>
-                                </tr></thead>
+                            <div className="overflow-x-auto w-full">
+                                <table className="management-table" style={{ minWidth: '800px' }}>
+                                    <thead><tr>
+                                        <th>#</th><th>Session</th><th>Table</th><th>Items</th><th>Total ($)</th><th>Status</th>
+                                    </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : diningOrders.length === 0
                                         ? <tr><td colSpan="6" className="py-16 text-center text-slate-400 italic">No dining orders found.</td></tr>
@@ -517,6 +534,7 @@ const Reports = () => {
                                         ))}
                                 </tbody>
                             </table>
+                            </div>
                             {!loading && diningOrders.length > 0 && (
                                 <div className="p-4 border-t border-slate-100">
                                     <Pagination 
@@ -544,12 +562,13 @@ const Reports = () => {
                             <StatCard label="Total Value" value={`$ ${venueTotal.toLocaleString()}`} accent="border-l-indigo-500" />
                         </div>
 
-                        <div className="premium-card overflow-x-auto">
+                        <div className="premium-card">
                             <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Venue Bookings</div>
-                            <table className="management-table">
-                                <thead><tr>
-                                    <th>#</th><th>Client</th><th>Venue</th><th>Event</th><th>Date In</th><th>Guests</th><th>Total ($)</th><th>Deposit</th><th>Status</th>
-                                </tr></thead>
+                            <div className="overflow-x-auto w-full">
+                                <table className="management-table" style={{ minWidth: '1000px' }}>
+                                    <thead><tr>
+                                        <th>#</th><th>Client</th><th>Venue</th><th>Event</th><th>Date In</th><th>Guests</th><th>Total ($)</th><th>Deposit</th><th>Status</th>
+                                    </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : venueBookings.length === 0
                                         ? <tr><td colSpan="9" className="py-16 text-center text-slate-400 italic">No venue bookings found.</td></tr>
@@ -570,6 +589,7 @@ const Reports = () => {
                                         ))}
                                 </tbody>
                             </table>
+                            </div>
                             {!loading && venueBookings.length > 0 && (
                                 <div className="p-4 border-t border-slate-100">
                                     <Pagination 
@@ -597,12 +617,13 @@ const Reports = () => {
                             <StatCard label="Urgent / High" value={maintenance.filter(m => m.priority === 'URGENT' || m.priority === 'HIGH').length} accent="border-l-orange-500" />
                         </div>
 
-                        <div className="premium-card overflow-x-auto">
+                        <div className="premium-card">
                             <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Maintenance Tickets</div>
-                            <table className="management-table">
-                                <thead><tr>
-                                    <th>#</th><th>Issue</th><th>Room</th><th>Priority</th><th>Status</th><th>Notes</th>
-                                </tr></thead>
+                            <div className="overflow-x-auto w-full">
+                                <table className="management-table" style={{ minWidth: '800px' }}>
+                                    <thead><tr>
+                                        <th>#</th><th>Issue</th><th>Room</th><th>Priority</th><th>Status</th><th>Notes</th>
+                                    </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : maintenance.length === 0
                                         ? <tr><td colSpan="6" className="py-16 text-center text-slate-400 italic">No maintenance tickets found.</td></tr>
@@ -626,6 +647,7 @@ const Reports = () => {
                                         ))}
                                 </tbody>
                             </table>
+                            </div>
                             {!loading && maintenance.length > 0 && (
                                 <div className="p-4 border-t border-slate-100">
                                     <Pagination 
@@ -653,12 +675,13 @@ const Reports = () => {
                             <StatCard label="Well Stocked" value={inventory.filter(i => i.quantity > (i.reorderLevel || 0)).length} accent="border-l-green-500" />
                         </div>
 
-                        <div className="premium-card overflow-x-auto">
+                        <div className="premium-card">
                             <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Inventory Items</div>
-                            <table className="management-table">
-                                <thead><tr>
-                                    <th>#</th><th>Item Name</th><th>Category</th><th>Quantity</th><th>Unit</th><th>Reorder Level</th><th>Stock Status</th>
-                                </tr></thead>
+                            <div className="overflow-x-auto w-full">
+                                <table className="management-table" style={{ minWidth: '800px' }}>
+                                    <thead><tr>
+                                        <th>#</th><th>Item Name</th><th>Category</th><th>Quantity</th><th>Unit</th><th>Reorder Level</th><th>Stock Status</th>
+                                    </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : inventory.length === 0
                                         ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No inventory items found.</td></tr>
@@ -683,6 +706,7 @@ const Reports = () => {
                                         })}
                                 </tbody>
                             </table>
+                            </div>
                             {!loading && inventory.length > 0 && (
                                 <div className="p-4 border-t border-slate-100">
                                     <Pagination 

@@ -138,9 +138,9 @@ const Attendance = () => {
                     </div>
                 </div>
 
-                <div className="premium-card overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="management-table">
+                <div className="premium-card">
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
                                     <th>Employee</th>
@@ -187,7 +187,7 @@ const Attendance = () => {
                                 )}
                             </tbody>
                         </table>
-                    </div>
+                        </div>
                 </div>
             </div>
         </div>

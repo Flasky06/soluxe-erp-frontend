@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus, CreditCard } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const PaymentMethods = () => {
     const [methods, setMethods] = useState([]);
@@ -11,6 +12,7 @@ const PaymentMethods = () => {
         name: '',
         active: true
     });
+    const [serverErrors, setServerErrors] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchMethods = async () => {
@@ -42,11 +44,13 @@ const PaymentMethods = () => {
                 active: true
             });
         }
+        setServerErrors({});
         setShowModal(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setServerErrors({});
         try {
             if (editingMethod) {
                 await api.put(`/folios/payment-methods/${editingMethod.id}`, formData);
@@ -57,7 +61,11 @@ const PaymentMethods = () => {
             fetchMethods();
         } catch (err) {
             console.error('Failed to save payment method:', err);
-            alert('Failed to save payment method.');
+            if (err.response && (err.response.status === 400 || err.response.status === 409)) {
+                setServerErrors(err.response.data);
+            } else {
+                alert('Failed to save payment method. Please try again.');
+            }
         }
     };
 
@@ -93,18 +101,19 @@ const PaymentMethods = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>Add Payment Method</button>
             </div>
 
-            <div className="premium-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">Syncing payment methods...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '75%' }}>Method Name</th>
-                                <th style={{ width: '10%' }}>Status</th>
-                                <th style={{ width: '15%' }}>Actions</th>
-                            </tr>
-                        </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse font-medium">Syncing payment methods...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '500px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Method Name</th>
+                                    <th>Status</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {filteredMethods.length > 0 ? filteredMethods.map((m) => (
                                 <tr key={m.id}>
@@ -114,8 +123,8 @@ const PaymentMethods = () => {
                                         </div>
                                     </td>
                                     <td>
-                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${m.active ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                                            {m.active ? 'Active' : 'Inactive'}
+                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${(m.isActive ?? m.active) ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                            {(m.isActive ?? m.active) ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                     <td>
@@ -135,16 +144,22 @@ const PaymentMethods = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingMethod ? 'Edit Payment Method' : 'Register New Method'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingMethod ? 'Edit Payment Method' : 'Register New Method'}
+                size="sm"
+                customClasses="!w-[85%] !max-w-[500px]"
+            >
+                {serverErrors.error && (
+                    <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium">
+                        {serverErrors.error}
+                    </div>
+                )}
+                <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-6 p-7">
                                 <div className="form-group">
                                     <label>Method Name</label>
@@ -155,6 +170,7 @@ const PaymentMethods = () => {
                                         onChange={(e) => setFormData({...formData, name: e.target.value})} 
                                         placeholder="e.g. M-Pesa, Cash, Bank Transfer"
                                     />
+                                    {serverErrors.name && <p className="text-red-500 text-[10px] mt-1">{serverErrors.name}</p>}
                                 </div>
                                 <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
                                     <input 
@@ -172,9 +188,7 @@ const PaymentMethods = () => {
                                 <button type="submit" className="btn-primary !px-10">Save Payment Method</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

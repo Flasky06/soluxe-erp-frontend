@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
 import Pagination from '../../components/Pagination/Pagination';
+import Modal from '../../components/Modal/Modal';
 
 const Expenses = () => {
     const [expenses, setExpenses] = useState([]);
@@ -163,21 +164,22 @@ const Expenses = () => {
                 </button>
             </div>
 
-            <div className="table-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse font-medium italic">Synchronizing financial records...</div>
-                ) : (
-                    <table className="management-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th>Amount</th>
-                                <th>Payment Info</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    {loading ? (
+                        <div className="text-center py-20 text-text-slate animate-pulse font-medium italic">Synchronizing financial records...</div>
+                    ) : (
+                        <table className="management-table" style={{ minWidth: '800px' }}>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Payment Info</th>
+                                    <th className="text-right">Actions</th>
+                                </tr>
+                            </thead>
                         <tbody>
                             {paginatedExpenses.length > 0 ? paginatedExpenses.map((exp) => (
                                 <tr key={exp.id}>
@@ -216,6 +218,7 @@ const Expenses = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
             {!loading && filteredExpenses.length > 0 && (
                 <Pagination 
@@ -227,14 +230,14 @@ const Expenses = () => {
                 />
             )}
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[80%] !max-w-[800px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editingExpense ? 'Update Expense Record' : 'Record New Hotel Expense'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingExpense ? 'Update Expense Record' : 'Record New Hotel Expense'}
+                size="md"
+                customClasses="!w-[80%] !max-w-[800px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Description / Item Name</label>
@@ -288,18 +291,17 @@ const Expenses = () => {
                                 <button type="submit" className="btn-primary !px-10">{editingExpense ? 'Save Updates' : 'Record Expense'}</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
-            {showTypeModal && (
-                <div className="modal-overlay !z-[1100]">
-                    <div className="modal-content premium-card !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-lg font-bold">Quick-Add Category</h2>
-                            <button className="close-modal-btn" onClick={() => setShowTypeModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleQuickAddExpenseType}>
+            <Modal
+                isOpen={showTypeModal}
+                onClose={() => setShowTypeModal(false)}
+                title="Quick-Add Category"
+                size="sm"
+                customClasses="!max-w-[500px]"
+                overlayClasses="z-[1100]"
+            >
+                <form onSubmit={handleQuickAddExpenseType}>
                             <div className="p-4">
                                 <label className="block text-sm font-medium mb-1">New Category Name</label>
                                 <input 
@@ -319,9 +321,7 @@ const Expenses = () => {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

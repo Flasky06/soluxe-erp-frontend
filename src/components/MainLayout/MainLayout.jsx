@@ -90,7 +90,7 @@ const MainLayout = ({ children }) => {
                 />
             )}
 
-            <main className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarOpen ? 'lg:ml-[var(--sidebar-width)]' : 'ml-0 lg:ml-[var(--sidebar-width)]'}`}>
+            <main className={`flex-1 min-w-0 flex flex-col min-h-screen transition-all duration-300 ${isSidebarOpen ? 'lg:ml-[var(--sidebar-width)]' : 'ml-0 lg:ml-[var(--sidebar-width)]'}`}>
 
                 {/* ── Header ── */}
                 <header className="h-[var(--header-height)] px-4 md:px-8 flex items-center justify-between
@@ -98,7 +98,7 @@ const MainLayout = ({ children }) => {
                                    shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
 
                     {/* Left side: Hamburger + Breadcrumb */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
                         <button 
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                             className="p-2 -ml-2 lg:hidden text-slate-500 hover:text-maroon transition-colors"
@@ -114,7 +114,7 @@ const MainLayout = ({ children }) => {
                             <span className="text-[13px] font-semibold text-slate-400">Soluxe Club Hotel</span>
                             <span className="text-slate-200 font-light">/</span>
                         </div>
-                        <span className="text-[13px] font-bold text-slate-700">{pageTitle}</span>
+                        <span className="text-[13px] font-bold text-slate-700 truncate max-w-[150px] sm:max-w-none">{pageTitle}</span>
                     </div>
 
                     {/* Right-side actions */}
@@ -157,7 +157,7 @@ const MainLayout = ({ children }) => {
 
                             {/* Notifications Panel */}
                             {panelOpen && (
-                                <div className="absolute top-[calc(100%+8px)] right-0 w-[360px] bg-white
+                                <div className="absolute top-[calc(100%+8px)] -right-2 sm:right-0 w-[calc(100vw-2rem)] sm:w-[360px] bg-white
                                                 border border-slate-200 rounded-2xl overflow-hidden
                                                 shadow-[0_16px_48px_rgba(0,0,0,0.14)] z-[200]"
                                      style={{ animation: 'modalIn 0.18s cubic-bezier(0.16,1,0.3,1)' }}>

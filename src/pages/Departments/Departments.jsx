@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Building2 } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const Departments = () => {
     const [departments, setDepartments] = useState([]);
@@ -94,14 +95,15 @@ const Departments = () => {
                 </div>
             )}
 
-            <div className="premium-card overflow-x-auto">
-                <table className="management-table">
-                    <thead>
-                        <tr>
-                            <th style={{ width: '85%' }}>Department Name</th>
-                            <th style={{ width: '15%' }} className="text-right">Actions</th>
-                        </tr>
-                    </thead>
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                <table className="management-table" style={{ minWidth: '400px' }}>
+                        <thead>
+                            <tr>
+                                <th>Department Name</th>
+                                <th className="text-right">Actions</th>
+                            </tr>
+                        </thead>
                     <tbody>
                         {filteredDepartments.length > 0 ? filteredDepartments.map((dept) => (
                             <tr key={dept.id}>
@@ -126,38 +128,37 @@ const Departments = () => {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
-            {isModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[50%] !max-w-[600px]">
-                        <div className="modal-header">
-                            <h2>{isEditing ? 'Edit Department' : 'Add New Department'}</h2>
-                            <button className="close-modal-btn" onClick={handleCloseModal}>&times;</button>
+            <Modal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                title={isEditing ? 'Edit Department' : 'Add New Department'}
+                size="sm"
+                customClasses="!w-[50%] !max-w-[600px]"
+            >
+                <form onSubmit={handleSubmit}>
+                    <div className="form-grid">
+                        <div className="form-group full-width">
+                            <label>Department Name</label>
+                            <input 
+                                type="text" 
+                                value={currentDepartment.name}
+                                onChange={(e) => setCurrentDepartment({...currentDepartment, name: e.target.value})}
+                                placeholder="e.g. Front Office"
+                                required 
+                            />
                         </div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-grid">
-                                <div className="form-group full-width">
-                                    <label>Department Name</label>
-                                    <input 
-                                        type="text" 
-                                        value={currentDepartment.name}
-                                        onChange={(e) => setCurrentDepartment({...currentDepartment, name: e.target.value})}
-                                        placeholder="e.g. Front Office"
-                                        required 
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn-secondary !px-10" onClick={handleCloseModal}>Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">
-                                    {isEditing ? 'Update Department' : 'Create Department'}
-                                </button>
-                            </div>
-                        </form>
                     </div>
-                </div>
-            )}
+                    <div className="modal-footer">
+                        <button type="button" className="btn-secondary !px-10" onClick={handleCloseModal}>Cancel</button>
+                        <button type="submit" className="btn-primary !px-10">
+                            {isEditing ? 'Update Department' : 'Create Department'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

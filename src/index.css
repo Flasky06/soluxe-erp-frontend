@@ -2,8 +2,12 @@
 
 @theme {
   --color-maroon: #7B1113;
+  --color-maroon-dark: #5e0d0f;
+  --color-maroon-light: #a82426;
   --color-yellow: #FACC15;
   --color-yellow-dark: #EAB308;
+  --color-gold: #D4AF37;
+  --color-gold-light: #F9E272;
   --color-border-gray: #e2e8f0;
   --color-text-dark: #1e293b;
   --color-text-slate: #64748b;
@@ -34,11 +38,13 @@
 
 /* ─── Core Card ─────────────────────────────────────────────────────────────── */
 @utility premium-card {
-  @apply bg-white border border-slate-200 rounded-lg p-5;
+  @apply bg-white border border-slate-200 rounded-lg p-4 md:p-5;
 }
 
 @utility table-card {
-  @apply bg-white border border-slate-200 rounded-lg p-0 overflow-hidden;
+  @apply bg-white border border-slate-200 rounded-lg p-0 w-full overflow-x-auto overflow-y-hidden;
+  /* Ensure the card itself never causes viewport overflow */
+  max-width: 100%;
 }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────────── */
@@ -70,25 +76,37 @@
 
   /* ─── Modal ────────────────────────────────────────────────────────────────── */
   .modal-overlay {
-    @apply fixed inset-0 bg-black/40 flex items-center justify-center z-[1000];
+    @apply fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center z-[1000] p-4;
+    animation: fadeIn 0.2s ease-out;
   }
 
   .modal-content {
-    @apply bg-white rounded-lg border border-slate-200 max-h-[95vh] overflow-y-auto w-[95%] md:w-auto;
+    @apply bg-white rounded-2xl border border-slate-200 shadow-2xl max-h-[95vh] overflow-hidden w-full md:w-auto flex flex-col;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
   }
 
   .modal-header {
-    @apply flex justify-between items-center px-8 pt-6 pb-5 border-b border-slate-200;
+    @apply flex justify-between items-center px-8 py-6 border-b border-slate-100 bg-slate-50/50;
   }
 
   .modal-header h2 {
-    @apply text-[17px] font-bold text-slate-800 tracking-tight m-0;
+    @apply text-xl font-bold text-slate-900 tracking-tight m-0 flex items-center gap-3;
   }
 
   .close-modal-btn {
-    @apply w-7 h-7 flex items-center justify-center rounded-md text-slate-400 text-lg
-           cursor-pointer transition-colors duration-150
-           hover:bg-slate-100 hover:text-slate-600 border-none bg-transparent leading-none;
+    @apply w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 
+           cursor-pointer transition-all duration-200
+           hover:bg-slate-100 hover:text-slate-600 border-none bg-transparent;
   }
 
   /* ─── Forms ────────────────────────────────────────────────────────────────── */
@@ -96,7 +114,7 @@
     @apply grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 px-4 md:px-8 py-6;
   }
 
-  .form-grid.triple { @apply grid-cols-3; }
+  .form-grid.triple { @apply md:grid-cols-3; }
 
   .form-group { @apply flex flex-col gap-1.5; }
 
@@ -135,7 +153,7 @@
 
   .status-badge.booked,
   .status-badge.confirmed,
-  .status-badge.info        { @apply bg-blue-50 text-blue-700 border border-blue-200; }
+  .status-badge.info        { @apply bg-slate-100 text-maroon border border-maroon/20; }
 
   .status-badge.checked_in,
   .status-badge.checked-in,
@@ -171,11 +189,14 @@
   /* ─── Management Table ─────────────────────────────────────────────────────── */
   .management-table {
     @apply w-full border-collapse text-left;
+    /* Default to natural sizing, overflow handled by scroll container */
+    min-width: 0;
   }
 
   .management-table th {
     @apply px-1.5 py-2 bg-slate-100 border-b border-slate-200
-           text-[11px] text-slate-600 uppercase tracking-[0.1em] font-bold;
+           text-[11px] text-slate-600 uppercase tracking-[0.1em] font-bold
+           whitespace-nowrap;
   }
 
   .management-table td {
@@ -194,20 +215,20 @@
   }
 
   @media (max-width: 1024px) {
+    .management-table {
+       min-width: 0;
+    }
     .management-table td, 
     .management-table th {
       @apply px-1 py-1.5 text-[12px];
     }
-    
-    .sidebar {
-      @apply w-[200px];
-    }
-    :root {
-      --sidebar-width: 200px;
-    }
   }
 
   .management-table tr:last-child td { @apply border-b-0; }
+
+  /* Last column (Actions) — align header to match right-justified buttons */
+  .management-table th:last-child { @apply text-right pr-3; }
+  .management-table td:last-child  { @apply text-right; }
 
   /* Zebra Striping for better readability in compact view */
   .management-table tbody tr:nth-child(even) td { @apply bg-slate-50/50; }
@@ -215,7 +236,7 @@
 
   /* ─── Table Actions ────────────────────────────────────────────────────────── */
   .table-actions { 
-    @apply flex items-center justify-end gap-2 pr-2 min-w-[120px]; 
+    @apply flex items-center justify-end gap-1.5 pr-1 min-w-[110px] flex-nowrap; 
   }
 
   .table-actions button {
@@ -227,7 +248,7 @@
   }
 
   .table-actions .edit-btn {
-    @apply bg-white text-blue-600 border-blue-200 hover:bg-blue-50;
+    @apply bg-white text-maroon border-maroon/20 hover:bg-maroon/5;
   }
 
   .table-actions .delete-btn {

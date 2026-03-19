@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Check, X } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const EVENT_TYPES = ['CONFERENCE', 'WEDDING', 'BIRTHDAY', 'GALA', 'SEMINAR', 'WORKSHOP', 'CORPORATE', 'OTHER'];
 const SETUP_TYPES = ['THEATER', 'CLASSROOM', 'BOARDROOM', 'BANQUET', 'COCKTAIL', 'U_SHAPE', 'HOLLOW_SQUARE', 'OPEN'];
@@ -171,11 +172,12 @@ const VenueBookings = () => {
                 })}
             </div>
 
-            <div className="premium-card overflow-x-auto">
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse">Loading bookings...</div>
                 ) : (
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '1000px' }}>
                         <thead>
                             <tr>
                                 <th>Client</th>
@@ -186,7 +188,7 @@ const VenueBookings = () => {
                                 <th>Total ($)</th>
                                 <th>Deposit</th>
                                 <th>Status</th>
-                                <th>Actions</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -246,16 +248,17 @@ const VenueBookings = () => {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[1100px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">{editing ? 'Edit Venue Booking' : 'New Venue Booking'}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editing ? 'Edit Venue Booking' : 'New Venue Booking'}
+                size="xl"
+                customClasses="!w-[90%] !max-w-[1100px]"
+            >
+                <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 {/* Client Info */}
                                 <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 col-span-full text-base tracking-tight uppercase">Client Information</div>
@@ -348,9 +351,7 @@ const VenueBookings = () => {
                                 <button type="submit" className="btn-primary !px-10">{editing ? 'Save Changes' : 'Create Booking'}</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

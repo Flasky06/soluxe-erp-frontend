@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Search, Filter, Plus, FileText, CreditCard } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const Folio = () => {
     const navigate = useNavigate();
@@ -223,17 +224,17 @@ const Folio = () => {
                 {loading ? (
                     <div className="text-center py-20 text-text-slate animate-pulse text-lg">Loading folios...</div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="management-table min-w-[900px]">
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table" style={{ minWidth: '900px' }}>
                             <thead>
                                 <tr>
-                                    <th>Folio ID</th>
+                                    <th style={{ width: '100px' }}>Folio ID</th>
                                     <th>Guest / Details</th>
-                                    <th>Type</th>
-                                    <th>Opened At</th>
-                                    <th>Status</th>
-                                    <th>Total Balance</th>
-                                    <th className="text-right">Actions</th>
+                                    <th style={{ width: '100px' }}>Type</th>
+                                    <th style={{ width: '120px' }}>Opened At</th>
+                                    <th style={{ width: '100px' }}>Status</th>
+                                    <th style={{ width: '120px' }}>Total Balance</th>
+                                    <th className="text-right" style={{ width: '250px' }}>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -269,7 +270,7 @@ const Folio = () => {
                                             </td>
                                             <td>
                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                                                    folio.folioType === 'STAY' ? 'bg-indigo-50 text-indigo-600' :
+                                                    folio.folioType === 'STAY' ? 'bg-slate-100 text-maroon' :
                                                     folio.folioType === 'RESERVATION' ? 'bg-amber-50 text-amber-600' :
                                                     'bg-slate-100 text-slate-600'
                                                 }`}>
@@ -279,22 +280,42 @@ const Folio = () => {
                                             <td>{new Date(folio.openedAt).toLocaleDateString()}</td>
                                             <td>
                                                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${
-                                                    folio.status === 'OPEN' ? 'bg-blue-50 text-blue-600' : 
+                                                    folio.status === 'OPEN' ? 'bg-maroon/5 text-maroon' : 
                                                     folio.status === 'CLOSED' ? 'bg-slate-100 text-slate-600' : 'bg-red-50 text-red-600'
                                                 }`}>
                                                     {folio.status}
                                                 </span>
                                             </td>
-                                            <td className="font-bold text-primary">$ {folio.totalAmount.toLocaleString()}</td>
+                                            <td className="font-bold text-maroon">$ {folio.totalAmount.toLocaleString()}</td>
                                             <td>
                                                 <div className="flex justify-end gap-2">
-                                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleOpenChargeModal(folio.id)}>Post Charge</button>
+                                                    <button 
+                                                        className="px-3 py-1.5 rounded-xl text-slate-500 hover:text-black hover:bg-slate-50 text-[11px] font-bold transition-all flex items-center gap-1.5 border border-transparent hover:border-slate-200" 
+                                                        onClick={() => handleOpenChargeModal(folio.id)}
+                                                    >
+                                                        Post Charge
+                                                    </button>
                                                     {folio.status === 'OPEN' && (
-                                                        <button className="btn-primary-outline px-3 py-1.5 text-[11px] font-bold" onClick={() => handleOpenPaymentModal(folio.id, folio.totalAmount)}>Record Payment</button>
+                                                        <button 
+                                                            className="bg-maroon text-white hover:bg-maroon-dark px-3 py-1.5 rounded-xl font-bold text-[11px] transition-all shadow-sm shadow-maroon/10" 
+                                                            onClick={() => handleOpenPaymentModal(folio.id, folio.totalAmount)}
+                                                        >
+                                                            Pay
+                                                        </button>
                                                     )}
-                                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleViewReceipts(folio.id)}>Receipts</button>
+                                                    <button 
+                                                        className="px-3 py-1.5 rounded-xl text-slate-500 hover:text-black hover:bg-slate-50 text-[11px] font-bold transition-all flex items-center gap-1.5 border border-transparent hover:border-slate-200" 
+                                                        onClick={() => handleViewReceipts(folio.id)}
+                                                    >
+                                                        Receipts
+                                                    </button>
                                                     {folio.status === 'OPEN' && folio.totalAmount <= 0 && (
-                                                        <button className="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded text-[11px] font-bold shadow-sm transition-all" onClick={() => handleCloseFolio(folio.id)}>Settle & Close</button>
+                                                        <button 
+                                                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-xl font-bold text-[11px] transition-all shadow-sm shadow-emerald-500/10" 
+                                                            onClick={() => handleCloseFolio(folio.id)}
+                                                        >
+                                                            Settle
+                                                        </button>
                                                     )}
                                                 </div>
                                             </td>
@@ -312,14 +333,14 @@ const Folio = () => {
             </div>
 
             {/* Post Charge Modal */}
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Post Charge to #{selectedFolioId?.toString().padStart(5, '0')}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handlePostCharge}>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={<span className="flex items-center gap-2"><Plus className="text-maroon" /> Post Charge to #{selectedFolioId?.toString().padStart(5, '0')}</span>}
+                size="md"
+                customClasses="!w-[85%] !max-w-[700px]"
+            >
+                <form onSubmit={handlePostCharge}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Charge Type</label>
@@ -357,19 +378,17 @@ const Folio = () => {
                                 <button type="submit" className="btn-primary !px-8">Submit Charge</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
             {/* Record Payment Modal */}
-            {showPaymentModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[600px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Record Payment for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowPaymentModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleRecordPayment}>
+            <Modal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                title={<span className="flex items-center gap-2"><CreditCard className="text-maroon" /> Record Payment for #{selectedFolioId?.toString().padStart(5, '0')}</span>}
+                size="md"
+                customClasses="!w-[85%] !max-w-[600px]"
+            >
+                <form onSubmit={handleRecordPayment}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Payment Method</label>
@@ -404,20 +423,17 @@ const Folio = () => {
                                 <button type="submit" className="btn-primary !px-8">Record Payment</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
             {/* Manage Payment Methods Modal */}
-            {showMethodModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Manage Payment Methods</h2>
-                            <button className="close-modal-btn" onClick={() => setShowMethodModal(false)}>&times;</button>
-                        </div>
-                        
-                        <div className="mb-8 max-h-[200px] overflow-y-auto border border-slate-200 p-5 rounded-xl bg-slate-50">
+            <Modal
+                isOpen={showMethodModal}
+                onClose={() => setShowMethodModal(false)}
+                title={<span className="flex items-center gap-2"><CreditCard className="text-maroon" /> Manage Payment Methods</span>}
+                size="md"
+                customClasses="!w-[85%] !max-w-[700px]"
+            >
+                <div className="mb-8 max-h-[200px] overflow-y-auto border border-slate-200 p-5 rounded-xl bg-slate-50">
                             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Existing Methods</h4>
                             {paymentMethods.length > 0 ? (
                                 <div className="flex flex-col gap-2">
@@ -450,25 +466,28 @@ const Folio = () => {
                                 <button type="submit" className="btn-primary !px-8">Add Method</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
             {/* Receipts Modal */}
-            {showReceiptModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[95%] !max-w-[700px] print:!max-w-none print:shadow-none print:p-0">
-                        <div className="modal-header print:hidden">
-                            <h2 className="text-xl font-bold text-primary">Receipts for #{selectedFolioId?.toString().padStart(5, '0')}</h2>
-                            <button className="close-modal-btn" onClick={() => setShowReceiptModal(false)}>&times;</button>
-                        </div>
+            <Modal
+                isOpen={showReceiptModal}
+                onClose={() => setShowReceiptModal(false)}
+                size="none"
+                customClasses="!w-[95%] !max-w-[700px] print:!max-w-none print:shadow-none print:p-0"
+            >
+                <div className="modal-header print:hidden">
+                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <FileText className="text-maroon" /> Receipts for #{selectedFolioId?.toString().padStart(5, '0')}
+                    </h2>
+                    <button className="close-modal-btn" onClick={() => setShowReceiptModal(false)}>&times;</button>
+                </div>
 
-                        <div className="flex flex-col gap-10 p-4 print:p-0">
+                <div className="flex flex-col gap-10 p-4 print:p-0">
                             {receipts.length > 0 ? (
                                 receipts.map(receipt => (
                                     <div key={receipt.id} className="p-10 max-w-[600px] mx-auto w-full bg-white border border-dashed border-slate-300 relative before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-[radial-gradient(circle,theme(colors.slate.300)_1px,transparent_1px)] before:bg-[length:8px_4px] before:bg-repeat-x after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-[radial-gradient(circle,theme(colors.slate.300)_1px,transparent_1px)] after:bg-[length:8px_4px] after:bg-repeat-x shadow-md print:shadow-none print:border-none print:mx-0 print:max-w-none">
                                         <div className="text-center border-b-2 border-slate-200 pb-6 mb-6">
-                                            <h2 className="text-3xl font-extrabold tracking-[4px] text-primary m-0">SOLUXE CLUB HOTEL</h2>
+                                            <h2 className="text-3xl font-extrabold tracking-[4px] text-maroon m-0">SOLUXE CLUB HOTEL</h2>
                                             <p className="uppercase text-[10px] text-slate-400 mt-1 font-bold tracking-widest">Official Payment Receipt</p>
                                         </div>
                                         <div className="flex flex-col gap-4">
@@ -486,7 +505,7 @@ const Folio = () => {
                                             </div>
                                             <div className="py-5 border-t border-dashed border-slate-200 border-b-2 border-primary my-2 flex justify-between items-center bg-slate-50/30 px-2 rounded">
                                                 <span className="text-lg font-bold text-slate-800">Amount Paid:</span>
-                                                <span className="text-2xl font-extrabold text-green-600">$ {receipt.amount.toLocaleString()}</span>
+                                                <span className="text-2xl font-extrabold text-emerald-600">$ {receipt.amount.toLocaleString()}</span>
                                             </div>
                                         </div>
                                         <div className="text-center mt-8 pt-4">
@@ -506,20 +525,18 @@ const Folio = () => {
                                     <p>No receipts found for this folio.</p>
                                 </div>
                             )}
-                        </div>
-                    </div>
                 </div>
-            )}
+            </Modal>
             {/* Manage Charge Types Modal */}
-            {showChargeTypeModal && (
-                <div className="modal-overlay z-[1100]">
-                    <div className="modal-content premium-card !w-[85%] !max-w-[700px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Manage Charge Types</h2>
-                            <button className="close-modal-btn" onClick={() => setShowChargeTypeModal(false)}>&times;</button>
-                        </div>
-                        
-                        <div className="mb-8 max-h-[200px] overflow-y-auto border border-slate-200 p-5 rounded-xl bg-slate-50">
+            <Modal
+                isOpen={showChargeTypeModal}
+                onClose={() => setShowChargeTypeModal(false)}
+                title={<span className="flex items-center gap-2"><Plus className="text-maroon" /> Manage Charge Types</span>}
+                size="md"
+                customClasses="!w-[85%] !max-w-[700px]"
+                overlayClasses="z-[1100]"
+            >
+                <div className="mb-8 max-h-[200px] overflow-y-auto border border-slate-200 p-5 rounded-xl bg-slate-50">
                             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Existing Types</h4>
                             {chargeTypes.length > 0 ? (
                                 <div className="flex flex-col gap-2">
@@ -552,9 +569,7 @@ const Folio = () => {
                                 <button type="submit" className="btn-primary !px-8">Add Type</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

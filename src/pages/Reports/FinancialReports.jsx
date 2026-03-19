@@ -131,28 +131,44 @@ const FinancialReports = () => {
                 {/* Revenue Breakdown */}
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">Revenue by Charge Type</h3>
-                    <table className="w-full">
-                        <thead>
-                            <tr className="text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                                <th className="pb-3 text-left">Category</th>
-                                <th className="pb-3 text-right">Amount ($)</th>
-                                <th className="pb-3 text-right">Share (%)</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-50">
-                            {financeData?.revenueByChargeType && Object.entries(financeData.revenueByChargeType).map(([type, amount]) => (
-                                <tr key={type}>
-                                    <td className="py-4 text-sm font-semibold text-slate-600">{type}</td>
-                                    <td className="py-4 text-right font-bold text-slate-800">{parseFloat(amount).toLocaleString()}</td>
-                                    <td className="py-4 text-right">
-                                        <span className="status-badge info">
-                                            {Math.round((amount / (financeData.totalRevenue || 1)) * 100)}%
-                                        </span>
-                                    </td>
+<div className="overflow-x-auto">
+                        <table className="management-table">
+                            <thead>
+                                <tr>
+                                    <th className="text-left">Category</th>
+                                    <th className="text-right" style={{ width: '140px' }}>Amount ($)</th>
+                                    <th className="text-right" style={{ width: '140px' }}>Share (%)</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {financeData?.revenueByChargeType && Object.entries(financeData.revenueByChargeType).map(([type, amount]) => (
+                                    <tr key={type}>
+                                        <td className="py-4 text-sm font-semibold text-slate-600">{type}</td>
+                                        <td className="py-4 text-right font-bold text-slate-800">{parseFloat(amount).toLocaleString()}</td>
+                                        <td className="py-4 text-right">
+                                            <div className="flex flex-col gap-2 relative z-10">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{type}</span>
+                                                    <span className="text-[10px] font-black text-maroon bg-maroon/5 px-2 py-0.5 rounded-full">
+                                                        {financeData ? Math.round((amount / (financeData.totalRevenue || 1)) * 100) : 0}% Share
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-end">
+                                                    <span className="text-xl font-black text-slate-800">$ {amount.toLocaleString()}</span>
+                                                    <div className="h-1.5 w-24 bg-slate-100 rounded-full overflow-hidden">
+                                                        <div 
+                                                            className="h-full bg-maroon transition-all duration-1000" 
+                                                            style={{ width: `${financeData ? Math.min(100, (amount / (financeData.totalRevenue || 1)) * 100) : 0}%` }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 {/* Treasury Audit & Cash Flow */}
@@ -285,39 +301,39 @@ const FinancialReports = () => {
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Running Balance History</span>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="management-table">
                         <thead>
-                            <tr className="text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                                <th className="pb-3">Timestamp</th>
-                                <th className="pb-3">Account</th>
-                                <th className="pb-3">Reference</th>
-                                <th className="pb-3">Description</th>
-                                <th className="pb-3 text-right">Debit / Credit</th>
-                                <th className="pb-3 text-right">Running Balance</th>
+                            <tr>
+                                <th style={{ width: '180px' }}>Timestamp</th>
+                                <th style={{ width: '120px' }}>Account</th>
+                                <th style={{ width: '140px' }}>Reference</th>
+                                <th>Description</th>
+                                <th className="text-right" style={{ width: '140px' }}>Debit / Credit</th>
+                                <th className="text-right" style={{ width: '140px' }}>Running Balance</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-50">
+                        <tbody>
                             {financeData?.auditTrail?.map((item, idx) => (
                                 <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                                    <td className="py-4 text-xs text-slate-500 whitespace-nowrap">
+                                    <td className="text-xs text-slate-500 whitespace-nowrap">
                                         {new Date(item.timestamp).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                                     </td>
-                                    <td className="py-4">
+                                    <td>
                                         <span className={`status-badge ${
                                             item.type === 'REVENUE' || item.type === 'COLLECTION' ? 'success' : 'error'
                                         }`}>
                                             {item.type}
                                         </span>
                                     </td>
-                                    <td className="py-4 text-sm font-bold text-slate-700">{item.reference}</td>
-                                    <td className="py-4 text-sm text-slate-600">{item.description}</td>
-                                    <td className={`py-4 text-right font-black ${
+                                    <td className="text-sm font-bold text-slate-700">{item.reference}</td>
+                                    <td className="text-sm text-slate-600">{item.description}</td>
+                                    <td className={`text-right font-black ${
                                         item.type === 'EXPENSE' || item.type === 'PROCUREMENT' ? 'text-red-500' : 'text-green-600'
                                     }`}>
                                         {item.type === 'EXPENSE' || item.type === 'PROCUREMENT' ? '-' : '+'}
                                         {parseFloat(item.amount || 0).toLocaleString()}
                                     </td>
-                                    <td className="py-4 text-right">
+                                    <td className="text-right">
                                         <span className="text-sm font-black text-slate-800">
                                             $ {parseFloat(item.runningBalance || 0).toLocaleString()}
                                         </span>

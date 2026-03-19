@@ -2,14 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Plus } from 'lucide-react';
+import Modal from '../../components/Modal/Modal';
 
 const Maintenance = () => {
     const { user, hasRole } = useAuthStore();
     const [tickets, setTickets] = useState([]);
     const [rooms, setRooms] = useState([]);
     const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
-
     const [showModal, setShowModal] = useState(false);
     const [showIssueTypeModal, setShowIssueTypeModal] = useState(false);
     const [issueTypes, setIssueTypes] = useState([]);
@@ -35,7 +34,6 @@ const Maintenance = () => {
     const isMaintenanceStaff = hasRole('ROLE_MAINTENANCE') || hasRole('ROLE_HOTEL_ADMIN') || hasRole('ROLE_MANAGER');
 
     const fetchAllData = useCallback(async () => {
-        setLoading(true);
         try {
             const [ticketsRes, roomsRes, usersRes, issueTypesRes] = await Promise.all([
                 api.get('/maintenance'),
@@ -49,15 +47,18 @@ const Maintenance = () => {
             setIssueTypes(issueTypesRes.data);
             
             // Auto-select first issue type if none selected
-            if (issueTypesRes.data.length > 0 && !formData.issueTypeId) {
-                setFormData(prev => ({ ...prev, issueTypeId: issueTypesRes.data[0].id }));
+            if (issueTypesRes.data.length > 0) {
+                setFormData(prev => {
+                    if (!prev.issueTypeId) {
+                        return { ...prev, issueTypeId: issueTypesRes.data[0].id };
+                    }
+                    return prev;
+                });
             }
         } catch (err) {
             console.error('Failed to fetch maintenance data:', err);
-        } finally {
-            setLoading(false);
         }
-    }, [formData.issueTypeId]);
+    }, []);
 
     const fetchIssueTypes = useCallback(async () => {
         try {
@@ -69,6 +70,7 @@ const Maintenance = () => {
     }, []);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchAllData();
     }, [fetchAllData]);
 
@@ -182,11 +184,9 @@ const Maintenance = () => {
                 <button className="btn-primary" onClick={() => setShowModal(true)}>+ Report Issue</button>
             </div>
 
-            <div className="table-card overflow-x-auto">
-                {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading maintenance tickets...</div>
-                ) : (
-                    <table className="management-table">
+            <div className="premium-card">
+                <div className="overflow-x-auto w-full">
+                    <table className="management-table" style={{ minWidth: '800px' }}>
                         <thead>
                             <tr>
                                 <th>Location / ID</th>
@@ -194,7 +194,7 @@ const Maintenance = () => {
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Assigned To</th>
-                                <th>Actions</th>
+                                <th className="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -205,9 +205,9 @@ const Maintenance = () => {
                                             <div className="font-bold text-text-dark">{getRoomNumber(ticket.roomId)}</div>
                                             <div className="text-xs text-text-slate">TK-{ticket.id} • {new Date(ticket.createdAt).toLocaleDateString()}</div>
                                         </td>
-                                        <td className="max-w-[300px]">
+                                        <td>
                                             <div className="font-bold text-[13px]">{ticket.issueTypeName}</div>
-                                            <div className="text-[12px] text-text-slate truncate" title={ticket.description}>{ticket.description}</div>
+                                            <div className="text-[12px] text-text-slate truncate max-w-[250px]" title={ticket.description}>{ticket.description}</div>
                                         </td>
                                         <td>{getPriorityBadge(ticket.priority)}</td>
                                         <td>{getStatusBadge(ticket.status)}</td>
@@ -216,7 +216,7 @@ const Maintenance = () => {
                                             <div className="text-[10px] text-text-slate">Reported by: {getUserName(ticket.reportedBy)}</div>
                                         </td>
                                         <td>
-                                            <div className="flex gap-2">
+                                            <div className="flex justify-end gap-2 pr-2">
                                                 {ticket.status === 'OPEN' && isMaintenanceStaff && (
                                                     <button onClick={() => handleAssignToMe(ticket.id)} className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-bold transition-all">
                                                         Assign to Me
@@ -238,17 +238,17 @@ const Maintenance = () => {
                             )}
                         </tbody>
                     </table>
-                )}
+                </div>
             </div>
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[600px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Report Maintenance Issue</h2>
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleCreateTicket} className="form-grid">
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title="Report Maintenance Issue"
+                size="md"
+                customClasses="!w-[90%] !max-w-[600px]"
+            >
+                <form onSubmit={handleCreateTicket} className="form-grid">
                             <div className="form-group full-width">
                                 <label>Location</label>
                                 <select value={formData.roomId} onChange={e => setFormData({...formData, roomId: e.target.value})}>
@@ -298,18 +298,17 @@ const Maintenance = () => {
                                 <button type="submit" className="btn-primary">Submit Ticket</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
-            {showIssueTypeModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Add Issue Category</h2>
-                            <button className="close-modal-btn" onClick={() => setShowIssueTypeModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={handleCreateIssueType} className="form-grid">
+            <Modal
+                isOpen={showIssueTypeModal}
+                onClose={() => setShowIssueTypeModal(false)}
+                title="Add Issue Category"
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+                overlayClasses="z-[1001]"
+            >
+                <form onSubmit={handleCreateIssueType} className="form-grid">
                             <div className="form-group full-width">
                                 <label>Category Name</label>
                                 <input type="text" required value={issueTypeFormData.name} onChange={e => setIssueTypeFormData({...issueTypeFormData, name: e.target.value})} placeholder="e.g. Electrical, Plumbing" />
@@ -323,18 +322,16 @@ const Maintenance = () => {
                                 <button type="submit" className="btn-primary">Create Category</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
 
-            {showResolveModal && (
-                <div className="modal-overlay">
-                    <div className="modal-content premium-card !w-[90%] !max-w-[500px]">
-                        <div className="modal-header">
-                            <h2 className="text-xl font-bold text-primary">Resolve Ticket</h2>
-                            <button className="close-modal-btn" onClick={() => setShowResolveModal(false)}>&times;</button>
-                        </div>
-                        <form onSubmit={submitResolve} className="form-grid">
+            <Modal
+                isOpen={showResolveModal}
+                onClose={() => setShowResolveModal(false)}
+                title="Resolve Ticket"
+                size="sm"
+                customClasses="!w-[90%] !max-w-[500px]"
+            >
+                <form onSubmit={submitResolve} className="form-grid">
                             <div className="form-group full-width">
                                 <label>Resolution Notes</label>
                                 <textarea required rows="4" value={resolveData.notes} onChange={e => setResolveData({...resolveData, notes: e.target.value})} placeholder="What was done to fix the issue?" />
@@ -344,9 +341,7 @@ const Maintenance = () => {
                                 <button type="submit" className="bg-green-600 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-green-700 transition-colors">Mark as Resolved</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };
