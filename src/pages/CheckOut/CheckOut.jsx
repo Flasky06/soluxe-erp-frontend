@@ -155,9 +155,40 @@ const CheckOut = () => {
         window.print();
     };
 
+    const finalBalanceDue = useMemo(() => {
+        if (!selectedStay) return 0;
+        const totalCharges = charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0);
+        const totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+        let adjustment = 0;
+
+        if (new Date(selectedStay.dateOut) > new Date()) {
+            const getDays = (d1, d2) => {
+                const start = new Date(d1);
+                const end = new Date(d2);
+                start.setHours(0, 0, 0, 0);
+                end.setHours(0, 0, 0, 0);
+                return Math.round((end - start) / (1000 * 60 * 60 * 24));
+            };
+
+            let plannedNights = getDays(selectedStay.dateIn, selectedStay.dateOut);
+            if (plannedNights < 1) plannedNights = 1;
+
+            let actualNights = getDays(selectedStay.dateIn, new Date());
+            if (actualNights < 1) actualNights = 1;
+
+            if (actualNights < plannedNights) {
+                const diff = plannedNights - actualNights;
+                const roomCharge = charges.find(c => c.description?.includes('Room Charge'));
+                const rate = roomCharge ? parseFloat(roomCharge.unitPrice || 0) : 0;
+                adjustment = diff * rate;
+            }
+        }
+        return totalCharges - totalPayments - adjustment;
+    }, [selectedStay, charges, payments]);
+
     const handleOpenPaymentModal = () => {
         setPaymentData({
-            amount: folio?.totalAmount || '',
+            amount: finalBalanceDue,
             paymentMethodId: paymentMethods[0]?.id || '',
             reference: '',
             notes: ''
@@ -474,34 +505,7 @@ const CheckOut = () => {
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-maroon-light">Final Balance Due</span>
                                                     <span className="text-xl font-black">
-                                                        $ {(() => {
-                                                            const totalCharges = charges.reduce((sum, c) => sum + parseFloat(c.totalAmount || 0), 0);
-                                                            const totalPayments = payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
-                                                            let adjustment = 0;
-                                                            if (new Date(selectedStay.dateOut) > new Date()) {
-                                                                const getDays = (d1, d2) => {
-                                                                    const start = new Date(d1);
-                                                                    const end = new Date(d2);
-                                                                    start.setHours(0, 0, 0, 0);
-                                                                    end.setHours(0, 0, 0, 0);
-                                                                    return Math.round((end - start) / (1000 * 60 * 60 * 24));
-                                                                };
-
-                                                                let plannedNights = getDays(selectedStay.dateIn, selectedStay.dateOut);
-                                                                if (plannedNights < 1) plannedNights = 1;
-
-                                                                let actualNights = getDays(selectedStay.dateIn, new Date());
-                                                                if (actualNights < 1) actualNights = 1;
-
-                                                                if (actualNights < plannedNights) {
-                                                                    const diff = plannedNights - actualNights;
-                                                                    const roomCharge = charges.find(c => c.description?.includes('Room Charge'));
-                                                                    const rate = roomCharge ? parseFloat(roomCharge.unitPrice || 0) : 0;
-                                                                    adjustment = diff * rate;
-                                                                }
-                                                            }
-                                                            return Math.max(0, totalCharges - totalPayments - adjustment).toLocaleString();
-                                                        })()}
+                                                        {finalBalanceDue < 0 ? `-$ ${Math.abs(finalBalanceDue).toLocaleString()}` : `$ ${finalBalanceDue.toLocaleString()}`}
                                                     </span>
                                                 </div>
                                             </div>
@@ -530,12 +534,15 @@ const CheckOut = () => {
                                         Print Invoice
                                     </button>
                                     
-                                    {folio.totalAmount > 0 ? (
+                                    {finalBalanceDue !== 0 ? (
                                         <div className="flex flex-col gap-2 w-full max-w-[400px]">
-                                            <div className="bg-red-50 text-red-600 px-4 py-2.5 rounded-lg border border-red-100 flex items-center justify-between gap-3">
-                                                <span className="text-sm font-bold">Balance must be $ 0 to Check-out.</span>
-                                                <button className="bg-maroon text-white hover:bg-maroon/90 px-3 py-1 rounded text-xs font-bold transition-all flex items-center gap-1.5" onClick={handleOpenPaymentModal}>
-                                                    <Wallet size={12} /> Record Payment
+                                            <div className={`px-4 py-2.5 rounded-lg border flex items-center justify-between gap-3 ${finalBalanceDue > 0 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-bold">Balance must be $ 0 to Check-out.</span>
+                                                    {finalBalanceDue < 0 && <span className="text-[10px] font-medium opacity-80">Guest has a credit balance. Issue refund.</span>}
+                                                </div>
+                                                <button className="bg-maroon text-white hover:bg-maroon/90 px-3 py-1.5 rounded text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap" onClick={handleOpenPaymentModal}>
+                                                    <Wallet size={12} /> {finalBalanceDue < 0 ? 'Record Refund' : 'Record Payment'}
                                                 </button>
                                             </div>
                                             
@@ -561,15 +568,7 @@ const CheckOut = () => {
                                             )}
                                         </div>
                                     ) : (
-                                    <div className="flex items-center gap-3">
-                                            {new Date(selectedStay.dateOut) > new Date() && (
-                                                <button 
-                                                    className="bg-amber-50 text-amber-700 hover:bg-amber-100 px-4 py-3 rounded-xl font-bold text-[13px] transition-all border border-amber-100"
-                                                    onClick={() => handleCheckOut(selectedStay.id, true)}
-                                                >
-                                                    Approve Early Checkout Adjustment
-                                                </button>
-                                            )}
+                                        <div className="flex items-center gap-3">
                                             <button 
                                                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold tracking-wide shadow-sm transition-all flex items-center gap-2"
                                                 onClick={() => handleCheckOut(selectedStay.id)}
@@ -610,7 +609,7 @@ const CheckOut = () => {
                                 <div className="bg-maroon/10 p-2 rounded-lg">
                                     <Wallet className="text-maroon" size={20} />
                                 </div>
-                                Record Folio Payment
+                                {paymentData.amount < 0 ? 'Record Refund' : 'Record Folio Payment'}
                             </h2>
                             <button className="close-modal-btn !top-6 !right-6" onClick={() => setShowPaymentModal(false)}>&times;</button>
                         </div>
@@ -637,7 +636,9 @@ const CheckOut = () => {
                             <form onSubmit={handleRecordPayment} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="form-group">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block text-left">Payment Amount ($)</label>
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block text-left">
+                                            {paymentData.amount < 0 ? 'Refund Amount ($)' : 'Payment Amount ($)'}
+                                        </label>
                                         <div className="relative">
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
                                             <input 
@@ -686,7 +687,7 @@ const CheckOut = () => {
                                         type="submit" 
                                         className="flex-[2] bg-maroon hover:bg-[#6b0f11] text-white font-black text-lg py-4 rounded-xl shadow-lg shadow-maroon/20 transition-all flex items-center justify-center gap-2"
                                     >
-                                        <Wallet size={18} /> Record Payment
+                                        <Wallet size={18} /> {paymentData.amount < 0 ? 'Process Refund' : 'Record Payment'}
                                     </button>
                                 </div>
                             </form>
