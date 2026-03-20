@@ -211,7 +211,7 @@ const MainLayout = ({ children }) => {
                 </header>
 
                 {/* ── Page Content ── */}
-                <div className="flex-1 p-4 md:p-8 overflow-x-hidden">
+                <div className="flex-1 p-4 md:p-8 overflow-x-clip">
                     <div className="max-w-[1400px] mx-auto">
                         {children}
                     </div>

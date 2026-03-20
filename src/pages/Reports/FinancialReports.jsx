@@ -131,8 +131,8 @@ const FinancialReports = () => {
                 {/* Revenue Breakdown */}
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">Revenue by Charge Type</h3>
-<div className="overflow-x-auto">
-                        <table className="management-table">
+                    <div className="overflow-x-auto">
+                        <table className="management-table" style={{ minWidth: '700px' }}>
                             <thead>
                                 <tr>
                                     <th className="text-left">Category</th>
@@ -301,7 +301,7 @@ const FinancialReports = () => {
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Running Balance History</span>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="management-table">
+                    <table className="management-table" style={{ minWidth: '700px' }}>
                         <thead>
                             <tr>
                                 <th style={{ width: '180px' }}>Timestamp</th>

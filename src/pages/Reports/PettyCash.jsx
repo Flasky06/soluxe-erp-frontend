@@ -88,7 +88,7 @@ const PettyCash = () => {
             </div>
 
 <div className="premium-card overflow-x-auto">
-                <table className="management-table">
+                <table className="management-table" style={{ minWidth: '600px' }}>
                     <thead>
                         <tr>
                             <th>Date</th>
