@@ -199,13 +199,18 @@ const CheckOut = () => {
     const handleRecordPayment = async (e) => {
         e.preventDefault();
         try {
-            await api.post(`/folios/${folio.id}/payments?userId=${user?.id || 1}`, paymentData);
+            const payload = {
+                amount: parseFloat(paymentData.amount),
+                paymentMethodId: parseInt(paymentData.paymentMethodId, 10),
+                referenceNumber: paymentData.reference || null,
+            };
+            await api.post(`/folios/${folio.id}/payments?userId=${user?.id || 1}`, payload);
             setShowPaymentModal(false);
             // Refresh invoice data
             handleViewInvoice(selectedStay);
         } catch (err) {
             console.error('Failed to record payment:', err);
-            alert('Error recording payment.');
+            alert(err.response?.data?.message || 'Error recording payment.');
         }
     };
 
