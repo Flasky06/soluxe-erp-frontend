@@ -49,6 +49,23 @@ const pageTitles = {
 const MainLayout = ({ children }) => {
     const { notifications, totalCount } = useNotifications();
     const [panelOpen, setPanelOpen] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
+    const toggleFullscreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+            setIsFullscreen(true);
+        } else {
+            document.exitFullscreen();
+            setIsFullscreen(false);
+        }
+    };
+
+    useEffect(() => {
+        const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+        document.addEventListener('fullscreenchange', onFsChange);
+        return () => document.removeEventListener('fullscreenchange', onFsChange);
+    }, []);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const panelRef = useRef(null);
     const navigate = useNavigate();
@@ -117,8 +134,8 @@ const MainLayout = ({ children }) => {
                         <span className="text-[13px] font-bold text-slate-700 truncate max-w-[150px] sm:max-w-none">{pageTitle}</span>
                     </div>
 
-                    {/* Right-side actions */}
-                    <div className="flex items-center gap-6" ref={panelRef}>
+                    {/* Right-side actions — hidden on mobile */}
+                    <div className="hidden md:flex items-center gap-6" ref={panelRef}>
                         
                         {/* Date & Time Display */}
                         <div className="hidden md:flex flex-col items-end border-r border-slate-100 pr-6">
@@ -207,6 +224,31 @@ const MainLayout = ({ children }) => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Fullscreen Toggle */}
+                        <button
+                            onClick={toggleFullscreen}
+                            title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+                            className="w-9 h-9 flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-700 transition-all duration-200"
+                        >
+                            {isFullscreen ? (
+                                // Compress / exit fullscreen icon
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M8 3v3a2 2 0 0 1-2 2H3"/>
+                                    <path d="M21 8h-3a2 2 0 0 1-2-2V3"/>
+                                    <path d="M3 16h3a2 2 0 0 1 2 2v3"/>
+                                    <path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
+                                </svg>
+                            ) : (
+                                // Expand / enter fullscreen icon
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+                                    <path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
+                                    <path d="M3 16v3a2 2 0 0 0 2 2h3"/>
+                                    <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+                                </svg>
+                            )}
+                        </button>
                     </div>
                 </header>
 
