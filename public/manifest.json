@@ -1,6 +1,18 @@
 {
+  "id": "soluxe-hotel-erp",
   "short_name": "Soluxe ERP",
   "name": "Soluxe Hotel ERP",
+  "description": "Hotel management system for Soluxe — manage reservations, guests, billing, and staff from one place.",
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait",
+  "theme_color": "#7B1113",
+  "background_color": "#ffffff",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/logo/soluxe-icon-192.png",
@@ -15,9 +27,18 @@
       "purpose": "maskable any"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#7B1113",
-  "background_color": "#ffffff"
+  "shortcuts": [
+    {
+      "name": "Reservations",
+      "url": "/reservations",
+      "description": "View and manage reservations"
+    },
+    {
+      "name": "Front Desk",
+      "url": "/front-desk",
+      "description": "Check in and check out guests"
+    }
+  ]
 }
+
 
