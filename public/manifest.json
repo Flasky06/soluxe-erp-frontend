@@ -38,6 +38,22 @@
       "url": "/front-desk",
       "description": "Check in and check out guests"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/screenshot-desktop.png",
+      "sizes": "1366x615",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Soluxe HMS Login - Desktop"
+    },
+    {
+      "src": "/screenshots/screenshot-mobile.png",
+      "sizes": "215x466",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Soluxe HMS Login - Mobile"
+    }
   ]
 }
 
