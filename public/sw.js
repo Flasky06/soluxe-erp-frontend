@@ -14,6 +14,9 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Only handle same-origin requests — skip external URLs (e.g. Cloudflare analytics)
+  if (!event.request.url.startsWith(self.location.origin)) return;
+
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request))
