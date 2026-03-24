@@ -36,7 +36,7 @@ const Reservations = () => {
     const [paymentData, setPaymentData] = useState({
         amount: '',
         paymentMethodId: '',
-        reference: '',
+        referenceNumber: '',
         notes: ''
     });
 
@@ -172,7 +172,7 @@ const Reservations = () => {
             setPaymentData({
                 amount: '',
                 paymentMethodId: paymentMethods[0]?.id || '',
-                reference: '',
+                referenceNumber: '',
                 notes: ''
             });
             setShowPaymentModal(true);
@@ -186,13 +186,18 @@ const Reservations = () => {
         e.preventDefault();
         if (!activeFolio) return;
         try {
-            await api.post(`/folios/${activeFolio.id}/payments?userId=${1}`, paymentData);
+            const payload = {
+                ...paymentData,
+                amount: parseFloat(paymentData.amount),
+                paymentMethodId: parseInt(paymentData.paymentMethodId)
+            };
+            await api.post(`/folios/${activeFolio.id}/payments?userId=${1}`, payload);
             setShowPaymentModal(false);
             alert('Payment recorded successfully!');
             fetchAllData();
         } catch (err) {
             console.error('Failed to record payment:', err);
-            alert('Error recording payment.');
+            alert(err.response?.data?.message || 'Error recording payment.');
         }
     };
 
@@ -719,8 +724,8 @@ const Reservations = () => {
                                         <input 
                                             type="text" 
                                             className="w-full !py-3 !px-4 !rounded-xl !border-slate-200 font-semibold"
-                                            value={paymentData.reference} 
-                                            onChange={e => setPaymentData({...paymentData, reference: e.target.value})} 
+                                            value={paymentData.referenceNumber} 
+                                            onChange={e => setPaymentData({...paymentData, referenceNumber: e.target.value})} 
                                             placeholder="Receipt / TXN ID" 
                                         />
                                     </div>
