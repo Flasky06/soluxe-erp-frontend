@@ -46,9 +46,52 @@ import LeaveRequests from './pages/LeaveRequests/LeaveRequests';
 import PurchaseOrders from './pages/PurchaseOrders/PurchaseOrders';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import BookingSync from './pages/Integrations/BookingSync';
+import { useEffect, useState } from 'react';
+import useTenantStore from './store/useTenantStore';
+import tenantService from './services/tenantService';
 import './index.css';
 
 function App() {
+  const { setTenantConfig, isLoading, setLoading } = useTenantStore();
+  const [initFailed, setInitFailed] = useState(false);
+
+  useEffect(() => {
+    const initTenant = async () => {
+      try {
+        const hostname = window.location.hostname;
+        const subdomain = hostname.split('.')[0];
+        
+        // Use 'hotel1' as fallback on local development
+        const searchSubdomain = (hostname === 'localhost' || hostname === '127.0.0.1') ? 'hotel1' : subdomain;
+        
+        const config = await tenantService.fetchTenantConfig(searchSubdomain);
+        setTenantConfig(config);
+        
+        // Apply branding
+        if (config.primaryColor) {
+           document.documentElement.style.setProperty('--theme-primary', config.primaryColor);
+           // Generate secondary shades if needed, or simply let CSS variables handle the fallback
+        }
+        if (config.hotelName) {
+           document.title = config.hotelName;
+        }
+      } catch (err) {
+        console.error("Initialization Failed:", err);
+        setInitFailed(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    initTenant();
+  }, [setTenantConfig, setLoading]);
+
+  if (isLoading) {
+    return <div className="flex h-screen items-center justify-center text-slate-500 font-semibold tracking-wide">Loading Hotel Configuration...</div>;
+  }
+
+  if (initFailed) {
+    return <div className="flex h-screen items-center justify-center text-red-500 font-semibold text-lg">Hotel Not Found: Unknown Subdomain</div>;
+  }
 
   return (
     <Router>

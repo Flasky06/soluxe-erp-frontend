@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import useAuthStore from '../store/authStore';
+import useTenantStore from '../store/useTenantStore';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
@@ -15,6 +16,12 @@ api.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
+
+    const tenantId = useTenantStore.getState().tenantId;
+    if (tenantId) {
+        config.headers['X-Tenant-ID'] = tenantId;
+    }
+
     return config;
 }, (error) => {
     return Promise.reject(error);
