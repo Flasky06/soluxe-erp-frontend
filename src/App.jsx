@@ -145,6 +145,9 @@ function App() {
               </Route>
           </Route>
         </Route>
+        
+        {/* Catch-all undefined routes and redirect to root (helps prevent blank screens) */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
