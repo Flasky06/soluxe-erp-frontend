@@ -42,7 +42,7 @@ const menuGroups = [
         title: 'Overview',
         icon: LayoutDashboard,
         items: [
-            { label: 'Dashboard', path: '/', icon: LayoutDashboard },
+            { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
             { label: 'Maintenance', path: '/maintenance', icon: Wrench, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE', 'ROLE_RECEPTIONIST'] },
             { label: 'Issue Types', path: '/maintenance-issue-types', icon: Settings2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
         ]

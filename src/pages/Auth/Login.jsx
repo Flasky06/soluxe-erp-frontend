@@ -31,7 +31,7 @@ const Login = () => {
             // Wrapping role in an array as authStore expects 'roles'
             login({ id, username, roles: [role] }, token);
             
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
         } finally {

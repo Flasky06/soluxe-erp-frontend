@@ -57,10 +57,11 @@ function App() {
         
         {/* Protected Routes - All require at least being logged in */}
         <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route element={<MainLayout />}>
               {/* Main */}
               <Route element={<ProtectedRoute />}>
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
               </Route>
 
               {/* Operations */}

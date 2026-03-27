@@ -16,7 +16,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
         
         if (!hasRequiredRole) {
             // Logged in but doesn't have required role, maybe redirect to a generic page or dashboard
-            return <Navigate to="/" replace />; 
+            return <Navigate to="/dashboard" replace />; 
         }
     }
 
