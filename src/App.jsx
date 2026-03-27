@@ -53,11 +53,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
         
         {/* Protected Routes - All require at least being logged in */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route element={<MainLayout />}>
               {/* Main */}
               <Route element={<ProtectedRoute />}>

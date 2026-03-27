@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
@@ -12,7 +12,12 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     
     const login = useAuthStore((state) => state.login);
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const navigate = useNavigate();
+
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const handleChange = (e) => {
         setCredentials({ ...credentials, [e.target.name]: e.target.value });

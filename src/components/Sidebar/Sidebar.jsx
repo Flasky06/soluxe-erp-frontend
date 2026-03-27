@@ -141,7 +141,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     const handleLogout = () => {
         logout();
-        window.location.href = '/login';
+        window.location.href = 'https://soluxe.mflowpos.com';
     };
 
     // Helper to check if item is allowed for current user

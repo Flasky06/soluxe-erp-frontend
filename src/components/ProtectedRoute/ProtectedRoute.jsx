@@ -6,8 +6,8 @@ const ProtectedRoute = ({ allowedRoles }) => {
     const { isAuthenticated, hasRole } = useAuthStore();
 
     if (!isAuthenticated) {
-        // Not logged in, redirect to login page
-        return <Navigate to="/login" replace />;
+        // Not logged in, redirect to login page (which is now at /)
+        return <Navigate to="/" replace />;
     }
 
     if (allowedRoles && allowedRoles.length > 0) {

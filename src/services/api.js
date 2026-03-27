@@ -29,7 +29,7 @@ api.interceptors.response.use((response) => {
         // (avoids double-redirect race with manual logout)
         if (useAuthStore.getState().isAuthenticated) {
             useAuthStore.getState().logout();
-            window.location.href = '/login';
+            window.location.href = '/';
         }
     }
     return Promise.reject(error);
