@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar/Sidebar';
 import useNotifications from '../../services/useNotifications';
 
@@ -255,7 +255,7 @@ const MainLayout = ({ children }) => {
                 {/* ── Page Content ── */}
                 <div className="flex-1 p-4 md:p-8 overflow-x-clip">
                     <div className="max-w-[1400px] mx-auto">
-                        {children}
+                        {children || <Outlet />}
                     </div>
                 </div>
             </main>
