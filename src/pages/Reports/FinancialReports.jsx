@@ -14,11 +14,13 @@ import {
     HardHat
 } from 'lucide-react';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 const FinancialReports = () => {
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [financeData, setFinanceData] = useState(null);
+    const { t } = useLanguage();
 
     const fetchFinanceData = useCallback(async () => {
         try {
@@ -60,8 +62,8 @@ const FinancialReports = () => {
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-black text-text-dark tracking-tight">Financial Reports</h1>
-                    <p className="text-text-slate mt-1">Revenue audit and cash collection tracking</p>
+                    <h1 className="text-2xl font-black text-text-dark tracking-tight">{t('Financial Reports')}</h1>
+                    <p className="text-text-slate mt-1">{t('Revenue audit and cash collection tracking')}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 bg-white p-1 rounded-xl shadow-sm border border-slate-100">
@@ -76,68 +78,31 @@ const FinancialReports = () => {
                         className="btn-secondary !bg-white border border-slate-200 flex items-center gap-2"
                     >
                         <Download size={18} />
-                        Export
+                        {t('Export')}
                     </button>
                 </div>
             </div>
 
             {/* KPI Grill */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard 
-                    label="Billed Revenue" 
-                    value={`$ ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
-                    desc="Total invoices generated"
-                    color="text-primary"
-                    bg="bg-primary/5"
-                />
-                <StatCard 
-                    label="Cash Collected" 
-                    value={`$ ${parseFloat(financeData?.totalPayments || 0).toLocaleString()}`} 
-                    desc="Actual payments received"
-                    color="text-green-600"
-                    bg="bg-green-50"
-                />
-                <StatCard 
-                    label="Total Expenses" 
-                    value={`$ ${parseFloat(financeData?.totalExpenses || 0).toLocaleString()}`} 
-                    desc="Operational expenditures"
-                    color="text-red-600"
-                    bg="bg-red-50"
-                />
-                <StatCard 
-                    label="Net Collections" 
-                    value={`$ ${ (parseFloat(financeData?.totalPayments || 0) - parseFloat(financeData?.operationalExpenses || 0)).toLocaleString()}`} 
-                    desc="Collections - OpEx"
-                    color="text-blue-600"
-                    bg="bg-blue-50"
-                />
-                <StatCard 
-                    label="Petty Cash" 
-                    value={`$ ${parseFloat(financeData?.pettyCash || 0).toLocaleString()}`} 
-                    desc="Daily cash spend"
-                    color="text-orange-600"
-                    bg="bg-orange-50"
-                />
-                <StatCard 
-                    label="Billed Revenue" 
-                    value={`$ ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`} 
-                    desc="Total invoices generated"
-                    color="text-primary"
-                    bg="bg-primary/5"
-                />
+                <StatCard label={t('Billed Revenue')}  value={`$ ${parseFloat(financeData?.totalRevenue || 0).toLocaleString()}`}  desc={t('Total invoices generated')} color="text-primary" bg="bg-primary/5" />
+                <StatCard label={t('Cash Collected')}   value={`$ ${parseFloat(financeData?.totalPayments || 0).toLocaleString()}`}  desc={t('Actual payments received')} color="text-green-600" bg="bg-green-50" />
+                <StatCard label={t('Total Expenses')}   value={`$ ${parseFloat(financeData?.totalExpenses || 0).toLocaleString()}`}  desc={t('Operational expenditures')} color="text-red-600" bg="bg-red-50" />
+                <StatCard label={t('Net Collections')}  value={`$ ${ (parseFloat(financeData?.totalPayments || 0) - parseFloat(financeData?.operationalExpenses || 0)).toLocaleString()}`} desc={t('Collections - OpEx')} color="text-blue-600" bg="bg-blue-50" />
+                <StatCard label={t('Petty Cash')}       value={`$ ${parseFloat(financeData?.pettyCash || 0).toLocaleString()}`}       desc={t('Daily cash spend')} color="text-orange-600" bg="bg-orange-50" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Revenue Breakdown */}
                 <div className="premium-card p-6">
-                    <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">Revenue by Charge Type</h3>
+                    <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">{t('Revenue by Charge Type')}</h3>
                     <div className="overflow-x-auto">
                         <table className="management-table" style={{ minWidth: '700px' }}>
                             <thead>
                                 <tr>
-                                    <th className="text-left">Category</th>
-                                    <th className="text-right" style={{ width: '140px' }}>Amount ($)</th>
-                                    <th className="text-right" style={{ width: '140px' }}>Share (%)</th>
+                                    <th className="text-left">{t('Category')}</th>
+                                    <th className="text-right" style={{ width: '140px' }}>{t('Amount ($)')}</th>
+                                    <th className="text-right" style={{ width: '140px' }}>{t('Share (%)')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -174,13 +139,13 @@ const FinancialReports = () => {
                 {/* Treasury Audit & Cash Flow */}
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
-                        <span>Treasury Audit</span>
+                        <span>{t('Treasury Audit')}</span>
                     </h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">Unrealized Revenue</p>
-                                <p className="text-sm font-black text-slate-700">Pending Folios</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase">{t('Unrealized Revenue')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Pending Folios')}</p>
                             </div>
                             <span className="text-sm font-black text-slate-600">
                                 $ {Math.max(0, (financeData?.totalRevenue || 0) - (financeData?.totalPayments || 0)).toLocaleString()}
@@ -188,8 +153,8 @@ const FinancialReports = () => {
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">Procurement</p>
-                                <p className="text-sm font-black text-slate-700">Supply Spend</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase">{t('Procurement')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Supply Spend')}</p>
                             </div>
                             <span className="text-sm font-black text-red-600">
                                 $ {parseFloat(financeData?.supplyCosts || 0).toLocaleString()}
@@ -197,8 +162,8 @@ const FinancialReports = () => {
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">Payroll Liability</p>
-                                <p className="text-sm font-black text-slate-700">Staff Salaries</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase">{t('Payroll Liability')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Staff Salaries')}</p>
                             </div>
                             <span className="text-sm font-black text-red-600">
                                 $ {parseFloat(financeData?.payrollExpenses || 0).toLocaleString()}
@@ -206,8 +171,8 @@ const FinancialReports = () => {
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">Inventory Assets</p>
-                                <p className="text-sm font-black text-slate-700">Stock Value</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase">{t('Inventory Assets')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Stock Value')}</p>
                             </div>
                             <span className="text-sm font-black text-blue-600">
                                 $ {parseFloat(financeData?.inventoryValue || 0).toLocaleString()}
@@ -215,8 +180,8 @@ const FinancialReports = () => {
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
                             <div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase">Petty Cash</p>
-                                <p className="text-sm font-black text-slate-700">Daily Cash Spend</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase">{t('Petty Cash')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Daily Cash Spend')}</p>
                             </div>
                             <span className="text-sm font-black text-orange-600">
                                 $ {parseFloat(financeData?.pettyCash || 0).toLocaleString()}
@@ -224,8 +189,8 @@ const FinancialReports = () => {
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-orange-50/50 border border-orange-100">
                             <div>
-                                <p className="text-[10px] font-bold text-orange-600 uppercase">Maintenance</p>
-                                <p className="text-sm font-black text-slate-700">Repairs & Upkeep</p>
+                                <p className="text-[10px] font-bold text-orange-600 uppercase">{t('Maintenance')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Repairs & Upkeep')}</p>
                             </div>
                             <span className="text-sm font-black text-orange-600">
                                 $ {parseFloat(financeData?.maintenanceCosts || 0).toLocaleString()}
@@ -237,13 +202,13 @@ const FinancialReports = () => {
                 {/* AR & AP Debtor Tracking */}
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
-                        <span>Debtor Tracking</span>
+                        <span>{t('Debtor Tracking')}</span>
                     </h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center p-3 rounded-xl bg-red-50/50 border border-red-100">
                             <div>
-                                <p className="text-[10px] font-bold text-red-600 uppercase">Accounts Payable</p>
-                                <p className="text-sm font-black text-slate-700">Owed to Suppliers</p>
+                                <p className="text-[10px] font-bold text-red-600 uppercase">{t('Accounts Payable')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Owed to Suppliers')}</p>
                             </div>
                             <span className="text-sm font-black text-red-600">
                                 $ {parseFloat(financeData?.accountsPayable || 0).toLocaleString()}
@@ -251,8 +216,8 @@ const FinancialReports = () => {
                         </div>
                         <div className="flex justify-between items-center p-3 rounded-xl bg-blue-50/50 border border-blue-100">
                             <div>
-                                <p className="text-[10px] font-bold text-blue-600 uppercase">Accounts Receivable</p>
-                                <p className="text-sm font-black text-slate-700">Due from Guests</p>
+                                <p className="text-[10px] font-bold text-blue-600 uppercase">{t('Accounts Receivable')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Due from Guests')}</p>
                             </div>
                             <span className="text-sm font-black text-blue-600">
                                 $ {parseFloat(financeData?.accountsReceivable || 0).toLocaleString()}
@@ -263,13 +228,13 @@ const FinancialReports = () => {
 
                 <div className="premium-card p-6">
                     <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
-                        <span>Liquidity Summary</span>
+                        <span>{t('Liquidity Summary')}</span>
                     </h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center p-3 rounded-xl bg-orange-50/50 border border-orange-100">
                             <div>
-                                <p className="text-[10px] font-bold text-orange-600 uppercase">Petty Cash</p>
-                                <p className="text-sm font-black text-slate-700">Daily Cash Spend</p>
+                                <p className="text-[10px] font-bold text-orange-600 uppercase">{t('Petty Cash')}</p>
+                                <p className="text-sm font-black text-slate-700">{t('Daily Cash Spend')}</p>
                             </div>
                             <span className="text-sm font-black text-orange-600">
                                 $ {parseFloat(financeData?.pettyCash || 0).toLocaleString()}
@@ -277,7 +242,7 @@ const FinancialReports = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-slate-100">
                             <div className="flex justify-between items-center px-1">
-                                <span className="text-xs font-bold text-slate-500 uppercase italic">Active Collections</span>
+                                <span className="text-xs font-bold text-slate-500 uppercase italic">{t('Active Collections')}</span>
                                 <span className="text-lg font-black text-green-600">
                                     $ {(
                                         parseFloat(financeData?.totalPayments || 0) - 
@@ -287,7 +252,7 @@ const FinancialReports = () => {
                                 </span>
                             </div>
                             <p className="px-1 mt-1 text-[10px] text-slate-400 text-right uppercase tracking-tighter">
-                                Net Cash from Operations
+                                {t('Net Cash from Operations')}
                             </p>
                         </div>
                     </div>
@@ -297,19 +262,19 @@ const FinancialReports = () => {
             {/* General Ledger */}
             <div className="premium-card p-6">
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-                    <h3 className="text-base font-bold text-slate-700">General Ledger</h3>
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Running Balance History</span>
+                <h3 className="text-base font-bold text-slate-700">{t('General Ledger')}</h3>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('Running Balance History')}</span>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="management-table" style={{ minWidth: '700px' }}>
                         <thead>
                             <tr>
-                                <th style={{ width: '180px' }}>Timestamp</th>
-                                <th style={{ width: '120px' }}>Account</th>
-                                <th style={{ width: '140px' }}>Reference</th>
-                                <th>Description</th>
-                                <th className="text-right" style={{ width: '140px' }}>Debit / Credit</th>
-                                <th className="text-right" style={{ width: '140px' }}>Running Balance</th>
+                                <th style={{ width: '180px' }}>{t('Timestamp')}</th>
+                                <th style={{ width: '120px' }}>{t('Account')}</th>
+                                <th style={{ width: '140px' }}>{t('Reference')}</th>
+                                <th>{t('Description')}</th>
+                                <th className="text-right" style={{ width: '140px' }}>{t('Debit / Credit')}</th>
+                                <th className="text-right" style={{ width: '140px' }}>{t('Running Balance')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -343,7 +308,7 @@ const FinancialReports = () => {
                             {(!financeData?.auditTrail || financeData.auditTrail.length === 0) && (
                                 <tr>
                                     <td colSpan="6" className="py-20 text-center text-slate-400 italic text-sm">
-                                        No ledger entries for this period
+                                        {t('No data found')}
                                     </td>
                                 </tr>
                             )}

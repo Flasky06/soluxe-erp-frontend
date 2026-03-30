@@ -244,18 +244,18 @@ const Reports = () => {
                     REVENUE SECTION
                 ════════════════════════════════════════════════ */}
                 {activeTab === 'revenue' && (
-                    <Section title="Revenue Report" period={periodLabel}>
+                    <Section title={t('Revenue Report')} period={periodLabel}>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <StatCard label="Net Revenue" value={`$ ${parseFloat(revenue?.netRevenue || 0).toLocaleString()}`} sub={`Gross: $ ${parseFloat(revenue?.totalRevenue || 0).toLocaleString()}`} accent="border-l-green-500" />
-                            <StatCard label="Occupancy Rate" value={`${occupancyPct}%`} sub={`${occupiedRooms} occupied · ${totalRooms - occupiedRooms} available`} accent="border-l-indigo-500" />
-                            <StatCard label="Arrivals Today" value={arrivalsToday} sub="Guests checking in today" accent="border-l-blue-500" />
-                            <StatCard label="Departures Today" value={departuresToday} sub="Guests checking out today" accent="border-l-slate-400" />
+                            <StatCard label={t('Net Revenue')} value={`$ ${parseFloat(revenue?.netRevenue || 0).toLocaleString()}`} sub={`${t('Gross')}: $ ${parseFloat(revenue?.totalRevenue || 0).toLocaleString()}`} accent="border-l-green-500" />
+                            <StatCard label={t('Occupancy Rate')} value={`${occupancyPct}%`} sub={`${occupiedRooms} ${t('occupied')} · ${totalRooms - occupiedRooms} ${t('available')}`} accent="border-l-indigo-500" />
+                            <StatCard label={t('Arrivals Today')} value={arrivalsToday} sub={t('Guests checking in today')} accent="border-l-blue-500" />
+                            <StatCard label={t('Departures Today')} value={departuresToday} sub={t('Guests checking out today')} accent="border-l-slate-400" />
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Revenue by Charge Type */}
                             <div className="premium-card p-6">
-                                <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">Revenue by Charge Type</h3>
+                                <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">{t('Revenue by Charge Type')}</h3>
                                 {Object.keys(revenueByType).length === 0 ? (
                                     <p className="py-10 text-center text-slate-400 italic text-sm">No charges recorded for this period.</p>
                                 ) : (
@@ -263,9 +263,9 @@ const Reports = () => {
                                         <table className="management-table" style={{ minWidth: '600px' }}>
                                             <thead>
                                                 <tr>
-                                                    <th>Charge Type</th>
-                                                    <th className="text-right">Amount ($)</th>
-                                                    <th className="text-right">Share</th>
+                                                    <th>{t('Charge Type')}</th>
+                                                    <th className="text-right">{t('Amount ($)')}</th>
+                                                    <th className="text-right">{t('Share')}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -296,7 +296,7 @@ const Reports = () => {
 
                             {/* Folio Summary */}
                             <div className="premium-card p-6">
-                                <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">Folio Summary</h3>
+                                <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">{t('Folio Summary')}</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                                     <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center">
                                         <div className="text-2xl font-extrabold text-orange-600">{folios.filter(f => f.status === 'OPEN').length}</div>
@@ -312,7 +312,7 @@ const Reports = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between py-3 border-t border-slate-100">
-                                    <span className="text-sm font-bold text-slate-600">All-time Folio Value</span>
+                                    <span className="text-sm font-bold text-slate-600">{t('All-time Folio Value')}</span>
                                     <span className="font-extrabold text-primary text-lg">$ {folioTotal.toLocaleString()}</span>
                                 </div>
                             </div>
@@ -324,24 +324,24 @@ const Reports = () => {
                     RESERVATIONS SECTION
                 ════════════════════════════════════════════════ */}
                 {activeTab === 'reservations' && (
-                    <Section title="Reservations Report">
+                    <Section title={t('Reservations Report')}>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <StatCard label="Total Reservations" value={reservations.length} accent="border-l-primary" />
-                            <StatCard label="Booked" value={reservations.filter(r => r.status === 'BOOKED').length} accent="border-l-blue-500" />
-                            <StatCard label="Checked In" value={reservations.filter(r => r.status === 'CHECKED_IN').length} accent="border-l-green-500" />
-                            <StatCard label="Cancelled" value={reservations.filter(r => r.status === 'CANCELLED').length} accent="border-l-red-400" />
+                            <StatCard label={t('Total Reservations')} value={reservations.length} accent="border-l-primary" />
+                            <StatCard label={t('Booked')} value={reservations.filter(r => r.status === 'BOOKED').length} accent="border-l-blue-500" />
+                            <StatCard label={t('Checked In')} value={reservations.filter(r => r.status === 'CHECKED_IN').length} accent="border-l-green-500" />
+                            <StatCard label={t('Cancelled')} value={reservations.filter(r => r.status === 'CANCELLED').length} accent="border-l-red-400" />
                         </div>
 
                         <div className="premium-card">
-                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Reservations</div>
+                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">{t('All Reservations')}</div>
                             <div className="overflow-x-auto w-full">
                                 <table className="management-table" style={{ minWidth: '900px' }}>
                                     <thead><tr>
-                                        <th>#</th><th>Guest</th><th>Type</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Nights</th>
+                                        <th>#</th><th>{t('Guest')}</th><th>{t('Type')}</th><th>{t('Check-In')}</th><th>{t('Check-Out')}</th><th>{t('Status')}</th><th>{t('Night(s)')}</th>
                                     </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : reservations.length === 0
-                                        ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No reservations found.</td></tr>
+                                        ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">{t('No reservations found.')}</td></tr>
                                         : reservations.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(r => {
                                             const g = guests.find(g => g.id === r.guestId);
                                             const nights = r.dateIn && r.dateOut
@@ -350,8 +350,8 @@ const Reports = () => {
                                             return (
                                                 <tr key={r.id}>
                                                     <td className="text-slate-400 text-xs">{r.id}</td>
-                                                    <td className="font-bold text-text-dark">{g?.fullName || `Guest ${r.guestId}`}</td>
-                                                    <td>{r.roomTypeId ? 'Room' : 'Table'}</td>
+                                                    <td className="font-bold text-text-dark">{g?.fullName || `${t('Guest')} ${r.guestId}`}</td>
+                                                    <td>{r.roomTypeId ? t('Room') : t('Table')}</td>
                                                     <td>{r.dateIn || '—'}</td>
                                                     <td>{r.dateOut || '—'}</td>
                                                     <td><span className={`status-badge ${r.status?.toLowerCase().replace('_', '-')}`}>{r.status}</span></td>
@@ -381,23 +381,23 @@ const Reports = () => {
                     GUESTS SECTION
                 ════════════════════════════════════════════════ */}
                 {activeTab === 'guests' && (
-                    <Section title="Guest Report">
+                    <Section title={t('Guest Report')}>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                            <StatCard label="Total Guests" value={guests.length} accent="border-l-primary" />
-                            <StatCard label="Guests with Active Stays" value={reservations.filter(r => r.status === 'CHECKED_IN').length} accent="border-l-green-500" />
-                            <StatCard label="New Arrivals Today" value={arrivalsToday} sub="Booked, checking in today" accent="border-l-blue-500" />
+                            <StatCard label={t('Total Guests')} value={guests.length} accent="border-l-primary" />
+                            <StatCard label={t('Guests with Active Stays')} value={reservations.filter(r => r.status === 'CHECKED_IN').length} accent="border-l-green-500" />
+                            <StatCard label={t('New Arrivals Today')} value={arrivalsToday} sub={t('Guests checking in today')} accent="border-l-blue-500" />
                         </div>
 
                         <div className="premium-card">
-                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Registered Guests</div>
+                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">{t('All Registered Guests')}</div>
                             <div className="overflow-x-auto w-full">
                                 <table className="management-table" style={{ minWidth: '900px' }}>
                                     <thead><tr>
-                                        <th>#</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Nationality</th><th>ID Type</th><th>ID Number</th>
+                                        <th>#</th><th>{t('Full Name')}</th><th>{t('Email')}</th><th>{t('Phone')}</th><th>{t('Nationality')}</th><th>{t('ID Type')}</th><th>{t('ID Number')}</th>
                                     </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : guests.length === 0
-                                        ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No guests found.</td></tr>
+                                        ? <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">{t('No guests found.')}</td></tr>
                                         : guests.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(g => (
                                             <tr key={g.id}>
                                                 <td className="text-slate-400 text-xs">{g.id}</td>
@@ -431,25 +431,25 @@ const Reports = () => {
                     EMPLOYEES SECTION
                 ════════════════════════════════════════════════ */}
                 {activeTab === 'employees' && (
-                    <Section title="Employee Report">
+                    <Section title={t('Employee Report')}>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                            <StatCard label="Total Employees" value={employees.length} accent="border-l-primary" />
-                            <StatCard label="Departments" value={Object.keys(byDept).length} accent="border-l-indigo-500" />
-                            <StatCard label="Active" value={employees.filter(e => e.status === 'ACTIVE' || !e.status).length} accent="border-l-green-500" />
+                            <StatCard label={t('Total Employees')} value={employees.length} accent="border-l-primary" />
+                            <StatCard label={t('Departments')} value={Object.keys(byDept).length} accent="border-l-indigo-500" />
+                            <StatCard label={t('Active')} value={employees.filter(e => e.status === 'ACTIVE' || !e.status).length} accent="border-l-green-500" />
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Department breakdown */}
                             <div className="premium-card p-6">
-                                <h3 className="text-base font-bold text-slate-700 mb-4 pb-3 border-b border-slate-100">By Department</h3>
+                                <h3 className="text-base font-bold text-slate-700 mb-4 pb-3 border-b border-slate-100">{t('By Department')}</h3>
                                 {Object.keys(byDept).length === 0
-                                    ? <p className="py-8 text-center text-slate-400 italic text-sm">No department data.</p>
+                                    ? <p className="py-8 text-center text-slate-400 italic text-sm">{t('No department data.')}</p>
                                     : <div className="overflow-x-auto w-full">
                                         <table className="management-table" style={{ minWidth: '400px' }}>
                                             <thead>
                                                 <tr>
-                                                    <th>Department</th>
-                                                    <th className="text-right">Count</th>
+                                                    <th>{t('Department')}</th>
+                                                    <th className="text-right">{t('Count')}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -467,13 +467,13 @@ const Reports = () => {
 
                             {/* Employee list */}
                             <div className="premium-card">
-                                <div className="p-5 border-b border-slate-100 font-bold text-slate-700">Employee Directory</div>
+                                <div className="p-5 border-b border-slate-100 font-bold text-slate-700">{t('Employee Directory')}</div>
                                 <div className="overflow-x-auto w-full">
                                     <table className="management-table" style={{ minWidth: '800px' }}>
-                                        <thead><tr><th>Name</th><th>Department</th><th>Role</th><th>Phone</th><th>Email</th></tr></thead>
+                                        <thead><tr><th>{t('Name')}</th><th>{t('Department')}</th><th>{t('Role')}</th><th>{t('Phone')}</th><th>{t('Email')}</th></tr></thead>
                                     <tbody>
                                         {loading ? <LoadingRow /> : employees.length === 0
-                                            ? <tr><td colSpan="5" className="py-16 text-center text-slate-400 italic">No employees found.</td></tr>
+                                            ? <tr><td colSpan="5" className="py-16 text-center text-slate-400 italic">{t('No employees found.')}</td></tr>
                                             : employees.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(e => (
                                                 <tr key={e.id}>
                                                     <td className="font-bold text-text-dark">{e.firstName} {e.lastName}</td>
@@ -506,24 +506,24 @@ const Reports = () => {
                     POS / F&B SECTION
                 ════════════════════════════════════════════════ */}
                 {activeTab === 'pos' && (
-                    <Section title="F&B / POS Report">
+                    <Section title={t('F&B / POS Report')}>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <StatCard label="Total Orders" value={diningOrders.length} accent="border-l-yellow-500" />
-                            <StatCard label="Dining Sessions" value={dinningSessions.length} accent="border-l-orange-500" />
-                            <StatCard label="Open Sessions" value={dinningSessions.filter(s => s.status === 'OPEN' || !s.closedAt).length} accent="border-l-red-400" />
-                            <StatCard label="Total POS Revenue" value={`$ ${posTotal.toLocaleString()}`} accent="border-l-green-500" />
+                            <StatCard label={t('Total Orders')} value={diningOrders.length} accent="border-l-yellow-500" />
+                            <StatCard label={t('Dining Sessions')} value={dinningSessions.length} accent="border-l-orange-500" />
+                            <StatCard label={t('Open Sessions')} value={dinningSessions.filter(s => s.status === 'OPEN' || !s.closedAt).length} accent="border-l-red-400" />
+                            <StatCard label={t('Total POS Revenue')} value={`$ ${posTotal.toLocaleString()}`} accent="border-l-green-500" />
                         </div>
 
                         <div className="premium-card">
-                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">Dining Orders</div>
+                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">{t('Dining Orders')}</div>
                             <div className="overflow-x-auto w-full">
                                 <table className="management-table" style={{ minWidth: '800px' }}>
                                     <thead><tr>
-                                        <th>#</th><th>Session</th><th>Table</th><th>Items</th><th>Total ($)</th><th>Status</th>
+                                        <th>#</th><th>{t('Session')}</th><th>{t('Table')}</th><th>{t('Items')}</th><th>{t('Total ($)')}</th><th>{t('Status')}</th>
                                     </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : diningOrders.length === 0
-                                        ? <tr><td colSpan="6" className="py-16 text-center text-slate-400 italic">No dining orders found.</td></tr>
+                                        ? <tr><td colSpan="6" className="py-16 text-center text-slate-400 italic">{t('No dining orders found.')}</td></tr>
                                         : diningOrders.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(o => (
                                             <tr key={o.id}>
                                                 <td className="text-slate-400 text-xs">{o.id}</td>
@@ -556,24 +556,24 @@ const Reports = () => {
                     VENUE BOOKINGS SECTION
                 ════════════════════════════════════════════════ */}
                 {activeTab === 'venue' && (
-                    <Section title="Venue Bookings Report">
+                    <Section title={t('Venue Bookings Report')}>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <StatCard label="Total Bookings" value={venueBookings.length} accent="border-l-primary" />
-                            <StatCard label="Confirmed" value={venueBookings.filter(b => b.status === 'CONFIRMED').length} accent="border-l-green-500" />
-                            <StatCard label="Pending" value={venueBookings.filter(b => b.status === 'PENDING').length} accent="border-l-yellow-400" />
-                            <StatCard label="Total Value" value={`$ ${venueTotal.toLocaleString()}`} accent="border-l-indigo-500" />
+                            <StatCard label={t('Total Bookings')} value={venueBookings.length} accent="border-l-primary" />
+                            <StatCard label={t('Confirmed')} value={venueBookings.filter(b => b.status === 'CONFIRMED').length} accent="border-l-green-500" />
+                            <StatCard label={t('Pending')} value={venueBookings.filter(b => b.status === 'PENDING').length} accent="border-l-yellow-400" />
+                            <StatCard label={t('Total Value')} value={`$ ${venueTotal.toLocaleString()}`} accent="border-l-indigo-500" />
                         </div>
 
                         <div className="premium-card">
-                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Venue Bookings</div>
+                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">{t('All Venue Bookings')}</div>
                             <div className="overflow-x-auto w-full">
                                 <table className="management-table" style={{ minWidth: '1000px' }}>
                                     <thead><tr>
-                                        <th>#</th><th>Client</th><th>Venue</th><th>Event</th><th>Date In</th><th>Guests</th><th>Total ($)</th><th>Deposit</th><th>Status</th>
+                                        <th>#</th><th>{t('Client')}</th><th>{t('Venue')}</th><th>{t('Event')}</th><th>{t('Date In')}</th><th>{t('Guests')}</th><th>{t('Total ($)')}</th><th>{t('Deposit')}</th><th>{t('Status')}</th>
                                     </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : venueBookings.length === 0
-                                        ? <tr><td colSpan="9" className="py-16 text-center text-slate-400 italic">No venue bookings found.</td></tr>
+                                        ? <tr><td colSpan="9" className="py-16 text-center text-slate-400 italic">{t('No venue bookings found.')}</td></tr>
                                         : venueBookings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(b => (
                                             <tr key={b.id}>
                                                 <td className="text-slate-400 text-xs">{b.id}</td>
@@ -584,7 +584,7 @@ const Reports = () => {
                                                 <td className="text-center">{b.expectedGuests || '—'}</td>
                                                 <td className="font-semibold">{b.totalAmount ? parseFloat(b.totalAmount).toLocaleString() : '—'}</td>
                                                 <td>
-                                                    {b.deposit ? <span className={`text-xs font-bold ${b.depositPaid ? 'text-green-600' : 'text-red-500'}`}>{b.depositPaid ? '✓ Paid' : '✗ Unpaid'}</span> : '—'}
+                                                    {b.deposit ? <span className={`text-xs font-bold ${b.depositPaid ? 'text-green-600' : 'text-red-500'}`}>{b.depositPaid ? t('✓ Paid') : t('✗ Unpaid')}</span> : '—'}
                                                 </td>
                                                 <td><span className={`status-badge ${b.status === 'CONFIRMED' ? 'checked-in' : b.status === 'CANCELLED' ? 'cancelled' : b.status === 'COMPLETED' ? 'checked-out' : 'booked'} text-[11px]`}>{b.status}</span></td>
                                             </tr>
@@ -611,29 +611,29 @@ const Reports = () => {
                     MAINTENANCE SECTION
                 ════════════════════════════════════════════════ */}
                 {activeTab === 'maintenance' && (
-                    <Section title="Maintenance Report">
+                    <Section title={t('Maintenance Report')}>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <StatCard label="Total Tickets" value={maintenance.length} accent="border-l-primary" />
-                            <StatCard label="Open" value={maintenance.filter(m => m.status !== 'RESOLVED' && m.status !== 'CLOSED').length} accent="border-l-red-400" />
-                            <StatCard label="Resolved" value={maintenance.filter(m => m.status === 'RESOLVED' || m.status === 'CLOSED').length} accent="border-l-green-500" />
-                            <StatCard label="Urgent / High" value={maintenance.filter(m => m.priority === 'URGENT' || m.priority === 'HIGH').length} accent="border-l-orange-500" />
+                            <StatCard label={t('Total Tickets')} value={maintenance.length} accent="border-l-primary" />
+                            <StatCard label={t('Open')} value={maintenance.filter(m => m.status !== 'RESOLVED' && m.status !== 'CLOSED').length} accent="border-l-red-400" />
+                            <StatCard label={t('Resolved')} value={maintenance.filter(m => m.status === 'RESOLVED' || m.status === 'CLOSED').length} accent="border-l-green-500" />
+                            <StatCard label={t('Urgent / High')} value={maintenance.filter(m => m.priority === 'URGENT' || m.priority === 'HIGH').length} accent="border-l-orange-500" />
                         </div>
 
                         <div className="premium-card">
-                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Maintenance Tickets</div>
+                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">{t('All Maintenance Tickets')}</div>
                             <div className="overflow-x-auto w-full">
                                 <table className="management-table" style={{ minWidth: '800px' }}>
                                     <thead><tr>
-                                        <th>#</th><th>Issue</th><th>Room</th><th>Priority</th><th>Status</th><th>Notes</th>
+                                        <th>#</th><th>{t('Issue')}</th><th>{t('Room')}</th><th>{t('Priority')}</th><th>{t('Status')}</th><th>{t('Notes')}</th>
                                     </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : maintenance.length === 0
-                                        ? <tr><td colSpan="6" className="py-16 text-center text-slate-400 italic">No maintenance tickets found.</td></tr>
+                                        ? <tr><td colSpan="6" className="py-16 text-center text-slate-400 italic">{t('No maintenance tickets found.')}</td></tr>
                                         : maintenance.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(m => (
                                             <tr key={m.id}>
                                                 <td className="text-slate-400 text-xs">{m.id}</td>
                                                 <td className="font-semibold text-text-dark">{m.issueType || m.description || '—'}</td>
-                                                <td>{m.roomId ? `Room ${m.roomId}` : '—'}</td>
+                                                <td>{m.roomId ? `${t('Room')} ${m.roomId}` : '—'}</td>
                                                 <td>
                                                     <span className={`status-badge text-[11px] ${m.priority === 'URGENT' ? 'cancelled' : m.priority === 'HIGH' ? 'warning' : 'info'}`}>
                                                         {m.priority || '—'}
@@ -669,20 +669,20 @@ const Reports = () => {
                     INVENTORY SECTION
                 ════════════════════════════════════════════════ */}
                 {activeTab === 'inventory' && (
-                    <Section title="Inventory Report">
+                    <Section title={t('Inventory Report')}>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <StatCard label="Total Items" value={inventory.length} accent="border-l-primary" />
-                            <StatCard label="Low Stock" value={inventory.filter(i => i.quantity != null && i.reorderLevel != null && i.quantity <= i.reorderLevel).length} accent="border-l-red-400" />
-                            <StatCard label="Out of Stock" value={inventory.filter(i => i.quantity === 0).length} accent="border-l-red-600" sub="Items with 0 quantity" />
-                            <StatCard label="Well Stocked" value={inventory.filter(i => i.quantity > (i.reorderLevel || 0)).length} accent="border-l-green-500" />
+                            <StatCard label={t('Total Items')} value={inventory.length} accent="border-l-primary" />
+                            <StatCard label={t('Low Stock')} value={inventory.filter(i => i.quantity != null && i.reorderLevel != null && i.quantity <= i.reorderLevel).length} accent="border-l-red-400" />
+                            <StatCard label={t('Out of Stock')} value={inventory.filter(i => i.quantity === 0).length} accent="border-l-red-600" sub={t('Items with 0 quantity')} />
+                            <StatCard label={t('Well Stocked')} value={inventory.filter(i => i.quantity > (i.reorderLevel || 0)).length} accent="border-l-green-500" />
                         </div>
 
                         <div className="premium-card">
-                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">All Inventory Items</div>
+                            <div className="p-5 border-b border-slate-100 font-bold text-slate-700">{t('All Inventory Items')}</div>
                             <div className="overflow-x-auto w-full">
                                 <table className="management-table" style={{ minWidth: '800px' }}>
                                     <thead><tr>
-                                        <th>#</th><th>Item Name</th><th>Category</th><th>Quantity</th><th>Unit</th><th>Reorder Level</th><th>Stock Status</th>
+                                        <th>#</th><th>{t('Item Name')}</th><th>{t('Category')}</th><th>{t('Quantity')}</th><th>{t('Unit')}</th><th>{t('Reorder Level')}</th><th>{t('Stock Status')}</th>
                                     </tr></thead>
                                 <tbody>
                                     {loading ? <LoadingRow /> : inventory.length === 0
