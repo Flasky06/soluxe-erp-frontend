@@ -82,25 +82,25 @@ const LeaveTypes = () => {
                     <Search size={18} />
                     <input 
                         type="text" 
-                        placeholder="Search leave types..." 
+                        placeholder={t('Search leave types...')} 
                         className="search-input w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Leave Type</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>{t('Add Leave Type')}</button>
             </div>
 
             <div className="premium-card">
                 <div className="overflow-x-auto w-full">
                 {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">Syncing HR records...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">{t('Syncing HR records...')}</div>
                 ) : (
                     <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
                                 <th>{t('Policy Name')}</th>
-                                <th className="text-right">Actions</th>
+                                <th className="text-right">{t('Actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -113,15 +113,15 @@ const LeaveTypes = () => {
                                     </td>
                                     <td>
                                         <div className="table-actions">
-                                            <button className="view-btn" onClick={() => handleOpenModal(t)}>Edit</button>
-                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleDelete(t.id)}>Delete</button>
+                                            <button className="view-btn" onClick={() => handleOpenModal(t)}>{t('Edit')}</button>
+                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleDelete(t.id)}>{t('Delete')}</button>
                                         </div>
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
                                     <td colSpan="2" className="text-center py-20 text-slate-400 italic font-medium">
-                                        {searchTerm ? 'No leave policies match your search.' : 'No leave types registered.'}
+                                        {searchTerm ? t('No leave policies match your search.') : t('No leave types registered.')}
                                     </td>
                                 </tr>
                             )}
@@ -134,7 +134,7 @@ const LeaveTypes = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingType ? 'Edit Leave Type' : 'Create HR Policy'}
+                title={editingType ? t('Edit Leave Type') : t('Create HR Policy')}
                 size="sm"
             >
                 <form onSubmit={handleSubmit}>
@@ -146,13 +146,13 @@ const LeaveTypes = () => {
                                 required 
                                 value={formData.name} 
                                 onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                                placeholder="e.g. Annual Leave, Sick Leave"
+                                placeholder={t('e.g. Annual Leave, Sick Leave')}
                             />
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                        <button type="submit" className="btn-primary !px-10">Save Policy</button>
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">{t('Cancel')}</button>
+                        <button type="submit" className="btn-primary !px-10">{t('Save Policy')}</button>
                     </div>
                 </form>
             </Modal>

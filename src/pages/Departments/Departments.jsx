@@ -80,14 +80,14 @@ const Departments = () => {
                     <Search size={18} />
                     <input 
                         type="text" 
-                        placeholder="Search departments..." 
+                        placeholder={t('Search departments...')}
                         className="search-input w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>
-                    Add Department
+                    {t('Add Department')}
                 </button>
             </div>
 
@@ -103,7 +103,7 @@ const Departments = () => {
                         <thead>
                             <tr>
                                 <th>{t('Department Name')}</th>
-                                <th className="text-right">Actions</th>
+                                <th className="text-right">{t('Actions')}</th>
                             </tr>
                         </thead>
                     <tbody>
@@ -116,15 +116,15 @@ const Departments = () => {
                                 </td>
                                 <td>
                                     <div className="table-actions">
-                                        <button className="view-btn" onClick={() => handleOpenModal(dept)}>Edit</button>
-                                        <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleDelete(dept.id)}>Delete</button>
+                                        <button className="view-btn" onClick={() => handleOpenModal(dept)}>{t('Edit')}</button>
+                                        <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300" onClick={() => handleDelete(dept.id)}>{t('Delete')}</button>
                                     </div>
                                 </td>
                             </tr>
                         )) : (
                             <tr>
                                 <td colSpan="2" className="text-center py-20 text-slate-400 italic">
-                                    {searchTerm ? 'No departments match your search.' : 'No departments found.'}
+                                    {searchTerm ? t('No departments match your search.') : t('No departments found.')}
                                 </td>
                             </tr>
                         )}
@@ -136,7 +136,7 @@ const Departments = () => {
             <Modal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                title={isEditing ? 'Edit Department' : 'Add New Department'}
+                title={isEditing ? t('Edit Department') : t('Add New Department')}
                 size="sm"
                 customClasses="!w-[50%] !max-w-[600px]"
             >
@@ -148,15 +148,15 @@ const Departments = () => {
                                 type="text" 
                                 value={currentDepartment.name}
                                 onChange={(e) => setCurrentDepartment({...currentDepartment, name: e.target.value})}
-                                placeholder="e.g. Front Office"
+                                placeholder={t('e.g. Front Office')}
                                 required 
                             />
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" className="btn-secondary !px-10" onClick={handleCloseModal}>Cancel</button>
+                        <button type="button" className="btn-secondary !px-10" onClick={handleCloseModal}>{t('Cancel')}</button>
                         <button type="submit" className="btn-primary !px-10">
-                            {isEditing ? 'Update Department' : 'Create Department'}
+                            {isEditing ? t('Update Department') : t('Create Department')}
                         </button>
                     </div>
                 </form>

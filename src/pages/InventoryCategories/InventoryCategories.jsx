@@ -74,19 +74,19 @@ const InventoryCategories = () => {
     return (
         <div className="flex flex-col">
             <div className="flex justify-end items-center mb-8">
-                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Category</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>{t('Add Category')}</button>
             </div>
 
             <div className="premium-card">
                 <div className="overflow-x-auto w-full">
                     {loading ? (
-                        <div className="text-center py-20 text-text-slate animate-pulse">Loading categories...</div>
+                        <div className="text-center py-20 text-text-slate animate-pulse">{t('Loading categories...')}</div>
                     ) : (
                         <table className="management-table" style={{ minWidth: '400px' }}>
                             <thead>
                                 <tr>
                                     <th>{t('Category Name')}</th>
-                                    <th className="text-right">Actions</th>
+                                    <th className="text-right">{t('Actions')}</th>
                                 </tr>
                             </thead>
                         <tbody>
@@ -95,15 +95,15 @@ const InventoryCategories = () => {
                                     <td className="font-bold text-text-dark">{cat.name}</td>
                                     <td>
                                         <div className="table-actions">
-                                            <button className="view-btn" onClick={() => handleOpenModal(cat)}>Edit</button>
-                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300 ml-2" onClick={() => handleDelete(cat.id)}>Delete</button>
+                                            <button className="view-btn" onClick={() => handleOpenModal(cat)}>{t('Edit')}</button>
+                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all duration-300 ml-2" onClick={() => handleDelete(cat.id)}>{t('Delete')}</button>
                                         </div>
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
                                     <td colSpan="2" className="text-center py-20 text-slate-400 italic">
-                                        No inventory categories found.
+                                        {t('No inventory categories found.')}
                                     </td>
                                 </tr>
                             )}
@@ -116,7 +116,7 @@ const InventoryCategories = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingCategory ? 'Edit Category' : 'Add New Category'}
+                title={editingCategory ? t('Edit Category') : t('Add New Category')}
                 size="sm"
                 customClasses="!w-[70%] !max-w-[500px]"
             >
@@ -124,12 +124,12 @@ const InventoryCategories = () => {
                             <div className="form-grid !grid-cols-1">
                                 <div className="form-group">
                                     <label>{t('Category Name')}</label>
-                                    <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Toiletries, Perishables" />
+                                    <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder={t('e.g. Toiletries, Perishables')} />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">{editingCategory ? 'Save Changes' : 'Save Category'}</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary !px-10">{editingCategory ? t('Save Changes') : t('Save Category')}</button>
                             </div>
                         </form>
             </Modal>

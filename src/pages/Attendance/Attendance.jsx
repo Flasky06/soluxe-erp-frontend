@@ -93,8 +93,8 @@ const Attendance = () => {
             {/* Quick Action Card */}
             <div className="premium-card bg-maroon text-white p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
                 <div className="flex flex-col gap-2 relative z-10">
-                    <h2 className="text-2xl font-black tracking-tight">Daily Attendance</h2>
-                    <p className="text-white/70 font-medium">Capture your work hours and stay update with your schedule.</p>
+                    <h2 className="text-2xl font-black tracking-tight">{t('Daily Attendance')}</h2>
+                    <p className="text-white/70 font-medium">{t('Capture your work hours and stay update with your schedule.')}</p>
                 </div>
                 
                 <div className="flex items-center gap-6 relative z-10">
@@ -111,7 +111,7 @@ const Attendance = () => {
                                 : 'bg-yellow text-maroon hover:bg-yellow-dark active:scale-95'}`}
                     >
                         {isClockedIn ? <LogOut size={24} /> : <LogIn size={24} />}
-                        {isClockedIn ? 'Clock Out' : 'Clock In Now'}
+                        {isClockedIn ? t('Clock Out') : t('Clock In Now')}
                     </button>
                 </div>
 
@@ -125,14 +125,14 @@ const Attendance = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <h3 className="text-xl font-bold text-text-dark flex items-center gap-2">
                         <Clock className="text-maroon" size={20} />
-                        Attendance Logs
+                        {t('Attendance Logs')}
                     </h3>
                     
                     <div className="relative group w-full md:w-80">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-maroon transition-colors" size={16} />
                         <input 
                             type="text" 
-                            placeholder="Search by name or date..." 
+                            placeholder={t('Search by name or date...')}
                             className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-maroon/10 outline-none transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -174,7 +174,7 @@ const Attendance = () => {
                                             <td><span className="text-text-slate font-medium">{record.date}</span></td>
                                             <td><span className="text-green-600 font-bold">{record.clockIn || '--:--'}</span></td>
                                             <td><span className="text-maroon font-bold">{record.clockOut || '--:--'}</span></td>
-                                            <td><span className="font-mono text-text-dark">{record.hoursWorked ? `${record.hoursWorked} hrs` : '--'}</span></td>
+                                            <td><span className="font-mono text-text-dark">{record.hoursWorked ? `${record.hoursWorked} ${t('hrs')}` : '--'}</span></td>
                                             <td>
                                                 <span className={`status-badge ${record.status === 'PRESENT' ? 'success' : 'warning'}`}>
                                                     {record.status}
@@ -184,7 +184,7 @@ const Attendance = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" className="py-20 text-center text-text-slate italic">No attendance records found.</td>
+                                        <td colSpan="6" className="py-20 text-center text-text-slate italic">{t('No attendance records found.')}</td>
                                     </tr>
                                 )}
                             </tbody>

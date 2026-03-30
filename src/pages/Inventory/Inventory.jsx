@@ -174,7 +174,7 @@ const Inventory = () => {
                     <Search size={18} />
                     <input 
                         type="text" 
-                        placeholder="Search items by name or category..." 
+                        placeholder={t('Search items by name or category...')}
                         className="search-input w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -185,22 +185,22 @@ const Inventory = () => {
                         className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
                         onClick={() => setShowQuickCatModal(true)}
                     >
-                        Manage Categories
+                        {t('Manage Categories')}
                     </button>
                     <button 
                         className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" 
                         onClick={() => setShowUnitModal(true)}
                     >
-                        Manage Units
+                        {t('Manage Units')}
                     </button>
-                    <button className="btn-primary" onClick={() => handleOpenModal()}>Add Item</button>
+                    <button className="btn-primary" onClick={() => handleOpenModal()}>{t('Add Item')}</button>
                 </div>
             </div>
 
             <div className="flex flex-col gap-6">
                 <div className="premium-card flex gap-12 p-6">
                     <div className="flex flex-col gap-2">
-                        <span className="text-[11px] font-bold text-text-slate uppercase tracking-wider">Total Items</span>
+                        <span className="text-[11px] font-bold text-text-slate uppercase tracking-wider">{t('Total Items')}</span>
                         <span className="text-3xl font-bold text-text-dark">{items.length}</span>
                     </div>
                 </div>
@@ -208,7 +208,7 @@ const Inventory = () => {
                 <div className="premium-card">
                     <div className="overflow-x-auto w-full">
                         {loading ? (
-                            <div className="text-center py-20 text-text-slate animate-pulse">Loading inventory...</div>
+                            <div className="text-center py-20 text-text-slate animate-pulse">{t('Loading inventory...')}</div>
                         ) : (
                             <table className="management-table" style={{ minWidth: '700px' }}>
                                 <thead>
@@ -217,7 +217,7 @@ const Inventory = () => {
                                         <th>{t('Stock Level')}</th>
                                         <th>{t('Category')}</th>
                                         <th>{t('Unit')}</th>
-                                        <th className="text-right">Actions</th>
+                                        <th className="text-right">{t('Actions')}</th>
                                     </tr>
                                 </thead>
                             <tbody>
@@ -229,7 +229,7 @@ const Inventory = () => {
                                         <td>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-base font-bold text-text-dark">
-                                                    {item.currentStock ?? '-'} / <span className="text-xs text-text-slate">Min: {item.minimumStock ?? 0}</span>
+                                                    {item.currentStock ?? '-'} / <span className="text-xs text-text-slate">{t('Min')}: {item.minimumStock ?? 0}</span>
                                                 </span>
                                             </div>
                                         </td>
@@ -241,14 +241,14 @@ const Inventory = () => {
                                         </td>
                                         <td>
                                             <div className="table-actions">
-                                                <button className="view-btn" onClick={() => handleOpenModal(item)}>Edit</button>
+                                                <button className="view-btn" onClick={() => handleOpenModal(item)}>{t('Edit')}</button>
                                             </div>
                                         </td>
                                     </tr>
                                 )) : (
                                     <tr>
                                         <td colSpan="5" className="text-center py-12 text-slate-400 font-medium italic">
-                                            No inventory items found matching "{searchTerm}"
+                                            {t('No inventory items found matching')} "{searchTerm}"
                                         </td>
                                     </tr>
                                 )}
@@ -271,7 +271,7 @@ const Inventory = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingItem ? 'Edit Inventory Item' : 'Add New Inventory Item'}
+                title={editingItem ? t('Edit Inventory Item') : t('Add New Inventory Item')}
                 size="lg"
                 customClasses="!w-[90%] !max-w-[1000px]"
             >
@@ -279,11 +279,11 @@ const Inventory = () => {
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>{t('Item Name')}</label>
-                                    <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Toilet Paper" />
+                                    <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder={t('e.g. Toilet Paper')} />
                                 </div>
                                 <div className="form-group">
                                     <div className="flex justify-between items-center mb-1">
-                                        <label className="mb-0">Category</label>
+                                        <label className="mb-0">{t('Category')}</label>
                                     </div>
                                     <select required value={formData.categoryId} onChange={(e) => setFormData({...formData, categoryId: e.target.value})}>
                                         {categories.map(cat => (
@@ -307,7 +307,7 @@ const Inventory = () => {
                                             type="button"
                                             className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center transition-colors px-3"
                                             onClick={() => setShowUnitModal(true)}
-                                            title="Add New Unit"
+                                            title={t("Add New Unit")}
                                         >
                                             <Plus size={18} />
                                         </button>
@@ -327,13 +327,13 @@ const Inventory = () => {
                                         className="w-full min-h-[80px]" 
                                         value={formData.notes} 
                                         onChange={(e) => setFormData({...formData, notes: e.target.value})} 
-                                        placeholder="Add any specific storage instructions or details..."
+                                        placeholder={t('Add any specific storage instructions or details...')}
                                     />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">Update Inventory</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary !px-10">{t('Update Inventory')}</button>
                             </div>
                         </form>
             </Modal>
@@ -342,7 +342,7 @@ const Inventory = () => {
             <Modal
                 isOpen={showQuickCatModal}
                 onClose={() => setShowQuickCatModal(false)}
-                title="Quick Add Category"
+                title={t('Quick Add Category')}
                 size="sm"
                 customClasses="!w-[90%] !max-w-[500px]"
                 overlayClasses="z-[1000]"
@@ -356,13 +356,13 @@ const Inventory = () => {
                                     autoFocus
                                     value={quickCatData.name} 
                                     onChange={(e) => setQuickCatData({...quickCatData, name: e.target.value})} 
-                                    placeholder="e.g. Toiletries" 
+                                    placeholder={t('e.g. Toiletries')}
                                 />
                             </div>
                             <div className="modal-footer !px-0 mt-6">
-                                <button type="button" onClick={() => setShowQuickCatModal(false)} className="btn-secondary">Cancel</button>
+                                <button type="button" onClick={() => setShowQuickCatModal(false)} className="btn-secondary">{t('Cancel')}</button>
                                 <button type="submit" className="btn-primary" disabled={quickCatLoading}>
-                                    {quickCatLoading ? 'Adding...' : 'Add Category'}
+                                    {quickCatLoading ? t('Adding...') : t('Add Category')}
                                 </button>
                             </div>
                         </form>
@@ -371,7 +371,7 @@ const Inventory = () => {
             <Modal
                 isOpen={showUnitModal}
                 onClose={() => setShowUnitModal(false)}
-                title="Add Inventory Unit"
+                title={t('Add Inventory Unit')}
                 size="sm"
                 customClasses="!w-[90%] !max-w-[500px]"
                 overlayClasses="z-[1001]"
@@ -379,15 +379,15 @@ const Inventory = () => {
                 <form onSubmit={handleCreateUnit} className="p-4">
                             <div className="form-group">
                                 <label>{t('Unit Name')}</label>
-                                <input name="name" type="text" required placeholder="e.g. Kg, Pcs, Box" />
+                                <input name="name" type="text" required placeholder={t('e.g. Kg, Pcs, Box')} />
                             </div>
                             <div className="form-group">
                                 <label>{t('Description')}</label>
-                                <input name="description" type="text" placeholder="e.g. Kilograms" />
+                                <input name="description" type="text" placeholder={t('e.g. Kilograms')} />
                             </div>
                             <div className="modal-footer !px-0 mt-6">
-                                <button type="button" onClick={() => setShowUnitModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Create Unit</button>
+                                <button type="button" onClick={() => setShowUnitModal(false)} className="btn-secondary">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary">{t('Create Unit')}</button>
                             </div>
                         </form>
             </Modal>

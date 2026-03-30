@@ -187,31 +187,31 @@ const Settings = () => {
                     className={`px-6 py-3 font-bold text-sm transition-all border-b-2 ${activeTab === 'users' ? 'text-primary border-primary bg-primary/5' : 'text-text-slate border-transparent hover:text-primary'}`} 
                     onClick={() => setActiveTab('users')}
                 >
-                    User Management
+                    {t('User Management')}
                 </button>
                 <button 
                     className={`px-6 py-3 font-bold text-sm transition-all border-b-2 ${activeTab === 'profile' ? 'text-primary border-primary bg-primary/5' : 'text-text-slate border-transparent hover:text-primary'}`} 
                     onClick={() => setActiveTab('profile')}
                 >
-                    Hotel Profile
+                    {t('Hotel Profile')}
                 </button>
                 <button 
                     className={`px-6 py-3 font-bold text-sm transition-all border-b-2 ${activeTab === 'definitions' ? 'text-primary border-primary bg-primary/5' : 'text-text-slate border-transparent hover:text-primary'}`} 
                     onClick={() => setActiveTab('definitions')}
                 >
-                    Global Definitions
+                    {t('Global Definitions')}
                 </button>
             </div>
 
             {activeTab === 'users' && (
                 <>
                     <div className="flex justify-end mb-6">
-                        <button className="btn-primary" onClick={() => handleOpenModal()}>+ Add New User</button>
+                        <button className="btn-primary" onClick={() => handleOpenModal()}>+ {t('Add New User')}</button>
                     </div>
                     <div className="premium-card">
                         <div className="overflow-x-auto w-full">
                         {loading ? (
-                            <div className="text-center py-20 text-text-slate animate-pulse text-lg">Loading user accounts...</div>
+                            <div className="text-center py-20 text-text-slate animate-pulse text-lg">{t('Loading user accounts...')}</div>
                         ) : (
                             <table className="management-table" style={{ minWidth: '800px' }}>
                                 <thead>
@@ -220,7 +220,7 @@ const Settings = () => {
                                         <th>{t('Contact Information')}</th>
                                         <th>{t('Role')}</th>
                                         <th>{t('Status')}</th>
-                                        <th className="text-right">Actions</th>
+                                        <th className="text-right">{t('Actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -239,8 +239,8 @@ const Settings = () => {
                                             </td>
                                             <td>
                                                 <div className="flex flex-col">
-                                                    <span className="text-[13px] text-slate-700">{user.email || 'No Email'}</span>
-                                                    <span className="text-[11px] text-slate-400 font-medium">{user.phoneNumber || 'No Phone'}</span>
+                                                    <span className="text-[13px] text-slate-700">{user.email || t('No Email')}</span>
+                                                    <span className="text-[11px] text-slate-400 font-medium">{user.phoneNumber || t('No Phone')}</span>
                                                 </div>
                                             </td>
                                             <td>
@@ -255,12 +255,12 @@ const Settings = () => {
                                             </td>
                                             <td>
                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight ${(user.isActive ?? user.active) ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                                                    {(user.isActive ?? user.active) ? 'Active' : 'Disabled'}
+                                                    {(user.isActive ?? user.active) ? t('Active') : t('Disabled')}
                                                 </span>
                                             </td>
                                             <td>
                                                 <div className="flex justify-end">
-                                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleOpenModal(user)}>Edit Profile</button>
+                                                    <button className="bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 px-3 py-1.5 rounded text-[11px] font-bold transition-all" onClick={() => handleOpenModal(user)}>{t('Edit Profile')}</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -277,11 +277,11 @@ const Settings = () => {
                 <div className="premium-card p-8 !max-w-[800px] mx-auto">
                     <form onSubmit={handleSaveHotelInfo} className="flex flex-col gap-8">
                         <div className="flex items-center gap-6 p-5 bg-slate-50 rounded-xl border border-slate-200">
-                            <div className="w-16 h-16 bg-slate-100 border border-slate-200 flex items-center justify-center rounded-lg text-sm font-bold text-slate-500">Logo</div>
-                            <button type="button" className="btn-secondary text-sm">Upload New Logo</button>
+                            <div className="w-16 h-16 bg-slate-100 border border-slate-200 flex items-center justify-center rounded-lg text-sm font-bold text-slate-500">{t('Logo')}</div>
+                            <button type="button" className="btn-secondary text-sm">{t('Upload New Logo')}</button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="form-section-title mt-4 md:col-span-2">General Details</div>
+                            <div className="form-section-title mt-4 md:col-span-2">{t('General Details')}</div>
                             <div className="form-group">
                                 <label>{t('Hotel Name')}</label>
                                 <input type="text" value={hotelInfo.name} onChange={(e) => setHotelInfo({...hotelInfo, name: e.target.value})} />
@@ -303,7 +303,7 @@ const Settings = () => {
                                 <textarea rows="2" value={hotelInfo.address} onChange={(e) => setHotelInfo({...hotelInfo, address: e.target.value})} className="min-h-[60px]"></textarea>
                             </div>
 
-                            <div className="form-section-title mt-4 md:col-span-2">Legal & Registration</div>
+                            <div className="form-section-title mt-4 md:col-span-2">{t('Legal & Registration')}</div>
                             <div className="form-group">
                                 <label>{t('KRA PIN')}</label>
                                 <input type="text" value={hotelInfo.kraPin} onChange={(e) => setHotelInfo({...hotelInfo, kraPin: e.target.value})} />
@@ -315,12 +315,12 @@ const Settings = () => {
                             <div className="form-group">
                                 <label>{t('VAT Status')}</label>
                                 <select value={hotelInfo.vatStatus} onChange={(e) => setHotelInfo({...hotelInfo, vatStatus: e.target.value})}>
-                                    <option value="Registered">Registered</option>
-                                    <option value="Not Registered">Not Registered</option>
+                                    <option value="Registered">{t('Registered')}</option>
+                                    <option value="Not Registered">{t('Not Registered')}</option>
                                 </select>
                             </div>
 
-                            <div className="form-section-title mt-4 md:col-span-2">Operations</div>
+                            <div className="form-section-title mt-4 md:col-span-2">{t('Operations')}</div>
                             <div className="form-group">
                                 <label>{t('Check-in Time')}</label>
                                 <input type="time" value={hotelInfo.checkInTime} onChange={(e) => setHotelInfo({...hotelInfo, checkInTime: e.target.value})} />
@@ -330,7 +330,7 @@ const Settings = () => {
                                 <input type="time" value={hotelInfo.checkOutTime} onChange={(e) => setHotelInfo({...hotelInfo, checkOutTime: e.target.value})} />
                             </div>
 
-                            <div className="form-section-title mt-4 md:col-span-2">Taxes & Charges config</div>
+                            <div className="form-section-title mt-4 md:col-span-2">{t('Taxes & Charges config')}</div>
                             <div className="form-group">
                                 <label>{t('VAT Percentage (%)')}</label>
                                 <input type="number" step="0.1" value={hotelInfo.vatPercentage} onChange={(e) => setHotelInfo({...hotelInfo, vatPercentage: parseFloat(e.target.value) || 0})} />
@@ -345,7 +345,7 @@ const Settings = () => {
                             </div>
                         </div>
                         <div className="flex justify-end pt-6 border-t border-slate-200">
-                            <button type="submit" className="btn-primary !px-10">Update Property Profile</button>
+                            <button type="submit" className="btn-primary !px-10">{t('Update Property Profile')}</button>
                         </div>
                     </form>
                 </div>
@@ -355,7 +355,7 @@ const Settings = () => {
                 <div className="flex flex-col md:flex-row gap-4">
                     {/* Def Navigation */}
                     <div className="w-full md:w-64 flex flex-col gap-1">
-                        <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-4 whitespace-nowrap">Entity Categories</label>
+                        <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-4 whitespace-nowrap">{t('Entity Categories')}</label>
                         {defTypes.map(type => (
                             <button 
                                 key={type.id}
@@ -373,7 +373,7 @@ const Settings = () => {
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-extrabold text-slate-800">{defTypes.find(t => t.id === activeDefType)?.name}</h3>
                             <button className="btn-primary-outline flex items-center gap-2 !py-2 !px-4" onClick={() => handleOpenDefModal()}>
-                                <Plus size={16} /> Add New
+                                <Plus size={16} /> {t('Add New')}
                             </button>
                         </div>
 
@@ -382,7 +382,7 @@ const Settings = () => {
                             {defLoading ? (
                                 <div className="flex flex-col items-center justify-center h-[400px] text-slate-400 gap-3">
                                     <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="font-bold text-sm tracking-wide">Syncing entries...</span>
+                                    <span className="font-bold text-sm tracking-wide">{t('Syncing entries...')}</span>
                                 </div>
                             ) : definitions.length > 0 ? (
                                 <table className="management-table" style={{ minWidth: '500px' }}>
@@ -390,14 +390,14 @@ const Settings = () => {
                                         <tr>
                                             <th>{t('Name')}</th>
                                             <th>{t('Description')}</th>
-                                            <th className="text-right">Actions</th>
+                                            <th className="text-right">{t('Actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {definitions.map((def) => (
                                             <tr key={def.id}>
                                                 <td className="font-bold text-slate-700">{def.name}</td>
-                                                <td className="text-sm text-slate-500 max-w-[300px] truncate">{def.description || 'N/A'}</td>
+                                                <td className="text-sm text-slate-500 max-w-[300px] truncate">{def.description || t('N/A')}</td>
                                                 <td>
                                                     <div className="flex justify-end gap-2">
                                                         <button onClick={() => handleOpenDefModal(def)} className="p-2 text-slate-400 hover:text-primary transition-colors hover:bg-primary/10 rounded-lg">
@@ -415,8 +415,8 @@ const Settings = () => {
                             ) : (
                                 <div className="flex flex-col items-center justify-center h-[400px] text-slate-300 gap-2">
                                     <Info size={40} strokeWidth={1.5} />
-                                    <p className="font-medium">No results found for this category</p>
-                                    <button className="text-primary font-bold text-xs mt-2 hover:underline" onClick={() => handleOpenDefModal()}>Click here to add your first record</button>
+                                    <p className="font-medium">{t('No results found for this category')}</p>
+                                    <button className="text-primary font-bold text-xs mt-2 hover:underline" onClick={() => handleOpenDefModal()}>{t('Click here to add your first record')}</button>
                                 </div>
                             )}
                             </div>
@@ -429,7 +429,7 @@ const Settings = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingUser ? 'Edit User Profile' : 'Create New User Account'}
+                title={editingUser ? t('Edit User Profile') : t('Create New User Account')}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
@@ -492,7 +492,7 @@ const Settings = () => {
                             </select>
                         </div>
                         <div className="form-group">
-                            <label>{editingUser ? 'New Password (Optional)' : 'Account Password'}</label>
+                            <label>{editingUser ? t('New Password (Optional)') : t('Account Password')}</label>
                             <input 
                                 type="password" 
                                 required={!editingUser}
@@ -510,14 +510,14 @@ const Settings = () => {
                                     onChange={(e) => setFormData({...formData, isActive: e.target.checked})} 
                                     className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary"
                                 />
-                                <label htmlFor="isActive" className="mb-0 font-medium text-slate-700">Account is Active (Allow login and system access)</label>
+                                <label htmlFor="isActive" className="mb-0 font-medium text-slate-700">{t('Account is Active (Allow login and system access)')}</label>
                             </div>
                         </div>
                     </div>
 
                     <div className="modal-footer">
-                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                        <button type="submit" className="btn-primary !px-10">{editingUser ? 'Save Updates' : 'Create Account'}</button>
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">{t('Cancel')}</button>
+                        <button type="submit" className="btn-primary !px-10">{editingUser ? t('Save Updates') : t('Create Account')}</button>
                     </div>
                 </form>
             </Modal>
@@ -528,7 +528,7 @@ const Settings = () => {
                 onClose={() => setShowDefModal(false)}
                 title={(
                     <div className="flex flex-col">
-                        <span>{editingDef ? 'Edit Definition' : 'Add New Entry'}</span>
+                        <span>{editingDef ? t('Edit Definition') : t('Add New Entry')}</span>
                         <span className="text-sm font-medium text-slate-500 mt-1">{defTypes.find(t => t.id === activeDefType)?.name}</span>
                     </div>
                 )}
@@ -558,8 +558,8 @@ const Settings = () => {
                     </div>
 
                     <div className="modal-footer">
-                        <button type="button" onClick={() => setShowDefModal(false)} className="btn-secondary !px-8">Cancel</button>
-                        <button type="submit" className="btn-primary !px-8">{editingDef ? 'Update Entry' : 'Create Entry'}</button>
+                        <button type="button" onClick={() => setShowDefModal(false)} className="btn-secondary !px-8">{t('Cancel')}</button>
+                        <button type="submit" className="btn-primary !px-8">{editingDef ? t('Update Entry') : t('Create Entry')}</button>
                     </div>
                 </form>
             </Modal>

@@ -96,22 +96,22 @@ const LeaveRequests = () => {
         <div className="flex flex-col gap-8">
             <div className="table-tools flex justify-between items-center">
                 <div className="flex flex-col">
-                    <h2 className="text-2xl font-black text-text-dark tracking-tight">Leave Requests</h2>
-                    <p className="text-text-slate text-sm font-medium">Manage and track employee absence requests.</p>
+                    <h2 className="text-2xl font-black text-text-dark tracking-tight">{t('Leave Requests')}</h2>
+                    <p className="text-text-slate text-sm font-medium">{t('Manage and track employee absence requests.')}</p>
                 </div>
                 <button className="btn-primary flex items-center gap-2" onClick={() => setShowModal(true)}>
                     <Plus size={18} />
-                    Submit Request
+                    {t('Submit Request')}
                 </button>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 <div className="xl:col-span-2 premium-card">
                     <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Leave History</span>
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('Leave History')}</span>
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-yellow animate-pulse"></span>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase">Real-time Updates</span>
+                            <span className="text-[10px] font-bold text-slate-500 uppercase">{t('Real-time Updates')}</span>
                         </div>
                     </div>
                     
@@ -136,32 +136,32 @@ const LeaveRequests = () => {
                                     ))
                                 ) : requests.length > 0 ? (requests.map(req => (
                                     <tr key={req.id}>
-                                        <td><span className="font-bold text-text-dark">{req.leaveTypeName || 'General Leave'}</span></td>
+                                        <td><span className="font-bold text-text-dark">{req.leaveTypeName || t('General Leave')}</span></td>
                                         <td>
                                             <div className="flex flex-col">
                                                 <span className="font-bold text-[13px] text-slate-700">{req.dateFrom} → {req.dateTo}</span>
-                                                <span className="text-[10px] font-bold text-slate-400">Total duration: 0 days</span>
+                                                <span className="text-[10px] font-bold text-slate-400">{t('Total duration:')} 0 {t('days')}</span>
                                             </div>
                                         </td>
                                         <td><span className={`status-badge ${getStatusBadge(req.status)}`}>{req.status}</span></td>
                                         <td className="max-w-[200px] truncate"><span className="text-text-slate italic">"{req.reason}"</span></td>
-                                        {isManager && <td><span className="font-medium text-text-dark">Employee #{req.employeeId}</span></td>}
+                                        {isManager && <td><span className="font-medium text-text-dark">{t('Employee')} #{req.employeeId}</span></td>}
                                         <td>
                                             <div className="flex gap-2">
                                                 {isManager && req.status === 'PENDING' ? (
                                                     <>
-                                                        <button className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors" title="Approve" onClick={() => handleStatusUpdate(req.id, 'APPROVED')}><CheckCircle size={16} /></button>
-                                                        <button className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors" title="Reject" onClick={() => handleStatusUpdate(req.id, 'REJECTED')}><XCircle size={16} /></button>
+                                                        <button className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors" title={t("Approve")} onClick={() => handleStatusUpdate(req.id, 'APPROVED')}><CheckCircle size={16} /></button>
+                                                        <button className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors" title={t("Reject")} onClick={() => handleStatusUpdate(req.id, 'REJECTED')}><XCircle size={16} /></button>
                                                     </>
                                                 ) : (
-                                                    <span className="text-[11px] font-bold text-slate-300 uppercase">Processed</span>
+                                                    <span className="text-[11px] font-bold text-slate-300 uppercase">{t('Processed')}</span>
                                                 )}
                                             </div>
                                         </td>
                                     </tr>
                                 ))) : (
                                     <tr>
-                                        <td colSpan={isManager ? 6 : 5} className="py-20 text-center text-text-slate italic">No leave requests found.</td>
+                                        <td colSpan={isManager ? 6 : 5} className="py-20 text-center text-text-slate italic">{t('No leave requests found.')}</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -171,27 +171,27 @@ const LeaveRequests = () => {
 
                 <div className="flex flex-col gap-6">
                     <div className="premium-card p-6 bg-linear-to-br from-slate-900 to-slate-800 text-white">
-                        <h4 className="text-lg font-bold mb-4">Leave Policy</h4>
+                        <h4 className="text-lg font-bold mb-4">{t('Leave Policy')}</h4>
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10">
                                 <div className="p-3 bg-yellow rounded-xl text-maroon shadow-lg shadow-yellow/20"><Calendar size={20} /></div>
                                 <div className="flex flex-col">
-                                    <span className="text-[11px] font-bold text-white/50 uppercase">Carry Forward</span>
-                                    <span className="text-lg font-black italic">5 Days</span>
+                                    <span className="text-[11px] font-bold text-white/50 uppercase">{t('Carry Forward')}</span>
+                                    <span className="text-lg font-black italic">5 {t('Days')}</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10">
                                 <div className="p-3 bg-white/10 rounded-xl text-white"><FileText size={20} /></div>
                                 <div className="flex flex-col">
-                                    <span className="text-[11px] font-bold text-white/50 uppercase">Notice Period</span>
-                                    <span className="text-lg font-black italic">48 Hours</span>
+                                    <span className="text-[11px] font-bold text-white/50 uppercase">{t('Notice Period')}</span>
+                                    <span className="text-lg font-black italic">48 {t('Hours')}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="premium-card p-6 border-l-4 border-l-maroon">
-                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Pending Approval</h4>
+                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">{t('Pending Approval')}</h4>
                         <div className="flex items-center justify-between">
                             <span className="text-4xl font-black text-text-dark">{requests.filter(r => r.status === 'PENDING').length}</span>
                             <div className="p-4 bg-maroon/5 text-maroon rounded-2xl"><Clock size={24} /></div>
@@ -204,7 +204,7 @@ const LeaveRequests = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title="New Leave Request"
+                title={t('New Leave Request')}
                 size="sm"
                 customClasses="!w-[90%] !max-w-[500px]"
             >
@@ -239,13 +239,13 @@ const LeaveRequests = () => {
                                         required 
                                         value={formData.reason} 
                                         onChange={(e) => setFormData({...formData, reason: e.target.value})} 
-                                        placeholder="Briefly describe the reason for your leave..."
+                                        placeholder={t('Briefly describe the reason for your leave...')}
                                     />
                                 </div>
                             </div>
                             <div className="modal-footer !px-0 mt-8">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-8">Discard</button>
-                                <button type="submit" className="btn-primary !px-12">Submit Request</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-8">{t('Discard')}</button>
+                                <button type="submit" className="btn-primary !px-12">{t('Submit Request')}</button>
                             </div>
                         </form>
             </Modal>
