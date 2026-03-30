@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Kitchen = () => {
+    const { t } = useLanguage();
     const [menuItems, setMenuItems] = useState([]);
     const [pendingOrders, setPendingOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -79,8 +81,8 @@ const Kitchen = () => {
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Kitchen Management</h1>
-                    <p className="text-text-slate text-base">Manage master menu and monitor live preparation queue.</p>
+                    <h1 className="text-[28px] font-bold text-text-dark">{t('Kitchen Orders')}</h1>
+                    <p className="text-text-slate text-base">{t('Manage room turnovers and cleaning cycles.')}</p>
                 </div>
                 {activeTab === 'orders' && (
                     <button className="btn-secondary" onClick={fetchLiveOrders}>Refresh Queue</button>

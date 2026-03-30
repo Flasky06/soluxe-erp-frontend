@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Calendar } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const LeaveTypes = () => {
+    const { t } = useLanguage();
     const [leaveTypes, setLeaveTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -97,7 +99,7 @@ const LeaveTypes = () => {
                     <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
-                                <th>Policy Name</th>
+                                <th>{t('Policy Name')}</th>
                                 <th className="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -138,7 +140,7 @@ const LeaveTypes = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-6 p-7">
                         <div className="form-group">
-                            <label>Policy Name</label>
+                            <label>{t('Policy Name')}</label>
                             <input 
                                 type="text" 
                                 required 

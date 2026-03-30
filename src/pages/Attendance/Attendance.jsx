@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Clock, LogIn, LogOut, Calendar, User, Search } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Attendance = () => {
+    const { t } = useLanguage();
     const { user } = useAuthStore();
     const [records, setRecords] = useState([]);
     const [employees, setEmployees] = useState([]);
@@ -143,12 +145,12 @@ const Attendance = () => {
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>Employee</th>
-                                    <th>Date</th>
-                                    <th>Clock In</th>
-                                    <th>Clock Out</th>
-                                    <th>Task Hours</th>
-                                    <th>Status</th>
+                                    <th>{t('Employee')}</th>
+                                    <th>{t('Date')}</th>
+                                    <th>{t('Clock In')}</th>
+                                    <th>{t('Clock Out')}</th>
+                                    <th>{t('Task Hours')}</th>
+                                    <th>{t('Status')}</th>
                                 </tr>
                             </thead>
                             <tbody>

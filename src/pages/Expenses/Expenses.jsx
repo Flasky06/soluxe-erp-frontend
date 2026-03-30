@@ -3,8 +3,10 @@ import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
 import Pagination from '../../components/Pagination/Pagination';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Expenses = () => {
+    const { t } = useLanguage();
     const [expenses, setExpenses] = useState([]);
     const [types, setTypes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -172,11 +174,11 @@ const Expenses = () => {
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th>Category</th>
-                                    <th>Amount</th>
-                                    <th>Payment Info</th>
+                                    <th>{t('Date')}</th>
+                                    <th>{t('Description')}</th>
+                                    <th>{t('Category')}</th>
+                                    <th>{t('Amount')}</th>
+                                    <th>{t('Payment Info')}</th>
                                     <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -240,15 +242,15 @@ const Expenses = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Description / Item Name</label>
+                                    <label>{t('Description / Item Name')}</label>
                                     <input type="text" required value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="e.g. Electricity Bill October 2023" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Amount ($)</label>
+                                    <label>{t('Amount ($)')}</label>
                                     <input type="number" step="0.01" required value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} placeholder="0.00" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Expense Date</label>
+                                    <label>{t('Expense Date')}</label>
                                     <input type="date" required value={formData.expenseDate} onChange={(e) => setFormData({...formData, expenseDate: e.target.value})} />
                                 </div>
                                 <div className="form-group">
@@ -274,7 +276,7 @@ const Expenses = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Payment Method</label>
+                                    <label>{t('Payment Method')}</label>
                                     <select value={formData.paymentMethod} onChange={(e) => setFormData({...formData, paymentMethod: e.target.value})}>
                                         {paymentMethods.map(pm => (
                                             <option key={pm} value={pm}>{pm.replace(/_/g, ' ')}</option>
@@ -282,7 +284,7 @@ const Expenses = () => {
                                     </select>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Reference # / Receipt No.</label>
+                                    <label>{t('Reference # / Receipt No.')}</label>
                                     <input type="text" value={formData.referenceNumber} onChange={(e) => setFormData({...formData, referenceNumber: e.target.value})} placeholder="e.g. Transaction ID or Invoice Number" />
                                 </div>
                             </div>

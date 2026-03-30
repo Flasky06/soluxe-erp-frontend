@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Check, X } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const EVENT_TYPES = ['CONFERENCE', 'WEDDING', 'BIRTHDAY', 'GALA', 'SEMINAR', 'WORKSHOP', 'CORPORATE', 'OTHER'];
 const SETUP_TYPES = ['THEATER', 'CLASSROOM', 'BOARDROOM', 'BANQUET', 'COCKTAIL', 'U_SHAPE', 'HOLLOW_SQUARE', 'OPEN'];
@@ -34,6 +35,7 @@ const emptyForm = {
 };
 
 const VenueBookings = () => {
+    const { t } = useLanguage();
     const [bookings, setBookings] = useState([]);
     const [venues, setVenues] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -180,14 +182,14 @@ const VenueBookings = () => {
                     <table className="management-table" style={{ minWidth: '1000px' }}>
                         <thead>
                             <tr>
-                                <th>Client</th>
-                                <th>Venue</th>
-                                <th>Event</th>
-                                <th>Dates</th>
-                                <th>Guests</th>
-                                <th>Total ($)</th>
-                                <th>Deposit</th>
-                                <th>Status</th>
+                                <th>{t('Client')}</th>
+                                <th>{t('Venue')}</th>
+                                <th>{t('Event')}</th>
+                                <th>{t('Dates')}</th>
+                                <th>{t('Guests')}</th>
+                                <th>{t('Total ($)')}</th>
+                                <th>{t('Deposit')}</th>
+                                <th>{t('Status')}</th>
                                 <th className="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -263,75 +265,75 @@ const VenueBookings = () => {
                                 {/* Client Info */}
                                 <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 col-span-full text-base tracking-tight uppercase">Client Information</div>
                                 <div className="form-group">
-                                    <label>Client Name *</label>
+                                    <label>{t('Client Name *')}</label>
                                     <input type="text" required value={formData.clientName} onChange={e => set('clientName', e.target.value)} placeholder="Full name" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Phone Number</label>
+                                    <label>{t('Phone Number')}</label>
                                     <input type="text" value={formData.clientPhone} onChange={e => set('clientPhone', e.target.value)} placeholder="+254..." />
                                 </div>
                                 <div className="form-group">
-                                    <label>Company / Organization</label>
+                                    <label>{t('Company / Organization')}</label>
                                     <input type="text" value={formData.clientCompany} onChange={e => set('clientCompany', e.target.value)} placeholder="Optional" />
                                 </div>
 
                                 {/* Event Details */}
                                 <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-2 col-span-full text-base tracking-tight uppercase">Event Details</div>
                                 <div className="form-group">
-                                    <label>Venue *</label>
+                                    <label>{t('Venue *')}</label>
                                     <select required value={formData.venueId} onChange={e => set('venueId', e.target.value)}>
                                         <option value="">-- Select Venue --</option>
                                         {venues.map(v => <option key={v.id} value={v.id}>{v.name} ({v.type}) – {v.capacity} pax</option>)}
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Event Type *</label>
+                                    <label>{t('Event Type *')}</label>
                                     <select value={formData.eventType} onChange={e => set('eventType', e.target.value)}>
                                         {EVENT_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g,' ')}</option>)}
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Room Setup</label>
+                                    <label>{t('Room Setup')}</label>
                                     <select value={formData.setupType} onChange={e => set('setupType', e.target.value)}>
                                         {SETUP_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g,' ')}</option>)}
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Expected Guests</label>
+                                    <label>{t('Expected Guests')}</label>
                                     <input type="number" min="1" value={formData.expectedGuests} onChange={e => set('expectedGuests', e.target.value)} placeholder="e.g. 100" />
                                 </div>
 
                                 {/* Dates & Times */}
                                 <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-2 col-span-full text-base tracking-tight uppercase">Dates & Times</div>
                                 <div className="form-group">
-                                    <label>Date In *</label>
+                                    <label>{t('Date In *')}</label>
                                     <input type="date" required value={formData.dateIn} onChange={e => set('dateIn', e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Date Out</label>
+                                    <label>{t('Date Out')}</label>
                                     <input type="date" value={formData.dateOut} onChange={e => set('dateOut', e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Start Time</label>
+                                    <label>{t('Start Time')}</label>
                                     <input type="time" value={formData.startTime} onChange={e => set('startTime', e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label>End Time</label>
+                                    <label>{t('End Time')}</label>
                                     <input type="time" value={formData.endTime} onChange={e => set('endTime', e.target.value)} />
                                 </div>
 
                                 {/* Financials */}
                                 <div className="font-bold text-maroon border-b border-border-gray pb-1 mb-1 mt-2 col-span-full text-base tracking-tight uppercase">Financials & Status</div>
                                 <div className="form-group">
-                                    <label>Total Amount ($)</label>
+                                    <label>{t('Total Amount ($)')}</label>
                                     <input type="number" min="0" value={formData.totalAmount} onChange={e => set('totalAmount', e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Deposit ($)</label>
+                                    <label>{t('Deposit ($)')}</label>
                                     <input type="number" min="0" value={formData.deposit} onChange={e => set('deposit', e.target.value)} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Status</label>
+                                    <label>{t('Status')}</label>
                                     <select value={formData.status} onChange={e => set('status', e.target.value)}>
                                         {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
@@ -342,7 +344,7 @@ const VenueBookings = () => {
                                 </div>
 
                                 <div className="form-group full-width">
-                                    <label>Notes</label>
+                                    <label>{t('Notes')}</label>
                                     <textarea rows="3" value={formData.notes} onChange={e => set('notes', e.target.value)} placeholder="Special requirements, setup notes..." className="min-h-[80px]" />
                                 </div>
                             </div>

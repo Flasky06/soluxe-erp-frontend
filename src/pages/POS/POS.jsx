@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { CreditCard, Bed } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const POS = () => {
     const [menuItems, setMenuItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [stays, setStays] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useLanguage();
     
     // POS Cart State
     const [cart, setCart] = useState([]);
@@ -129,7 +131,7 @@ const POS = () => {
                             className={`px-5 py-2 whitespace-nowrap rounded-full font-bold text-[13px] transition-all ${selectedCategory === 'ALL' ? 'bg-primary text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                             onClick={() => setSelectedCategory('ALL')}
                         >
-                            All Items
+                            {t('All Items')}
                         </button>
                         {categories.map(cat => (
                             <button 
@@ -145,9 +147,9 @@ const POS = () => {
                     {/* Menu Items Grid */}
                     <div className="flex-1 overflow-y-auto pr-2 grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-max">
                         {loading ? (
-                            <div className="col-span-full py-10 text-center text-slate-400 font-medium">Loading catalog...</div>
+                            <div className="col-span-full py-10 text-center text-slate-400 font-medium">{t('Loading...')}</div>
                         ) : filteredMenu.length === 0 ? (
-                            <div className="col-span-full py-10 text-center text-slate-400 font-medium">No items found in this category.</div>
+                            <div className="col-span-full py-10 text-center text-slate-400 font-medium">{t('No data found')}</div>
                         ) : (
                             filteredMenu.map(item => (
                                 <div 
@@ -170,7 +172,7 @@ const POS = () => {
                 {/* RIGHT PANEL: The Ticket / Cart */}
                 <div className="flex-[1] min-w-[320px] max-w-[400px] flex flex-col premium-card overflow-hidden">
                     <div className="p-5 border-b border-slate-100 shrink-0 bg-slate-50">
-                        <h2 className="text-lg font-bold text-slate-800">Current Ticket</h2>
+                        <h2 className="text-lg font-bold text-slate-800">{t('Current Ticket')}</h2>
                         <p className="text-xs text-slate-500 font-medium">{cart.length} items</p>
                     </div>
 
@@ -179,7 +181,7 @@ const POS = () => {
                         {cart.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center text-slate-400 text-sm">
                                 <svg className="w-12 h-12 mb-3 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                <span>Ticket is empty</span>
+                                <span>{t('Ticket is empty')}</span>
                             </div>
                         ) : (
                             cart.map(c => (
@@ -209,7 +211,7 @@ const POS = () => {
                     {/* Checkout Footer */}
                     <div className="p-5 border-t border-slate-200 bg-white shrink-0 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] z-10">
                         <div className="flex justify-between items-center mb-5">
-                            <span className="text-slate-500 font-bold uppercase tracking-widest text-xs">Total</span>
+                            <span className="text-slate-500 font-bold uppercase tracking-widest text-xs">{t('Total')}</span>
                             <span className="text-2xl font-extrabold text-primary">$ {cartTotal.toLocaleString()}</span>
                         </div>
 
@@ -220,29 +222,29 @@ const POS = () => {
                                     className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                     onClick={() => setCheckoutMode('PAY_NOW')}
                                 >
-                                    <CreditCard size={18} /> Immediate Payment (Direct)
+                                    <CreditCard size={18} /> {t('Immediate Payment (Direct)')}
                                 </button>
                                 <button 
                                     disabled={cart.length === 0}
                                     className="w-full bg-slate-800 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                     onClick={() => setCheckoutMode('CHARGE_TO_ROOM')}
                                 >
-                                    <Bed size={18} /> Charge to Room
+                                    <Bed size={18} /> {t('Charge to Room')}
                                 </button>
                             </div>
                         ) : (
                             <form onSubmit={handleCheckout} className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300">
                                 <div className="flex items-center justify-between mb-1">
                                     <h3 className="font-bold text-sm text-slate-800">
-                                        {checkoutMode === 'PAY_NOW' ? 'Direct Payment' : 'Room Tab'}
+                                        {checkoutMode === 'PAY_NOW' ? t('Direct Payment') : t('Room Tab')}
                                     </h3>
-                                    <button type="button" onClick={() => setCheckoutMode(null)} className="text-[11px] text-slate-500 hover:text-primary font-bold underline">Back</button>
+                                    <button type="button" onClick={() => setCheckoutMode(null)} className="text-[11px] text-slate-500 hover:text-primary font-bold underline">{t('Cancel')}</button>
                                 </div>
                                 
                                 {checkoutMode === 'PAY_NOW' ? (
                                     <input 
                                         type="text" 
-                                        placeholder="Guest Name (Optional)" 
+                                        placeholder={t('Guest Name (Optional)')} 
                                         className="w-full p-2.5 rounded-lg border border-slate-300 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                                         value={guestName}
                                         onChange={e => setGuestName(e.target.value)}
@@ -266,7 +268,7 @@ const POS = () => {
                                     disabled={isProcessing}
                                     className={`w-full mt-2 font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 ${isProcessing ? 'bg-slate-300 text-slate-500 cursor-wait' : 'bg-primary hover:bg-primary-dark text-white'}`}
                                 >
-                                    {isProcessing ? 'Processing...' : checkoutMode === 'PAY_NOW' ? `Confirm $ ${cartTotal.toLocaleString()}` : 'Post Charge to Folio'}
+                                    {isProcessing ? t('Processing...') : checkoutMode === 'PAY_NOW' ? `${t('Confirm')} $ ${cartTotal.toLocaleString()}` : t('Post Charge to Folio')}
                                 </button>
                             </form>
                         )}

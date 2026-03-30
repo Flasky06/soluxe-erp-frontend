@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Suppliers = () => {
+    const { t } = useLanguage();
     const [suppliers, setSuppliers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -128,10 +130,10 @@ const Suppliers = () => {
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>Supplier Name</th>
-                                    <th>Contact Person</th>
-                                    <th>Phone & Email</th>
-                                    <th>Category</th>
+                                    <th>{t('Supplier Name')}</th>
+                                    <th>{t('Contact Person')}</th>
+                                    <th>{t('Phone & Email')}</th>
+                                    <th>{t('Category')}</th>
                                     <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -183,26 +185,26 @@ const Suppliers = () => {
                         <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Company Name</label>
+                                    <label>{t('Company Name')}</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Fresh Foods Ltd" />
                                     {serverErrors.name && <p className="text-red-500 text-xs mt-1">{serverErrors.name}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label>Contact Person</label>
+                                    <label>{t('Contact Person')}</label>
                                     <input type="text" required value={formData.contactPerson} onChange={(e) => setFormData({...formData, contactPerson: e.target.value})} placeholder="Full name" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Phone Number</label>
+                                    <label>{t('Phone Number')}</label>
                                     <input type="text" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="+254..." />
                                     {serverErrors.phone && <p className="text-red-500 text-xs mt-1">{serverErrors.phone}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label>Email Address</label>
+                                    <label>{t('Email Address')}</label>
                                     <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="orders@vendor.com" />
                                     {serverErrors.email && <p className="text-red-500 text-xs mt-1">{serverErrors.email}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label>Supply Category</label>
+                                    <label>{t('Supply Category')}</label>
                                     <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
                                         <option value="FOOD">Food</option>
                                         <option value="BEVERAGE">Beverage</option>
@@ -214,7 +216,7 @@ const Suppliers = () => {
                                     </select>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Office Address</label>
+                                    <label>{t('Office Address')}</label>
                                     <textarea value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Physical location or mailing address..." rows="2" className="min-h-[80px]" />
                                 </div>
                             </div>

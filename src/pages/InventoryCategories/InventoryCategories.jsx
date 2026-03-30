@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const InventoryCategories = () => {
+    const { t } = useLanguage();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -83,7 +85,7 @@ const InventoryCategories = () => {
                         <table className="management-table" style={{ minWidth: '400px' }}>
                             <thead>
                                 <tr>
-                                    <th>Category Name</th>
+                                    <th>{t('Category Name')}</th>
                                     <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -121,7 +123,7 @@ const InventoryCategories = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="form-grid !grid-cols-1">
                                 <div className="form-group">
-                                    <label>Category Name</label>
+                                    <label>{t('Category Name')}</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Toiletries, Perishables" />
                                 </div>
                             </div>

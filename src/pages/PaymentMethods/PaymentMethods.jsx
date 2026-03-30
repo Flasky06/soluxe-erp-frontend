@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus, CreditCard } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PaymentMethods = () => {
+    const { t } = useLanguage();
     const [methods, setMethods] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -109,8 +111,8 @@ const PaymentMethods = () => {
                         <table className="management-table" style={{ minWidth: '500px' }}>
                             <thead>
                                 <tr>
-                                    <th>Method Name</th>
-                                    <th>Status</th>
+                                    <th>{t('Method Name')}</th>
+                                    <th>{t('Status')}</th>
                                     <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -162,7 +164,7 @@ const PaymentMethods = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-6 p-7">
                                 <div className="form-group">
-                                    <label>Method Name</label>
+                                    <label>{t('Method Name')}</label>
                                     <input 
                                         type="text" 
                                         required 

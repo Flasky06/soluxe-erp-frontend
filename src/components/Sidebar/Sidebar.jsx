@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useLocation, NavLink } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import { useLanguage } from '../../context/LanguageContext';
 import { 
     LayoutDashboard, 
     Wrench, 
@@ -138,6 +139,7 @@ const menuGroups = [
 const Sidebar = ({ isOpen, onClose }) => {
     const { user, logout } = useAuthStore();
     const location = useLocation();
+    const { language, toggleLanguage, t } = useLanguage();
 
     const handleLogout = () => {
         logout();
@@ -215,7 +217,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                         >
                             <div className="flex items-center gap-3">
                                 {group.icon && <group.icon size={14} className="opacity-70" />}
-                                <span>{group.title}</span>
+                                <span>{t(group.title)}</span>
                             </div>
                             <span className={`text-[10px] transition-transform duration-300 ${openGroup === group.title ? 'rotate-0' : '-rotate-90'}`}>▼</span>
                         </div>
@@ -230,7 +232,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                                     }
                                 >
                                     {item.icon && <item.icon size={16} />}
-                                    <span>{item.label}</span>
+                                    <span>{t(item.label)}</span>
                                 </NavLink>
                             ))}
                         </div>
@@ -238,7 +240,26 @@ const Sidebar = ({ isOpen, onClose }) => {
                 ))}
             </nav>
 
-            <div className="p-6 border-t border-border-gray">
+            {/* Language Toggle */}
+            <div className="px-6 pb-3">
+                <button
+                    onClick={toggleLanguage}
+                    title={language === 'en' ? 'Switch to Mandarin (中文)' : '切换到英文 (English)'}
+                    className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
+                >
+                    <div className="flex items-center gap-2.5">
+                        <span className="text-lg leading-none">{language === 'en' ? '🇺🇸' : '🇨🇳'}</span>
+                        <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest group-hover:text-white transition-colors">
+                            {language === 'en' ? 'English' : '中文'}
+                        </span>
+                    </div>
+                    <span className="text-[10px] font-black text-white/40 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+                        {language === 'en' ? '中文 →' : 'EN →'}
+                    </span>
+                </button>
+            </div>
+
+            <div className="px-6 pb-6 border-t border-border-gray pt-4">
                 <div className="flex items-center gap-3">
                     <div className="w-9 h-9 bg-linear-to-br from-yellow to-yellow-dark rounded-[10px] flex items-center justify-center font-bold text-[13px] text-white">
                         {user ? user.username.substring(0, 2).toUpperCase() : 'U'}
@@ -246,16 +267,16 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <div className="flex flex-col">
                         <span className="text-sm font-semibold text-white">{user ? user.username : 'Guest User'}</span>
                         <span className="text-[12px] text-white/70">
-                            {user?.roles?.includes('ROLE_HOTEL_ADMIN') ? 'Hotel Admin' : 
-                             user?.roles?.includes('ROLE_MANAGER') ? 'Manager' : 
-                             user?.roles?.includes('ROLE_RECEPTIONIST') ? 'Receptionist' : 
-                             user?.roles?.includes('ROLE_HOUSEKEEPING') ? 'Housekeeping' : 
-                             user?.roles?.includes('ROLE_ACCOUNTANT') ? 'Accountant' : 
-                             user?.roles?.includes('ROLE_CHEF') ? 'Chef' : 
-                             user?.roles?.includes('ROLE_WAITER') ? 'Waiter' : 
-                             user?.roles?.includes('ROLE_CASHIER') ? 'Cashier' : 
-                             user?.roles?.includes('ROLE_STORE_KEEPER') ? 'Store Keeper' : 
-                             user?.roles?.includes('ROLE_MAINTENANCE') ? 'Maintenance' : 'Staff'}
+                            {user?.roles?.includes('ROLE_HOTEL_ADMIN') ? t('Hotel Admin') : 
+                             user?.roles?.includes('ROLE_MANAGER') ? t('Manager') : 
+                             user?.roles?.includes('ROLE_RECEPTIONIST') ? t('Receptionist') : 
+                             user?.roles?.includes('ROLE_HOUSEKEEPING') ? t('Housekeeping Staff') : 
+                             user?.roles?.includes('ROLE_ACCOUNTANT') ? t('Accountant') : 
+                             user?.roles?.includes('ROLE_CHEF') ? t('Chef') : 
+                             user?.roles?.includes('ROLE_WAITER') ? t('Waiter') : 
+                             user?.roles?.includes('ROLE_CASHIER') ? t('Cashier') : 
+                             user?.roles?.includes('ROLE_STORE_KEEPER') ? t('Store Keeper') : 
+                             user?.roles?.includes('ROLE_MAINTENANCE') ? t('Maintenance Staff') : t('Staff')}
                         </span>
                     </div>
                 </div>
@@ -265,7 +286,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     title="Sign Out"
                 >
                     <LogOut size={16} />
-                    <span>Logout</span>
+                    <span>{t('Logout')}</span>
                 </button>
             </div>
         </aside>

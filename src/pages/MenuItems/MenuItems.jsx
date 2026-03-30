@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const MenuItems = () => {
+    const { t } = useLanguage();
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -149,11 +151,11 @@ const MenuItems = () => {
                     <table className="management-table" style={{ minWidth: '800px' }}>
                         <thead>
                             <tr>
-                                <th>Item Name</th>
-                                <th>Category</th>
-                                <th>Prep Time</th>
-                                <th>Price</th>
-                                <th>Status</th>
+                                <th>{t('Item Name')}</th>
+                                <th>{t('Category')}</th>
+                                <th>{t('Prep Time')}</th>
+                                <th>{t('Price')}</th>
+                                <th>{t('Status')}</th>
                                 <th className="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -208,7 +210,7 @@ const MenuItems = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Item Name</label>
+                                    <label>{t('Item Name')}</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Grilled Salmon" />
                                     {serverErrors.name && <p className="text-red-500 text-[10px] mt-1">{serverErrors.name}</p>}
                                 </div>
@@ -225,12 +227,12 @@ const MenuItems = () => {
                                     {serverErrors.categoryId && <p className="text-red-500 text-[10px] mt-1">{serverErrors.categoryId}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label>Price ($)</label>
+                                    <label>{t('Price ($)')}</label>
                                     <input type="number" step="0.01" required value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
                                     {serverErrors.price && <p className="text-red-500 text-[10px] mt-1">{serverErrors.price}</p>}
                                 </div>
                                 <div className="form-group">
-                                    <label>Prep Time (Minutes)</label>
+                                    <label>{t('Prep Time (Minutes)')}</label>
                                     <input type="number" required value={formData.prepTimeMins} onChange={(e) => setFormData({...formData, prepTimeMins: parseInt(e.target.value)})} />
                                     {serverErrors.prepTimeMins && <p className="text-red-500 text-[10px] mt-1">{serverErrors.prepTimeMins}</p>}
                                 </div>
@@ -257,7 +259,7 @@ const MenuItems = () => {
             >
                 <form onSubmit={handleQuickAddCategory} className="p-4">
                             <div className="form-group full-width">
-                                <label>Category Name</label>
+                                <label>{t('Category Name')}</label>
                                 <input 
                                     type="text" 
                                     required 

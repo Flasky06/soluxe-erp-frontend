@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { ShoppingCart, Plus, Calendar, User, Search, Filter, CheckCircle, Clock, Truck, MoreVertical } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PurchaseOrders = () => {
+    const { t } = useLanguage();
     const [orders, setOrders] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -183,7 +185,7 @@ const PurchaseOrders = () => {
                 <form onSubmit={handleSubmit} className="p-4">
                             <div className="flex flex-col gap-6">
                                 <div className="form-group">
-                                    <label>Preferred Supplier</label>
+                                    <label>{t('Preferred Supplier')}</label>
                                     <select 
                                         required 
                                         value={formData.supplierId} 
@@ -195,11 +197,11 @@ const PurchaseOrders = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Expected Delivery Date</label>
+                                    <label>{t('Expected Delivery Date')}</label>
                                     <input type="date" required value={formData.expectedDate} onChange={(e) => setFormData({...formData, expectedDate: e.target.value})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>PO Instructions / Notes</label>
+                                    <label>{t('PO Instructions / Notes')}</label>
                                     <textarea 
                                         className="min-h-[100px]" 
                                         value={formData.notes} 

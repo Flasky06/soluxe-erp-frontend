@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ChargeTypes = () => {
+    const { t } = useLanguage();
     const [chargeTypes, setChargeTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -109,8 +111,8 @@ const ChargeTypes = () => {
                     <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Status</th>
+                                <th>{t('Name')}</th>
+                                <th>{t('Status')}</th>
                                 <th className="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -157,7 +159,7 @@ const ChargeTypes = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-grid p-6">
                         <div className="form-group full-width">
-                            <label>Type Name</label>
+                            <label>{t('Type Name')}</label>
                             <input 
                                 type="text" 
                                 required 

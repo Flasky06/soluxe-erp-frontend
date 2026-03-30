@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const RoomTypes = () => {
     const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useLanguage();
     const [showModal, setShowModal] = useState(false);
     const [editingType, setEditingType] = useState(null);
     const [formData, setFormData] = useState({
@@ -87,9 +89,9 @@ const RoomTypes = () => {
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-[28px] font-bold text-text-dark">Room Types</h1>
+                    <h1 className="text-[28px] font-bold text-text-dark">{t('Room Types')}</h1>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>Add Room Type</button>
+                <button className="btn-primary" onClick={() => handleOpenModal()}>{t('Add Room Type')}</button>
             </div>
 
             <div className="premium-card">
@@ -100,10 +102,10 @@ const RoomTypes = () => {
                         <table className="management-table" style={{ minWidth: '600px' }}>
                             <thead>
                                 <tr>
-                                    <th>Type Name</th>
-                                    <th>Setup</th>
-                                    <th>Rate</th>
-                                    <th className="text-right">Actions</th>
+                                    <th>{t('Name')}</th>
+                                    <th>{t('Setup')}</th>
+                                    <th>{t('Rate')}</th>
+                                    <th className="text-right">{t('Actions')}</th>
                                 </tr>
                             </thead>
                         <tbody>
@@ -121,15 +123,15 @@ const RoomTypes = () => {
                                     </td>
                                     <td>
                                         <div className="table-actions">
-                                            <button className="view-btn" onClick={() => handleOpenModal(type)}>Edit</button>
-                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleDelete(type.id)}>Delete</button>
+                                            <button className="view-btn" onClick={() => handleOpenModal(type)}>{t('Edit')}</button>
+                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-semibold transition-all" onClick={() => handleDelete(type.id)}>{t('Delete')}</button>
                                         </div>
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
                                     <td colSpan="4" className="text-center py-20 text-slate-400 italic font-medium">
-                                        No room types defined yet.
+                                        {t('No room types defined yet.')}
                                     </td>
                                 </tr>
                             )}
@@ -143,13 +145,13 @@ const RoomTypes = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingType ? 'Edit Room Type' : 'Register New Type'}
+                title={editingType ? t('Edit Room Type') : t('Register New Type')}
                 size="sm"
             >
                 <form onSubmit={handleSubmit}>
                     <div className="form-grid !grid-cols-1">
                         <div className="form-group">
-                            <label>Room Category Name</label>
+                            <label>{t('Room Category Name')}</label>
                             <input 
                                 type="text" 
                                 required 
@@ -158,9 +160,8 @@ const RoomTypes = () => {
                                 placeholder="e.g. Executive Queen Suite"
                             />
                         </div>
-                        
                         <div className="form-group">
-                            <label>Max Occupancy</label>
+                            <label>{t('Max Occupancy')}</label>
                             <input 
                                 type="number" 
                                 required 
@@ -170,7 +171,7 @@ const RoomTypes = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Bed Configuration</label>
+                            <label>{t('Bed Configuration')}</label>
                             <select 
                                 value={formData.bedType} 
                                 onChange={(e) => setFormData({...formData, bedType: e.target.value})}
@@ -184,7 +185,7 @@ const RoomTypes = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Room Rate ($ per Night)</label>
+                            <label>{t('Room Rate ($ per Night)')}</label>
                             <input 
                                 type="number" 
                                 required 
@@ -196,10 +197,11 @@ const RoomTypes = () => {
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                        <button type="submit" className="btn-primary !px-10">Save Settings</button>
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">{t('Cancel')}</button>
+                        <button type="submit" className="btn-primary !px-10">{t('Save Settings')}</button>
                     </div>
                 </form>
+
             </Modal>
             )}
         </div>

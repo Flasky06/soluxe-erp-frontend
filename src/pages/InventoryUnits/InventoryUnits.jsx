@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Box } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const InventoryUnits = () => {
+    const { t } = useLanguage();
     const [units, setUnits] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -100,8 +102,8 @@ const InventoryUnits = () => {
                     <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
-                                <th>Unit Name</th>
-                                <th>Description</th>
+                                <th>{t('Unit Name')}</th>
+                                <th>{t('Description')}</th>
                                 <th className="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -144,7 +146,7 @@ const InventoryUnits = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-6 p-7">
                                 <div className="form-group">
-                                    <label>Unit Name</label>
+                                    <label>{t('Unit Name')}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -154,7 +156,7 @@ const InventoryUnits = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Description (Optional)</label>
+                                    <label>{t('Description (Optional)')}</label>
                                     <textarea 
                                         value={formData.description} 
                                         onChange={(e) => setFormData({...formData, description: e.target.value})} 

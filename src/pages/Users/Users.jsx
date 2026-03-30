@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useLanguage();
     const [showModal, setShowModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [formData, setFormData] = useState({
@@ -126,13 +128,13 @@ const Users = () => {
                     <Search size={18} />
                     <input 
                         type="text" 
-                        placeholder="Search security profiles by name, email or login id..." 
+                        placeholder={t('Search')}
                         className="search-input w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <button className="btn-primary flex-shrink-0" onClick={() => handleOpenModal()}>Add New User</button>
+                <button className="btn-primary flex-shrink-0" onClick={() => handleOpenModal()}>{t('Add New User')}</button>
             </div>
 
             <div className="premium-card">
@@ -143,11 +145,11 @@ const Users = () => {
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>User Profile</th>
-                                    <th>System Role</th>
-                                    <th>Contact Details</th>
-                                    <th>Status</th>
-                                    <th className="text-right">Actions</th>
+                                    <th>{t('User Profile')}</th>
+                                    <th>{t('System Role')}</th>
+                                    <th>{t('Contact Details')}</th>
+                                    <th>{t('Status')}</th>
+                                    <th className="text-right">{t('Actions')}</th>
                                 </tr>
                             </thead>
                         <tbody>
@@ -172,13 +174,13 @@ const Users = () => {
                                     </td>
                                     <td>
                                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${u.isActive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                                        {u.isActive ? 'Authenticated' : 'Disabled'}
+                                        {u.isActive ? t('Authenticated') : t('Disabled')}
                                     </span>
                                     </td>
                                     <td>
                                         <div className="table-actions">
-                                            <button className="view-btn" onClick={() => handleOpenModal(u)}>Configure</button>
-                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-bold transition-all duration-300 ml-2" onClick={() => handleDelete(u.id)}>Retract Access</button>
+                                            <button className="view-btn" onClick={() => handleOpenModal(u)}>{t('Configure')}</button>
+                                            <button className="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-bold transition-all duration-300 ml-2" onClick={() => handleDelete(u.id)}>{t('Retract Access')}</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -199,7 +201,7 @@ const Users = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingUser ? 'Update User Security Profile' : 'Register New System User'}
+                title={editingUser ? t('Update Profile') : t('Register New Staff Member')}
                 size="md"
                 customClasses="!w-[80%]"
             >
@@ -211,12 +213,12 @@ const Users = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-grid">
                         <div className="form-group">
-                            <label>Username (Login ID)</label>
+                            <label>{t('Username')}</label>
                             <input type="text" required minLength={3} maxLength={50} value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} placeholder="e.g. admin_soluxe" disabled={editingUser} />
                             {serverErrors.username && <p className="text-red-500 text-xs mt-1">{serverErrors.username}</p>}
                         </div>
                         <div className="form-group">
-                            <label>System Role</label>
+                            <label>{t('System Role')}</label>
                             <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})}>
                                 {roles.map(r => (
                                     <option key={r} value={r}>{r.replace(/_/g, ' ')}</option>
@@ -225,21 +227,21 @@ const Users = () => {
                             {serverErrors.role && <p className="text-red-500 text-xs mt-1">{serverErrors.role}</p>}
                         </div>
                         <div className="form-group">
-                            <label>Full Name</label>
+                            <label>{t('Full Name')}</label>
                             <input type="text" required value={formData.fullName} onChange={(e) => setFormData({...formData, fullName: e.target.value})} placeholder="Jane Doe" />
                             {serverErrors.fullName && <p className="text-red-500 text-xs mt-1">{serverErrors.fullName}</p>}
                         </div>
                         <div className="form-group">
-                            <label>Email Address</label>
+                            <label>{t('Email Address')}</label>
                             <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="jane@soluxeclubhotel.com" />
                             {serverErrors.email && <p className="text-red-500 text-xs mt-1">{serverErrors.email}</p>}
                         </div>
                         <div className="form-group">
-                            <label>Phone Number</label>
+                            <label>{t('Phone Number')}</label>
                             <input type="text" value={formData.phoneNumber} onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})} placeholder="+254..." />
                         </div>
                         <div className="form-group">
-                            <label>{editingUser ? 'New Password (Optional)' : 'Initial Password'}</label>
+                            <label>{editingUser ? t('New Password (Optional)') : t('Initial Password')}</label>
                             <input type="password" required={!editingUser} value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} placeholder="••••••••" />
                         </div>
                         <div className="md:col-span-2">
@@ -251,13 +253,13 @@ const Users = () => {
                                     onChange={(e) => setFormData({...formData, isActive: e.target.checked})} 
                                     className="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary/20" 
                                 />
-                                <label htmlFor="active" className="mb-0 text-sm font-semibold text-slate-700 uppercase tracking-wide">Account Active & Enabled</label>
+                                <label htmlFor="active" className="mb-0 text-sm font-semibold text-slate-700 uppercase tracking-wide">{t('Account Active & Enabled')}</label>
                             </div>
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                        <button type="submit" className="btn-primary !px-10">{editingUser ? 'Update Profile' : 'Provision User'}</button>
+                        <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">{t('Cancel')}</button>
+                        <button type="submit" className="btn-primary !px-10">{editingUser ? t('Update Profile') : t('Provision User')}</button>
                     </div>
                 </form>
             </Modal>

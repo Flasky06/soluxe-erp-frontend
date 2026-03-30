@@ -3,9 +3,11 @@ import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Search, FileText, CheckCircle, Printer, X, Wallet } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const CheckOut = () => {
     const { user } = useAuthStore();
+    const { t } = useLanguage();
     const [stays, setStays] = useState([]);
     const [guests, setGuests] = useState([]);
     const [rooms, setRooms] = useState([]);
@@ -222,7 +224,7 @@ const CheckOut = () => {
                     <Search size={18} />
                     <input 
                         type="text" 
-                        placeholder="Search Guest or Room..." 
+                        placeholder={t('Search by guest name...')} 
                         className="search-input w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -232,17 +234,17 @@ const CheckOut = () => {
 
             <div className="table-card overflow-hidden">
                 {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading active stays...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse font-medium">{t('Loading...')}</div>
                 ) : (
                     <div className="overflow-x-auto w-full">
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>Room</th>
-                                    <th>Guest</th>
-                                    <th>Date In</th>
-                                    <th>Expected Out</th>
-                                    <th className="text-right">Actions</th>
+                                    <th>{t('Room')}</th>
+                                    <th>{t('Guest')}</th>
+                                    <th>{t('Date')}</th>
+                                    <th>{t('Check-out')}</th>
+                                    <th className="text-right">{t('Actions')}</th>
                                 </tr>
                             </thead>
                         <tbody>
@@ -251,7 +253,7 @@ const CheckOut = () => {
                                     <tr key={stay.id}>
                                         <td>
                                             <div className="flex flex-col">
-                                                <span className="font-bold text-slate-900">Room {getRoomNumber(stay.roomId)}</span>
+                                                <span className="font-bold text-slate-900">{t('Room')} {getRoomNumber(stay.roomId)}</span>
                                                 <span className="text-[11px] text-slate-500">ID: {stay.id}</span>
                                             </div>
                                         </td>
@@ -260,12 +262,12 @@ const CheckOut = () => {
                                                 <span className="font-semibold text-slate-800">{getGuestName(stay.guestId)}</span>
                                                 {stay.status === 'OVERSTAY' && (
                                                     <span className="bg-red-100 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded w-fit uppercase tracking-wider mt-1">
-                                                        Overdue
+                                                        {t('Overdue')}
                                                     </span>
                                                 )}
                                                 {stay.status === 'DUE_CHECKOUT' && (
                                                     <span className="bg-amber-100 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded w-fit uppercase tracking-wider mt-1">
-                                                        Due Today
+                                                        {t('Due Today')}
                                                     </span>
                                                 )}
                                             </div>
@@ -285,7 +287,7 @@ const CheckOut = () => {
                                                     onClick={() => handleViewInvoice(stay)}
                                                 >
                                                     <FileText size={14} />
-                                                    View Folio
+                                                    {t('Folio')}
                                                 </button>
                                             </div>
                                         </td>
@@ -294,7 +296,7 @@ const CheckOut = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="5" className="text-center py-20 text-slate-400 font-medium italic">
-                                        {searchTerm ? 'No guests match your search.' : 'All guests have been checked out.'}
+                                        {searchTerm ? t('No reservations found') : t('No guests due for check-out.')}
                                     </td>
                                 </tr>
                             )}
@@ -536,7 +538,7 @@ const CheckOut = () => {
                                         className="btn-secondary !bg-slate-100" 
                                         onClick={handlePrintInvoice}
                                     >
-                                        Print Invoice
+                                        {t('Export')}
                                     </button>
                                     
                                     {finalBalanceDue !== 0 ? (
@@ -578,7 +580,7 @@ const CheckOut = () => {
                                                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-bold tracking-wide shadow-sm transition-all flex items-center gap-2"
                                                 onClick={() => handleCheckOut(selectedStay.id)}
                                             >
-                                                Confirm Check-out
+                                                {t('Process Check-Out')}
                                             </button>
                                         </div>
                                     )}

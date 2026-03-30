@@ -3,9 +3,11 @@ import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Plus } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Maintenance = () => {
     const { user, hasRole } = useAuthStore();
+    const { t } = useLanguage();
     const [tickets, setTickets] = useState([]);
     const [rooms, setRooms] = useState([]);
     const [users, setUsers] = useState([]);
@@ -181,7 +183,7 @@ const Maintenance = () => {
                         Configure Categories
                     </button>
                 )}
-                <button className="btn-primary" onClick={() => setShowModal(true)}>+ Report Issue</button>
+                <button className="btn-primary" onClick={() => setShowModal(true)}>+ {t('Report Issue')}</button>
             </div>
 
             <div className="premium-card">
@@ -189,12 +191,12 @@ const Maintenance = () => {
                     <table className="management-table" style={{ minWidth: '800px' }}>
                         <thead>
                             <tr>
-                                <th>Location / ID</th>
-                                <th>Issue Details</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Assigned To</th>
-                                <th className="text-right">Actions</th>
+                                <th>{t('Location / ID')}</th>
+                                <th>{t('Issue Details')}</th>
+                                <th>{t('Priority')}</th>
+                                <th>{t('Status')}</th>
+                                <th>{t('Assigned To')}</th>
+                                <th className="text-right">{t('Actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -213,18 +215,18 @@ const Maintenance = () => {
                                         <td>{getStatusBadge(ticket.status)}</td>
                                         <td>
                                             <span className="text-[13px] font-medium">{getUserName(ticket.assignedTo)}</span>
-                                            <div className="text-[10px] text-text-slate">Reported by: {getUserName(ticket.reportedBy)}</div>
+                                            <div className="text-[10px] text-text-slate">{t('Reported by')}: {getUserName(ticket.reportedBy)}</div>
                                         </td>
                                         <td>
                                             <div className="flex justify-end gap-2 pr-2">
                                                 {ticket.status === 'OPEN' && isMaintenanceStaff && (
                                                     <button onClick={() => handleAssignToMe(ticket.id)} className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-bold transition-all">
-                                                        Assign to Me
+                                                        {t('Assign to Me')}
                                                     </button>
                                                 )}
                                                 {ticket.status === 'IN_PROGRESS' && ticket.assignedTo === user.id && (
                                                     <button onClick={() => handleUpdateStatus(ticket.id, 'RESOLVED')} className="bg-green-50 text-green-600 hover:bg-green-600 hover:text-white px-3 py-1.5 rounded-md text-[12px] font-bold transition-all">
-                                                        Resolve
+                                                        {t('Resolve')}
                                                     </button>
                                                 )}
                                             </div>
@@ -233,7 +235,7 @@ const Maintenance = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-20 text-text-slate italic">No maintenance tickets found.</td>
+                                    <td colSpan="6" className="text-center py-20 text-text-slate italic">{t('No maintenance requests found.')}</td>
                                 </tr>
                             )}
                         </tbody>
@@ -260,7 +262,7 @@ const Maintenance = () => {
                             </div>
 
                             <div className="form-group">
-                                <label>Issue Type</label>
+                                <label>{t('Issue Type')}</label>
                                 <div className="flex gap-2">
                                     <select className="flex-1" required value={formData.issueTypeId} onChange={e => setFormData({...formData, issueTypeId: e.target.value})}>
                                         {issueTypes.map(type => (
@@ -279,7 +281,7 @@ const Maintenance = () => {
                             </div>
 
                             <div className="form-group">
-                                <label>Priority</label>
+                                <label>{t('Priority')}</label>
                                 <select required value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})}>
                                     <option value="LOW">Low</option>
                                     <option value="MEDIUM">Medium</option>
@@ -289,13 +291,13 @@ const Maintenance = () => {
                             </div>
 
                             <div className="form-group full-width">
-                                <label>Description</label>
+                                <label>{t('Description')}</label>
                                 <textarea required rows="4" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Describe the issue in detail..." />
                             </div>
 
                             <div className="modal-footer col-span-full">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Submit Ticket</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary">{t('Submit')}</button>
                             </div>
                         </form>
             </Modal>
@@ -310,7 +312,7 @@ const Maintenance = () => {
             >
                 <form onSubmit={handleCreateIssueType} className="form-grid">
                             <div className="form-group full-width">
-                                <label>Category Name</label>
+                                <label>{t('Category Name')}</label>
                                 <input type="text" required value={issueTypeFormData.name} onChange={e => setIssueTypeFormData({...issueTypeFormData, name: e.target.value})} placeholder="e.g. Electrical, Plumbing" />
                             </div>
                             <div className="form-group full-width">
@@ -318,8 +320,8 @@ const Maintenance = () => {
                                 <textarea required value={issueTypeFormData.description} onChange={e => setIssueTypeFormData({...issueTypeFormData, description: e.target.value})} placeholder="What kind of issues fall under this category?" />
                             </div>
                             <div className="modal-footer col-span-full">
-                                <button type="button" onClick={() => setShowIssueTypeModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Create Category</button>
+                                <button type="button" onClick={() => setShowIssueTypeModal(false)} className="btn-secondary">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary">{t('Create')}</button>
                             </div>
                         </form>
             </Modal>
@@ -337,8 +339,8 @@ const Maintenance = () => {
                                 <textarea required rows="4" value={resolveData.notes} onChange={e => setResolveData({...resolveData, notes: e.target.value})} placeholder="What was done to fix the issue?" />
                             </div>
                             <div className="modal-footer col-span-full">
-                                <button type="button" onClick={() => setShowResolveModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="bg-green-600 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-green-700 transition-colors">Mark as Resolved</button>
+                                <button type="button" onClick={() => setShowResolveModal(false)} className="btn-secondary">{t('Cancel')}</button>
+                                <button type="submit" className="bg-green-600 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-green-700 transition-colors">{t('Resolved')}</button>
                             </div>
                         </form>
             </Modal>

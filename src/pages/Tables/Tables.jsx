@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Tables = () => {
+    const { t } = useLanguage();
     const [tables, setTables] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -106,11 +108,11 @@ const Tables = () => {
                     <table className="management-table" style={{ minWidth: '800px' }}>
                         <thead>
                             <tr>
-                                <th>Table Name</th>
-                                <th>Capacity</th>
-                                <th>Location</th>
-                                <th>Type</th>
-                                <th>Status</th>
+                                <th>{t('Table Name')}</th>
+                                <th>{t('Capacity')}</th>
+                                <th>{t('Location')}</th>
+                                <th>{t('Type')}</th>
+                                <th>{t('Status')}</th>
                                 <th className="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -165,7 +167,7 @@ const Tables = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Table Name / Number</label>
+                                    <label>{t('Table Name / Number')}</label>
                                     <input
                                         type="text"
                                         required
@@ -175,7 +177,7 @@ const Tables = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Capacity (Pax)</label>
+                                    <label>{t('Capacity (Pax)')}</label>
                                     <input
                                         type="number"
                                         min="1"
@@ -185,7 +187,7 @@ const Tables = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Location</label>
+                                    <label>{t('Location')}</label>
                                     <select
                                         value={formData.location}
                                         onChange={(e) => setFormData({...formData, location: e.target.value})}
@@ -198,7 +200,7 @@ const Tables = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Current Status</label>
+                                    <label>{t('Current Status')}</label>
                                     <select
                                         value={formData.status}
                                         onChange={(e) => setFormData({...formData, status: e.target.value})}
@@ -219,7 +221,7 @@ const Tables = () => {
                                     <label htmlFor="isVip" className="mb-0">VIP Table</label>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Internal Service Notes</label>
+                                    <label>{t('Internal Service Notes')}</label>
                                     <textarea
                                         value={formData.notes}
                                         onChange={(e) => setFormData({...formData, notes: e.target.value})}

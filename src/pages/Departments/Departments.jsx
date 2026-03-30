@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Building2 } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Departments = () => {
+    const { t } = useLanguage();
     const [departments, setDepartments] = useState([]);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -100,7 +102,7 @@ const Departments = () => {
                 <table className="management-table" style={{ minWidth: '400px' }}>
                         <thead>
                             <tr>
-                                <th>Department Name</th>
+                                <th>{t('Department Name')}</th>
                                 <th className="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -141,7 +143,7 @@ const Departments = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-grid">
                         <div className="form-group full-width">
-                            <label>Department Name</label>
+                            <label>{t('Department Name')}</label>
                             <input 
                                 type="text" 
                                 value={currentDepartment.name}

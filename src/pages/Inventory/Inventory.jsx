@@ -3,8 +3,10 @@ import api from '../../services/api';
 import { Search, Plus } from 'lucide-react';
 import Pagination from '../../components/Pagination/Pagination';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Inventory = () => {
+    const { t } = useLanguage();
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -211,10 +213,10 @@ const Inventory = () => {
                             <table className="management-table" style={{ minWidth: '700px' }}>
                                 <thead>
                                     <tr>
-                                        <th>Item Name</th>
-                                        <th>Stock Level</th>
-                                        <th>Category</th>
-                                        <th>Unit</th>
+                                        <th>{t('Item Name')}</th>
+                                        <th>{t('Stock Level')}</th>
+                                        <th>{t('Category')}</th>
+                                        <th>{t('Unit')}</th>
                                         <th className="text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -276,7 +278,7 @@ const Inventory = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
-                                    <label>Item Name</label>
+                                    <label>{t('Item Name')}</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Toilet Paper" />
                                 </div>
                                 <div className="form-group">
@@ -290,11 +292,11 @@ const Inventory = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Initial Stock</label>
+                                    <label>{t('Initial Stock')}</label>
                                     <input type="number" required value={formData.currentStock} onChange={(e) => setFormData({...formData, currentStock: e.target.value})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Inventory Unit</label>
+                                    <label>{t('Inventory Unit')}</label>
                                     <div className="flex gap-2">
                                         <select className="flex-1" required value={formData.unitId} onChange={(e) => setFormData({...formData, unitId: e.target.value})}>
                                             {units.map(u => (
@@ -312,15 +314,15 @@ const Inventory = () => {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Minimum Stock Level</label>
+                                    <label>{t('Minimum Stock Level')}</label>
                                     <input type="number" required value={formData.minimumStock} onChange={(e) => setFormData({...formData, minimumStock: e.target.value})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Buying Price ($)</label>
+                                    <label>{t('Buying Price ($)')}</label>
                                     <input type="number" step="0.01" required value={formData.buyingPrice} onChange={(e) => setFormData({...formData, buyingPrice: e.target.value})} />
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Internal Notes / Description</label>
+                                    <label>{t('Internal Notes / Description')}</label>
                                     <textarea 
                                         className="w-full min-h-[80px]" 
                                         value={formData.notes} 
@@ -347,7 +349,7 @@ const Inventory = () => {
             >
                 <form onSubmit={handleQuickAddCategory} className="p-4">
                             <div className="form-group full-width">
-                                <label>Category Name</label>
+                                <label>{t('Category Name')}</label>
                                 <input 
                                     type="text" 
                                     required 
@@ -376,11 +378,11 @@ const Inventory = () => {
             >
                 <form onSubmit={handleCreateUnit} className="p-4">
                             <div className="form-group">
-                                <label>Unit Name</label>
+                                <label>{t('Unit Name')}</label>
                                 <input name="name" type="text" required placeholder="e.g. Kg, Pcs, Box" />
                             </div>
                             <div className="form-group">
-                                <label>Description</label>
+                                <label>{t('Description')}</label>
                                 <input name="description" type="text" placeholder="e.g. Kilograms" />
                             </div>
                             <div className="modal-footer !px-0 mt-6">

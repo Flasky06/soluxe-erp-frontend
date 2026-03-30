@@ -4,10 +4,12 @@ import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Search, Filter, Plus, FileText, CreditCard } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Folio = () => {
     const navigate = useNavigate();
     const { user } = useAuthStore();
+    const { t } = useLanguage();
     const [folios, setFolios] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -181,13 +183,13 @@ const Folio = () => {
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
-                <h1 className="text-xl font-bold text-slate-800">Folio & Billing</h1>
+                <h1 className="text-xl font-bold text-slate-800">{t('Folio & Billing')}</h1>
                 <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
                     <button className="flex-1 sm:flex-none px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 font-bold text-xs hover:bg-slate-50 transition-colors flex items-center justify-center gap-2" onClick={() => navigate('/charge-types')}>
-                        <Plus size={14} /> Charge Types
+                        <Plus size={14} /> {t('Charge Types')}
                     </button>
                     <button className="flex-1 sm:flex-none btn-secondary !py-1.5 !px-3 text-xs flex items-center justify-center gap-2 whitespace-nowrap" onClick={() => setShowMethodModal(true)}>
-                        <CreditCard size={14} /> Payment Methods
+                        <CreditCard size={14} /> {t('Payment Methods')}
                     </button>
                 </div>
             </div>
@@ -198,7 +200,7 @@ const Folio = () => {
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-maroon transition-colors" size={18} />
                     <input 
                         type="text" 
-                        placeholder="Search by Folio ID or Type..." 
+                        placeholder={t('Search by Folio ID...')} 
                         className="w-full pl-11 pr-4 py-2 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-maroon/10 outline-none transition-all"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -206,35 +208,35 @@ const Folio = () => {
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto">
                     <div className="flex items-center gap-2 text-slate-400 text-sm font-semibold whitespace-nowrap px-2">
-                        <Filter size={16} /> Status:
+                        <Filter size={16} /> {t('Status')}:
                     </div>
                     <select 
                         className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-maroon/10 outline-none cursor-pointer hover:border-slate-300 transition-all w-full md:w-[160px]"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
-                        <option value="ALL">All Status</option>
-                        <option value="OPEN">Open</option>
-                        <option value="CLOSED">Closed</option>
+                        <option value="ALL">{t('All Status')}</option>
+                        <option value="OPEN">{t('Open')}</option>
+                        <option value="CLOSED">{t('Completed')}</option>
                     </select>
                 </div>
             </div>
 
             <div className="premium-card overflow-hidden">
                 {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse text-lg">Loading folios...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse text-lg">{t('Loading...')}</div>
                 ) : (
                     <div className="overflow-x-auto w-full">
                         <table className="management-table" style={{ minWidth: '900px' }}>
                             <thead>
                                 <tr>
-                                    <th style={{ width: '100px' }}>Folio ID</th>
-                                    <th>Guest / Details</th>
-                                    <th style={{ width: '100px' }}>Type</th>
-                                    <th style={{ width: '120px' }}>Opened At</th>
-                                    <th style={{ width: '100px' }}>Status</th>
-                                    <th style={{ width: '120px' }}>Total Balance</th>
-                                    <th className="text-right" style={{ width: '250px' }}>Actions</th>
+                                    <th style={{ width: '100px' }}>{t('Folio #')}</th>
+                                    <th>{t('Guest / Details')}</th>
+                                    <th style={{ width: '100px' }}>{t('Type')}</th>
+                                    <th style={{ width: '120px' }}>{t('Opened At')}</th>
+                                    <th style={{ width: '100px' }}>{t('Status')}</th>
+                                    <th style={{ width: '120px' }}>{t('Total Balance')}</th>
+                                    <th className="text-right" style={{ width: '250px' }}>{t('Actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -293,28 +295,28 @@ const Folio = () => {
                                                         className="px-3 py-1.5 rounded-xl text-slate-500 hover:text-black hover:bg-slate-50 text-[11px] font-bold transition-all flex items-center gap-1.5 border border-transparent hover:border-slate-200" 
                                                         onClick={() => handleOpenChargeModal(folio.id)}
                                                     >
-                                                        Post Charge
+                                                        {t('Post Charge')}
                                                     </button>
                                                     {folio.status === 'OPEN' && (
                                                         <button 
                                                             className="bg-maroon text-white hover:bg-maroon-dark px-3 py-1.5 rounded-xl font-bold text-[11px] transition-all shadow-sm shadow-maroon/10" 
                                                             onClick={() => handleOpenPaymentModal(folio.id, folio.totalAmount)}
                                                         >
-                                                            Pay
+                                                            {t('Pay')}
                                                         </button>
                                                     )}
                                                     <button 
                                                         className="px-3 py-1.5 rounded-xl text-slate-500 hover:text-black hover:bg-slate-50 text-[11px] font-bold transition-all flex items-center gap-1.5 border border-transparent hover:border-slate-200" 
                                                         onClick={() => handleViewReceipts(folio.id)}
                                                     >
-                                                        Receipts
+                                                        {t('Receipts')}
                                                     </button>
                                                     {folio.status === 'OPEN' && folio.totalAmount <= 0 && (
                                                         <button 
                                                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-xl font-bold text-[11px] transition-all shadow-sm shadow-emerald-500/10" 
                                                             onClick={() => handleCloseFolio(folio.id)}
                                                         >
-                                                            Settle
+                                                            {t('Settle')}
                                                         </button>
                                                     )}
                                                 </div>
@@ -323,7 +325,7 @@ const Folio = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" className="text-center py-20 text-text-slate">No active folios found.</td>
+                                        <td colSpan="6" className="text-center py-20 text-text-slate">{t('No active folios found.')}</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -343,7 +345,7 @@ const Folio = () => {
                 <form onSubmit={handlePostCharge}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Charge Type</label>
+                                    <label>{t('Charge Type')}</label>
                                     <div className="flex gap-2">
                                         <select className="flex-1" value={newCharge.chargeTypeId} onChange={(e) => setNewCharge({...newCharge, chargeTypeId: e.target.value})}>
                                             {chargeTypes.map(type => (
@@ -354,28 +356,28 @@ const Folio = () => {
                                             type="button"
                                             className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center transition-colors"
                                             onClick={() => setShowChargeTypeModal(true)}
-                                            title="Add New Charge Type"
+                                            title={t('Add')}
                                         >
                                             <Plus size={18} />
                                         </button>
                                     </div>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Description</label>
+                                    <label>{t('Description')}</label>
                                     <input type="text" required value={newCharge.description} onChange={(e) => setNewCharge({...newCharge, description: e.target.value})} placeholder="e.g. Dinner" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Quantity</label>
+                                    <label>{t('Quantity')}</label>
                                     <input type="number" step="0.01" required value={newCharge.quantity} onChange={(e) => setNewCharge({...newCharge, quantity: parseFloat(e.target.value) || 0})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Unit Price ($)</label>
+                                    <label>{t('Unit Price ($)')}</label>
                                     <input type="number" step="0.01" required value={newCharge.unitPrice} onChange={(e) => setNewCharge({...newCharge, unitPrice: parseFloat(e.target.value) || 0})} />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-8">Cancel</button>
-                                <button type="submit" className="btn-primary !px-8">Submit Charge</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-8">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary !px-8">{t('Submit Charge')}</button>
                             </div>
                         </form>
             </Modal>
@@ -391,10 +393,10 @@ const Folio = () => {
                 <form onSubmit={handleRecordPayment}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Payment Method</label>
+                                    <label>{t('Payment Method')}</label>
                                     <div className="flex gap-2">
                                         <select className="flex-1" required value={newPayment.paymentMethodId} onChange={(e) => setNewPayment({...newPayment, paymentMethodId: e.target.value})}>
-                                            <option value="">Select Method</option>
+                                            <option value="">{t('Payment Method')}</option>
                                             {paymentMethods.map(method => (
                                                 <option key={method.id} value={method.id}>{method.name}</option>
                                             ))}
@@ -403,24 +405,24 @@ const Folio = () => {
                                             type="button"
                                             className="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg flex items-center justify-center transition-colors"
                                             onClick={() => setShowMethodModal(true)}
-                                            title="Add New Payment Method"
+                                            title={t('Add')}
                                         >
                                             <Plus size={18} />
                                         </button>
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Amount ($)</label>
+                                    <label>{t('Amount')}</label>
                                     <input type="number" step="0.01" required value={newPayment.amount} onChange={(e) => setNewPayment({...newPayment, amount: parseFloat(e.target.value) || 0})} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Reference / Receipt No.</label>
-                                    <input type="text" value={newPayment.referenceNumber} onChange={(e) => setNewPayment({...newPayment, referenceNumber: e.target.value})} placeholder="Optional" />
+                                    <label>{t('Reference')}</label>
+                                    <input type="text" value={newPayment.referenceNumber} onChange={(e) => setNewPayment({...newPayment, referenceNumber: e.target.value})} placeholder={t('Optional comments...')} />
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowPaymentModal(false)} className="btn-secondary !px-8">Cancel</button>
-                                <button type="submit" className="btn-primary !px-8">Record Payment</button>
+                                <button type="button" onClick={() => setShowPaymentModal(false)} className="btn-secondary !px-8">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary !px-8">{t('Record Payment')}</button>
                             </div>
                         </form>
             </Modal>
@@ -434,7 +436,7 @@ const Folio = () => {
                 customClasses="!w-[85%] !max-w-[700px]"
             >
                 <div className="mb-8 max-h-[200px] overflow-y-auto border border-slate-200 p-5 rounded-xl bg-slate-50">
-                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Existing Methods</h4>
+                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">{t('Existing Methods')}</h4>
                             {paymentMethods.length > 0 ? (
                                 <div className="flex flex-col gap-2">
                                     {paymentMethods.map(m => (
@@ -445,25 +447,25 @@ const Folio = () => {
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-center py-4 text-slate-400 text-sm italic">No payment methods defined yet.</p>
+                                <p className="text-center py-4 text-slate-400 text-sm italic">{t('No payment methods defined yet.')}</p>
                             )}
                         </div>
 
                         <form onSubmit={handleCreatePaymentMethod} className="border-t border-slate-200 pt-6">
-                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Add New Method</h4>
+                            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">{t('Add New Method')}</h4>
                             <div className="form-grid">
                                 <div className="form-group">
-                                    <label>Method Name</label>
+                                    <label>{t('Method Name')}</label>
                                     <input type="text" required value={newMethod.name} onChange={(e) => setNewMethod({...newMethod, name: e.target.value})} placeholder="e.g. M-Pesa, Visa" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Description</label>
-                                    <input type="text" value={newMethod.description} onChange={(e) => setNewMethod({...newMethod, description: e.target.value})} placeholder="Optional" />
+                                    <label>{t('Description')}</label>
+                                    <input type="text" value={newMethod.description} onChange={(e) => setNewMethod({...newMethod, description: e.target.value})} placeholder={t('Optional comments...')} />
                                 </div>
                             </div>
                             <div className="modal-footer mt-6">
-                                <button type="button" onClick={() => setShowMethodModal(false)} className="btn-secondary !px-8">Close</button>
-                                <button type="submit" className="btn-primary !px-8">Add Method</button>
+                                <button type="button" onClick={() => setShowMethodModal(false)} className="btn-secondary !px-8">{t('Close')}</button>
+                                <button type="submit" className="btn-primary !px-8">{t('Add Method')}</button>
                             </div>
                         </form>
             </Modal>
@@ -511,18 +513,18 @@ const Folio = () => {
                                         <div className="text-center mt-8 pt-4">
                                             <p className="text-[15px] font-medium text-slate-600">Thank you for choosing Soluxe Club Hotel!</p>
                                             <div className="text-[10px] mt-4 opacity-70 font-mono text-slate-500 flex flex-col items-center">
-                                                <p>Auth Code: {receipt.paymentId}</p>
-                                                <p>Issued by: {receipt.issuedBy}</p>
+                                                <p>{t('Auth Code:')} {receipt.paymentId}</p>
+                                                <p>{t('Issued by:')} {receipt.issuedBy}</p>
                                             </div>
                                         </div>
                                         <div className="mt-10 print:hidden">
-                                            <button className="w-full btn-primary py-3 rounded-xl shadow-sm font-bold text-base" onClick={handlePrintReceipt}>Print Official Receipt</button>
+                                            <button className="w-full btn-primary py-3 rounded-xl shadow-sm font-bold text-base" onClick={handlePrintReceipt}>{t('Print Official Receipt')}</button>
                                         </div>
                                     </div>
                                 ))
                             ) : (
                                 <div className="text-center py-20 text-text-slate border-2 border-dashed border-slate-200 rounded-xl">
-                                    <p>No receipts found for this folio.</p>
+                                    <p>{t('No receipts found for this folio.')}</p>
                                 </div>
                             )}
                 </div>

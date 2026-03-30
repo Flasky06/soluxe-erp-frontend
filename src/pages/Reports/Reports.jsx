@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { FileText } from 'lucide-react';
 import Pagination from '../../components/Pagination/Pagination';
+import { useLanguage } from '../../context/LanguageContext';
 
 // ─── Section Tab Button ───────────────────────────────────────────────────────
 const TabBtn = ({ label, active, onClick }) => (
@@ -49,6 +50,7 @@ const Reports = () => {
     const [activeTab, setActiveTab] = useState('revenue');
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+    const { t } = useLanguage();
 
     // Data state
     const [revenue, setRevenue] = useState(null);
@@ -159,14 +161,14 @@ const Reports = () => {
     const periodLabel = startDate === endDate ? startDate : `${startDate} → ${endDate}`;
 
     const tabs = [
-        { id: 'revenue', label: 'Revenue' },
-        { id: 'reservations', label: 'Reservations' },
-        { id: 'guests', label: 'Guests' },
-        { id: 'employees', label: 'Employees' },
+        { id: 'revenue', label: t('Revenue') },
+        { id: 'reservations', label: t('Reservations') },
+        { id: 'guests', label: t('Guests') },
+        { id: 'employees', label: t('Employees') },
         { id: 'pos', label: 'F&B / POS' },
-        { id: 'venue', label: 'Venue Bookings' },
-        { id: 'maintenance', label: 'Maintenance' },
-        { id: 'inventory', label: 'Inventory' },
+        { id: 'venue', label: t('Venue Bookings') },
+        { id: 'maintenance', label: t('Maintenance') },
+        { id: 'inventory', label: t('Inventory') },
     ];
 
     const getActiveDataForCSV = () => {
@@ -200,8 +202,8 @@ const Reports = () => {
                 <div className="flex justify-between items-center mb-6 no-print">
                     <div className="flex justify-between items-center w-full">
                         <div>
-                            <h1 className="text-2xl font-black text-text-dark tracking-tight">Management Reports</h1>
-                            <p className="text-text-slate mt-1">Daily, monthly and operational insights</p>
+                            <h1 className="text-2xl font-black text-text-dark tracking-tight">{t('Management Reports')}</h1>
+                            <p className="text-text-slate mt-1">{t('From')}: {startDate} · {t('To')}: {endDate}</p>
                         </div>
                         <button 
                             className="btn-secondary !bg-white !px-6 border border-slate-200 flex items-center gap-2"
@@ -211,22 +213,22 @@ const Reports = () => {
                             }}
                         >
                             <FileText size={18} />
-                            Download CSV
+                            {t('Download CSV')}
                         </button>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-bold text-slate-400 uppercase">From:</span>
+                            <span className="text-[11px] font-bold text-slate-400 uppercase">{t('From')}:</span>
                             <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
                                 className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 outline-none shadow-sm" />
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-[11px] font-bold text-slate-400 uppercase">To:</span>
+                            <span className="text-[11px] font-bold text-slate-400 uppercase">{t('To')}:</span>
                             <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)}
                                 className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 outline-none shadow-sm" />
                         </div>
                         <button onClick={() => window.print()} className="btn-secondary !px-5">
-                            Print Report
+                            {t('Print Report')}
                         </button>
                     </div>
                 </div>

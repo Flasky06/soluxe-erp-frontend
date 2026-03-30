@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../../services/api';
 import { Pencil, Trash2, Plus, Info } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Settings = () => {
+    const { t } = useLanguage();
     const [activeTab, setActiveTab] = useState('users');
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -214,10 +216,10 @@ const Settings = () => {
                             <table className="management-table" style={{ minWidth: '800px' }}>
                                 <thead>
                                     <tr>
-                                        <th>User</th>
-                                        <th>Contact Information</th>
-                                        <th>Role</th>
-                                        <th>Status</th>
+                                        <th>{t('User')}</th>
+                                        <th>{t('Contact Information')}</th>
+                                        <th>{t('Role')}</th>
+                                        <th>{t('Status')}</th>
                                         <th className="text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -281,37 +283,37 @@ const Settings = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="form-section-title mt-4 md:col-span-2">General Details</div>
                             <div className="form-group">
-                                <label>Hotel Name</label>
+                                <label>{t('Hotel Name')}</label>
                                 <input type="text" value={hotelInfo.name} onChange={(e) => setHotelInfo({...hotelInfo, name: e.target.value})} />
                             </div>
                             <div className="form-group">
-                                <label>Business Email</label>
+                                <label>{t('Business Email')}</label>
                                 <input type="email" value={hotelInfo.email} onChange={(e) => setHotelInfo({...hotelInfo, email: e.target.value})} />
                             </div>
                             <div className="form-group">
-                                <label>Contact Phone</label>
+                                <label>{t('Contact Phone')}</label>
                                 <input type="text" value={hotelInfo.phone} onChange={(e) => setHotelInfo({...hotelInfo, phone: e.target.value})} />
                             </div>
                             <div className="form-group">
-                                <label>Website</label>
+                                <label>{t('Website')}</label>
                                 <input type="text" value={hotelInfo.website} onChange={(e) => setHotelInfo({...hotelInfo, website: e.target.value})} />
                             </div>
                             <div className="form-group md:col-span-2">
-                                <label>Physical Address</label>
+                                <label>{t('Physical Address')}</label>
                                 <textarea rows="2" value={hotelInfo.address} onChange={(e) => setHotelInfo({...hotelInfo, address: e.target.value})} className="min-h-[60px]"></textarea>
                             </div>
 
                             <div className="form-section-title mt-4 md:col-span-2">Legal & Registration</div>
                             <div className="form-group">
-                                <label>KRA PIN</label>
+                                <label>{t('KRA PIN')}</label>
                                 <input type="text" value={hotelInfo.kraPin} onChange={(e) => setHotelInfo({...hotelInfo, kraPin: e.target.value})} />
                             </div>
                             <div className="form-group">
-                                <label>Business Reg. No</label>
+                                <label>{t('Business Reg. No')}</label>
                                 <input type="text" value={hotelInfo.companyReg} onChange={(e) => setHotelInfo({...hotelInfo, companyReg: e.target.value})} />
                             </div>
                             <div className="form-group">
-                                <label>VAT Status</label>
+                                <label>{t('VAT Status')}</label>
                                 <select value={hotelInfo.vatStatus} onChange={(e) => setHotelInfo({...hotelInfo, vatStatus: e.target.value})}>
                                     <option value="Registered">Registered</option>
                                     <option value="Not Registered">Not Registered</option>
@@ -320,25 +322,25 @@ const Settings = () => {
 
                             <div className="form-section-title mt-4 md:col-span-2">Operations</div>
                             <div className="form-group">
-                                <label>Check-in Time</label>
+                                <label>{t('Check-in Time')}</label>
                                 <input type="time" value={hotelInfo.checkInTime} onChange={(e) => setHotelInfo({...hotelInfo, checkInTime: e.target.value})} />
                             </div>
                             <div className="form-group">
-                                <label>Check-out Time</label>
+                                <label>{t('Check-out Time')}</label>
                                 <input type="time" value={hotelInfo.checkOutTime} onChange={(e) => setHotelInfo({...hotelInfo, checkOutTime: e.target.value})} />
                             </div>
 
                             <div className="form-section-title mt-4 md:col-span-2">Taxes & Charges config</div>
                             <div className="form-group">
-                                <label>VAT Percentage (%)</label>
+                                <label>{t('VAT Percentage (%)')}</label>
                                 <input type="number" step="0.1" value={hotelInfo.vatPercentage} onChange={(e) => setHotelInfo({...hotelInfo, vatPercentage: parseFloat(e.target.value) || 0})} />
                             </div>
                             <div className="form-group">
-                                <label>Service Charge (%)</label>
+                                <label>{t('Service Charge (%)')}</label>
                                 <input type="number" step="0.1" value={hotelInfo.serviceChargePercentage} onChange={(e) => setHotelInfo({...hotelInfo, serviceChargePercentage: parseFloat(e.target.value) || 0})} />
                             </div>
                             <div className="form-group">
-                                <label>Tourism Levy (%)</label>
+                                <label>{t('Tourism Levy (%)')}</label>
                                 <input type="number" step="0.1" value={hotelInfo.tourismLevyPercentage} onChange={(e) => setHotelInfo({...hotelInfo, tourismLevyPercentage: parseFloat(e.target.value) || 0})} />
                             </div>
                         </div>
@@ -386,8 +388,8 @@ const Settings = () => {
                                 <table className="management-table" style={{ minWidth: '500px' }}>
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Description</th>
+                                            <th>{t('Name')}</th>
+                                            <th>{t('Description')}</th>
                                             <th className="text-right">Actions</th>
                                         </tr>
                                     </thead>
@@ -434,7 +436,7 @@ const Settings = () => {
                     {/* ... same as before */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-7">
                         <div className="form-group">
-                            <label>Username</label>
+                            <label>{t('Username')}</label>
                             <input 
                                 type="text" 
                                 required 
@@ -445,7 +447,7 @@ const Settings = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Full Name</label>
+                            <label>{t('Full Name')}</label>
                             <input 
                                 type="text" 
                                 required 
@@ -455,7 +457,7 @@ const Settings = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Email Address</label>
+                            <label>{t('Email Address')}</label>
                             <input 
                                 type="email" 
                                 required 
@@ -465,7 +467,7 @@ const Settings = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Phone Number</label>
+                            <label>{t('Phone Number')}</label>
                             <input 
                                 type="text" 
                                 value={formData.phoneNumber} 
@@ -474,7 +476,7 @@ const Settings = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Security Role</label>
+                            <label>{t('Security Role')}</label>
                             <select 
                                 value={formData.role} 
                                 onChange={(e) => setFormData({...formData, role: e.target.value})}
@@ -535,7 +537,7 @@ const Settings = () => {
                 <form onSubmit={handleDefSubmit}>
                     <div className="flex flex-col gap-6 p-7">
                         <div className="form-group">
-                            <label>Display Name</label>
+                            <label>{t('Display Name')}</label>
                             <input 
                                 type="text" 
                                 required 
@@ -545,7 +547,7 @@ const Settings = () => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Description (Optional)</label>
+                            <label>{t('Description (Optional)')}</label>
                             <textarea 
                                 rows="3"
                                 value={defFormData.description} 

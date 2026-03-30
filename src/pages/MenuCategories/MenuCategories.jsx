@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const MenuCategories = () => {
+    const { t } = useLanguage();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -89,9 +91,9 @@ const MenuCategories = () => {
                         <table className="management-table" style={{ minWidth: '500px' }}>
                             <thead>
                                 <tr>
-                                    <th>Category Name</th>
-                                    <th>Sort Order</th>
-                                    <th>Status</th>
+                                    <th>{t('Category Name')}</th>
+                                    <th>{t('Sort Order')}</th>
+                                    <th>{t('Status')}</th>
                                     <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -135,11 +137,11 @@ const MenuCategories = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Category Name</label>
+                                    <label>{t('Category Name')}</label>
                                     <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="e.g. Appetizers, Main Course, House Wines" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Sort Order</label>
+                                    <label>{t('Sort Order')}</label>
                                     <input type="number" value={formData.sortOrder} onChange={(e) => setFormData({...formData, sortOrder: parseInt(e.target.value)})} />
                                 </div>
                                 <div className="flex items-center gap-2.5 mt-6">

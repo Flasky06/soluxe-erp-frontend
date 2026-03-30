@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Rooms = () => {
+    const { t } = useLanguage();
     const [rooms, setRooms] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -148,37 +150,37 @@ const Rooms = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" onClick={() => setShowTypeModal(true)}>
-                        Configure Types
+                        {t('Configure Types')}
                     </button>
-                    <button className="btn-primary" onClick={() => handleOpenModal()}>Add New Room</button>
+                    <button className="btn-primary" onClick={() => handleOpenModal()}>{t('Add New Room')}</button>
                 </div>
             </div>
 
             <div className="premium-card">
                 <div className="overflow-x-auto w-full">
                     {loading && rooms.length === 0 ? (
-                        <div className="text-center py-20 text-text-slate animate-pulse font-medium">Loading rooms...</div>
+                        <div className="text-center py-20 text-text-slate animate-pulse font-medium">{t('Loading rooms...')}</div>
                     ) : (
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>Room Number</th>
-                                    <th>Type</th>
-                                    <th>Floor</th>
-                                    <th>Status</th>
-                                    <th>Housekeeping</th>
-                                    <th className="text-right">Actions</th>
+                                    <th>{t('Room Number')}</th>
+                                    <th>{t('Type')}</th>
+                                    <th>{t('Floor')}</th>
+                                    <th>{t('Status')}</th>
+                                    <th>{t('Housekeeping')}</th>
+                                    <th className="text-right">{t('Actions')}</th>
                                 </tr>
                             </thead>
                         <tbody>
                             {filteredRooms.length > 0 ? (
                                 filteredRooms.map((room) => (
                                     <tr key={room.id}>
-                                        <td className="font-bold text-slate-900">Room {room.roomNumber}</td>
+                                        <td className="font-bold text-slate-900">{t('Room')} {room.roomNumber}</td>
                                         <td>
                                             <span className="font-semibold text-slate-700">{room.roomType?.name || '-'}</span>
                                         </td>
-                                        <td>Floor {room.floor}</td>
+                                        <td>{t('Floor')} {room.floor}</td>
                                         <td>
                                             <span className={`status-badge ${getStatusClass(room.status)}`}>
                                                 {room.status || 'UNKNOWN'}
@@ -187,16 +189,16 @@ const Rooms = () => {
                                         <td>
                                             <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider">
                                                 {room.status === 'DIRTY' ? (
-                                                    <span className="text-amber-600">Needs Cleaning</span>
+                                                    <span className="text-amber-600">{t('Needs Cleaning')}</span>
                                                 ) : (
-                                                    <span className="text-emerald-600">Clean</span>
+                                                    <span className="text-emerald-600">{t('Clean')}</span>
                                                 )}
                                             </div>
                                         </td>
                                         <td>
                                             <div className="table-actions">
-                                                <button className="view-btn" onClick={() => handleOpenModal(room)}>Edit</button>
-                                                <button className="delete-btn" onClick={() => handleDelete(room.id)}>Delete</button>
+                                                <button className="view-btn" onClick={() => handleOpenModal(room)}>{t('Edit')}</button>
+                                                <button className="delete-btn" onClick={() => handleDelete(room.id)}>{t('Delete')}</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -204,7 +206,7 @@ const Rooms = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="6" className="text-center py-20 text-slate-400 font-medium italic">
-                                        {searchTerm ? 'No rooms match your search.' : 'No rooms found.'}
+                                        {searchTerm ? t('No rooms match your search.') : t('No rooms found.')}
                                     </td>
                                 </tr>
                             )}
@@ -217,28 +219,28 @@ const Rooms = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingRoom ? 'Edit Room' : 'Add New Room'}
+                title={editingRoom ? t('Edit Room') : t('Add New Room')}
                 size="md"
                 customClasses="!w-[70%] !max-w-[800px]"
             >
                 <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
-                                    <label>Room Number</label>
+                                    <label>{t('Room Number')}</label>
                                     <input type="text" required value={formData.roomNumber} onChange={(e) => setFormData({...formData, roomNumber: e.target.value})} placeholder="e.g. 101" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Floor</label>
+                                    <label>{t('Floor')}</label>
                                     <input type="text" required value={formData.floor} onChange={(e) => setFormData({...formData, floor: e.target.value})} placeholder="e.g. 1" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Room Category</label>
+                                    <label>{t('Room Category')}</label>
                                     <select 
                                         required 
                                         value={formData.roomTypeId} 
                                         onChange={(e) => setFormData({...formData, roomTypeId: e.target.value})}
                                     >
-                                        <option value="">-- Select Type --</option>
+                                        <option value="">{t('-- Select Type --')}</option>
                                         {roomTypes.map(type => (
                                             <option key={type.id} value={type.id}>{type.name}</option>
                                         ))}
@@ -246,44 +248,44 @@ const Rooms = () => {
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Status</label>
+                                    <label>{t('Status')}</label>
                                     <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
-                                        <option value="AVAILABLE">AVAILABLE</option>
-                                        <option value="OCCUPIED">OCCUPIED</option>
-                                        <option value="MAINTENANCE">MAINTENANCE</option>
-                                        <option value="DIRTY">DIRTY</option>
+                                        <option value="AVAILABLE">{t('AVAILABLE')}</option>
+                                        <option value="OCCUPIED">{t('OCCUPIED')}</option>
+                                        <option value="MAINTENANCE">{t('MAINTENANCE')}</option>
+                                        <option value="DIRTY">{t('DIRTY')}</option>
                                     </select>
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">Cancel</button>
-                                <button type="submit" className="btn-primary !px-10">{editingRoom ? 'Save Changes' : 'Save Room'}</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="btn-secondary !px-10">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary !px-10">{editingRoom ? t('Save Changes') : t('Save Room')}</button>
                             </div>
                         </form>
             </Modal>
             <Modal
                 isOpen={showTypeModal}
                 onClose={() => setShowTypeModal(false)}
-                title="Add Room Category"
+                title={t('Add Room Category')}
                 size="sm"
                 customClasses="!w-[90%] !max-w-[500px]"
             >
                 <form onSubmit={handleCreateType} className="form-grid">
                             <div className="form-group full-width">
-                                <label>Category Name</label>
+                                <label>{t('Category Name')}</label>
                                 <input type="text" required value={typeFormData.name} onChange={e => setTypeFormData({...typeFormData, name: e.target.value})} placeholder="e.g. Deluxe Suite" />
                             </div>
                             <div className="form-group full-width">
-                                <label>Base Price ($)</label>
+                                <label>{t('Base Price ($)')}</label>
                                 <input type="number" required value={typeFormData.basePrice} onChange={e => setTypeFormData({...typeFormData, basePrice: e.target.value})} placeholder="5000" />
                             </div>
                             <div className="form-group full-width">
-                                <label>Description</label>
+                                <label>{t('Description')}</label>
                                 <textarea required value={typeFormData.description} onChange={e => setTypeFormData({...typeFormData, description: e.target.value})} placeholder="Features and amenities..." />
                             </div>
                             <div className="modal-footer col-span-full">
-                                <button type="button" onClick={() => setShowTypeModal(false)} className="btn-secondary">Cancel</button>
-                                <button type="submit" className="btn-primary">Create Category</button>
+                                <button type="button" onClick={() => setShowTypeModal(false)} className="btn-secondary">{t('Cancel')}</button>
+                                <button type="submit" className="btn-primary">{t('Create Category')}</button>
                             </div>
                         </form>
             </Modal>

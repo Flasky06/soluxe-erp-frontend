@@ -4,8 +4,10 @@ import { User, Search } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import GuestForm from '../../components/GuestForm/GuestForm';
 import Pagination from '../../components/Pagination/Pagination';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Guests = () => {
+    const { t } = useLanguage();
     const [guests, setGuests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -89,30 +91,30 @@ const Guests = () => {
                     <Search size={18} />
                     <input 
                         type="text" 
-                        placeholder="Search guests by name, phone, email or ID..." 
+                        placeholder={t('Search guests by name, phone, email or ID...')} 
                         className="search-input w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="flex items-center gap-4">
-                    <button className="btn-primary" onClick={() => handleOpenModal()}>Register Guest</button>
+                    <button className="btn-primary" onClick={() => handleOpenModal()}>{t('Register Guest')}</button>
                 </div>
             </div>
 
             <div className="premium-card">
                 <div className="overflow-x-auto w-full">
                     {loading ? (
-                        <div className="text-center py-20 text-text-slate animate-pulse">Loading guests...</div>
+                        <div className="text-center py-20 text-text-slate animate-pulse">{t('Loading guests...')}</div>
                     ) : (
                         <table className="management-table" style={{ minWidth: '900px' }}>
                             <thead>
                                 <tr>
-                                    <th>Guest</th>
-                                    <th>Contact</th>
-                                    <th>ID Info</th>
-                                    <th>Nationality</th>
-                                    <th className="text-right">Actions</th>
+                                    <th>{t('Guest')}</th>
+                                    <th>{t('Contact')}</th>
+                                    <th>{t('ID Info')}</th>
+                                    <th>{t('Nationality')}</th>
+                                    <th className="text-right">{t('Actions')}</th>
                                 </tr>
                             </thead>
                         <tbody>
@@ -165,14 +167,14 @@ const Guests = () => {
                                                     window.location.href = `/check-in?guestId=${guest.id}`;
                                                 }}
                                             >
-                                                Check In
+                                                {t('Check In')}
                                             </a>
-                                            <button className="view-btn" onClick={() => handleOpenModal(guest)}>Edit</button>
+                                            <button className="view-btn" onClick={() => handleOpenModal(guest)}>{t('Edit')}</button>
                                             <button 
                                                 className="btn-secondary !py-1 !px-3 text-xs !bg-slate-50 !text-slate-500 !border-slate-100 hover:!bg-slate-100" 
                                                 onClick={() => handleVoidGuest(guest.id)}
                                             >
-                                                Void
+                                                {t('Void')}
                                             </button>
                                         </div>
                                     </td>
@@ -202,7 +204,7 @@ const Guests = () => {
             <Modal
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
-                title={editingGuest ? 'Guest Profile' : 'Register New Guest'}
+                title={editingGuest ? t('Guest Profile') : t('Register New Guest')}
                 size="lg"
                 customClasses="!max-w-[1000px] !p-0"
             >
@@ -211,7 +213,7 @@ const Guests = () => {
                         className={`px-6 py-3 font-bold text-sm transition-all ${activeTab === 'profile' ? 'border-b-2 border-primary text-primary' : 'text-text-slate hover:text-primary'}`}
                         onClick={() => setActiveTab('profile')}
                     >
-                        Profile Details
+                        {t('Profile Details')}
                     </button>
                     {editingGuest && (
                         <button 
@@ -221,7 +223,7 @@ const Guests = () => {
                                 if (stayHistory.length === 0) fetchStayHistory(editingGuest.id);
                             }}
                         >
-                            Stay History
+                            {t('Stay History')}
                         </button>
                     )}
                 </div>
@@ -238,22 +240,22 @@ const Guests = () => {
                 ) : (
                     <div className="p-6 overflow-y-auto max-h-[80vh]">
                         {historyLoading ? (
-                            <div className="text-center py-10 animate-pulse text-text-slate">Loading history...</div>
+                            <div className="text-center py-10 animate-pulse text-text-slate">{t('Loading history...')}</div>
                         ) : stayHistory.length > 0 ? (
                         <div className="overflow-x-auto w-full">
                             <table className="management-table" style={{ minWidth: '600px' }}>
                                 <thead>
                                     <tr>
-                                        <th>Room</th>
-                                        <th>Dates</th>
-                                        <th>Duration</th>
-                                        <th>Status</th>
+                                        <th>{t('Room')}</th>
+                                        <th>{t('Dates')}</th>
+                                        <th>{t('Duration')}</th>
+                                        <th>{t('Status')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {stayHistory.map(stay => (
                                         <tr key={stay.id}>
-                                            <td><span className="font-bold text-text-dark">Room {stay.roomId}</span></td>
+                                            <td><span className="font-bold text-text-dark">{t('Room')} {stay.roomId}</span></td>
                                             <td className="text-xs">
                                                 {new Date(stay.dateIn).toLocaleDateString()} — {stay.actualDateOut ? new Date(stay.actualDateOut).toLocaleDateString() : (stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : 'Active')}
                                             </td>
@@ -271,7 +273,7 @@ const Guests = () => {
                             </table>
                         </div>
                         ) : (
-                            <div className="text-center py-20 text-text-slate italic">No past stays recorded for this guest.</div>
+                            <div className="text-center py-20 text-text-slate italic">{t('No past stays recorded for this guest.')}</div>
                         )}
                     </div>
                 )}

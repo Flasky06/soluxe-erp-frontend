@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search, Plus, Wrench } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const MaintenanceIssueTypes = () => {
+    const { t } = useLanguage();
     const [issueTypes, setIssueTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -97,7 +99,7 @@ const MaintenanceIssueTypes = () => {
                         <table className="management-table" style={{ minWidth: '400px' }}>
                             <thead>
                                 <tr>
-                                    <th>Category Name</th>
+                                    <th>{t('Category Name')}</th>
                                     <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -139,7 +141,7 @@ const MaintenanceIssueTypes = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-6 p-7">
                                 <div className="form-group">
-                                    <label>Category Label</label>
+                                    <label>{t('Category Label')}</label>
                                     <input 
                                         type="text" 
                                         required 

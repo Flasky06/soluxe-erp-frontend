@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Venues = () => {
+    const { t } = useLanguage();
     const [venues, setVenues] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -103,11 +105,11 @@ const Venues = () => {
                     <table className="management-table" style={{ minWidth: '900px' }}>
                         <thead>
                             <tr>
-                                <th>Venue Name</th>
-                                <th>Type</th>
-                                <th>Capacity</th>
-                                <th>Hourly Rate</th>
-                                <th>Daily Rate</th>
+                                <th>{t('Venue Name')}</th>
+                                <th>{t('Type')}</th>
+                                <th>{t('Capacity')}</th>
+                                <th>{t('Hourly Rate')}</th>
+                                <th>{t('Daily Rate')}</th>
                                 <th className="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -155,7 +157,7 @@ const Venues = () => {
                 <form onSubmit={handleSubmit}>
                             <div className="form-grid">
                                 <div className="form-group">
-                                    <label>Venue Name</label>
+                                    <label>{t('Venue Name')}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -165,7 +167,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Venue Type</label>
+                                    <label>{t('Venue Type')}</label>
                                     <input 
                                         type="text" 
                                         required 
@@ -175,7 +177,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Capacity (Pax)</label>
+                                    <label>{t('Capacity (Pax)')}</label>
                                     <input 
                                         type="number" 
                                         required 
@@ -184,7 +186,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Hourly Rate ($)</label>
+                                    <label>{t('Hourly Rate ($)')}</label>
                                     <input 
                                         type="number" 
                                         required 
@@ -193,7 +195,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Daily Rate ($)</label>
+                                    <label>{t('Daily Rate ($)')}</label>
                                     <input 
                                         type="number" 
                                         required 
@@ -202,7 +204,7 @@ const Venues = () => {
                                     />
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Description</label>
+                                    <label>{t('Description')}</label>
                                     <textarea 
                                         rows="3" 
                                         value={formData.description} 

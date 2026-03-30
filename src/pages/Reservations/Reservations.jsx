@@ -10,9 +10,11 @@ import {
 import GuestForm from '../../components/GuestForm/GuestForm';
 import Pagination from '../../components/Pagination/Pagination';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Reservations = () => {
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const [reservations, setReservations] = useState([]);
     const [guests, setGuests] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
@@ -312,9 +314,9 @@ const Reservations = () => {
         <div className="flex flex-col gap-6">
             {/* Header & New Action */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 className="text-xl font-bold text-slate-800">Reservations</h1>
+                <h1 className="text-xl font-bold text-slate-800">{t('Reservations')}</h1>
                 <button className="btn-primary flex items-center gap-2 h-11 w-full sm:w-auto justify-center" onClick={() => handleOpenBookingModal()}>
-                    <span>+ New Reservation</span>
+                    <span>{t('New Reservation')}</span>
                 </button>
             </div>
 
@@ -322,7 +324,7 @@ const Reservations = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="premium-card p-5 border-l-4 border-l-maroon flex items-center justify-between">
                     <div>
-                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Bookings</p>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('Total Bookings')}</p>
                         <h3 className="text-2xl font-black text-text-dark mt-1">{stats.total}</h3>
                     </div>
                     <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
@@ -331,7 +333,7 @@ const Reservations = () => {
                 </div>
                 <div className="premium-card p-5 border-l-4 border-l-blue-500 flex items-center justify-between">
                     <div>
-                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending Arrivals</p>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('Pending Arrivals')}</p>
                         <h3 className="text-2xl font-black text-text-dark mt-1">{stats.booked}</h3>
                     </div>
                     <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-500">
@@ -340,7 +342,7 @@ const Reservations = () => {
                 </div>
                 <div className="premium-card p-5 border-l-4 border-l-emerald-500 flex items-center justify-between">
                     <div>
-                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">In-House Now</p>
+                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('In-House Now')}</p>
                         <h3 className="text-2xl font-black text-text-dark mt-1">{stats.inHouse}</h3>
                     </div>
                     <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500">
@@ -355,7 +357,7 @@ const Reservations = () => {
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-maroon transition-colors" size={18} />
                     <input 
                         type="text" 
-                        placeholder="Search by guest name..." 
+                        placeholder={t('Search by guest name...')} 
                         className="w-full pl-11 pr-4 py-2 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-maroon/10 outline-none transition-all"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -363,18 +365,18 @@ const Reservations = () => {
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto">
                     <div className="flex items-center gap-2 text-slate-400 text-sm font-semibold whitespace-nowrap px-2">
-                        <Filter size={16} /> Filter:
+                        <Filter size={16} /> {t('Filter')}:
                     </div>
                     <select 
                         className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-maroon/10 outline-none cursor-pointer hover:border-slate-300 transition-all w-full md:w-[160px]"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
-                        <option value="ALL">All Status</option>
-                        <option value="BOOKED">Pending</option>
-                        <option value="CHECKED_IN">In-House</option>
-                        <option value="CHECKED_OUT">Completed</option>
-                        <option value="CANCELLED">Cancelled</option>
+                        <option value="ALL">{t('All Status')}</option>
+                        <option value="BOOKED">{t('Pending')}</option>
+                        <option value="CHECKED_IN">{t('In-House')}</option>
+                        <option value="CHECKED_OUT">{t('Completed')}</option>
+                        <option value="CANCELLED">{t('Cancelled')}</option>
                     </select>
                 </div>
             </div>
@@ -385,11 +387,11 @@ const Reservations = () => {
                     <table className="management-table" style={{ minWidth: '1000px' }}>
                         <thead>
                             <tr className="bg-slate-50/50">
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Guest</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Type & Info</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Schedule</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">Status</th>
-                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100 text-right">Actions</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">{t('Guest')}</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">{t('Type & Info')}</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">{t('Schedule')}</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">{t('Status')}</th>
+                                <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100 text-right">{t('Actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
@@ -414,7 +416,7 @@ const Reservations = () => {
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-bold text-text-dark">{guest.fullName}</p>
-                                                        <p className="text-[11px] text-text-slate">{guest.email || 'No email provided'}</p>
+                                                        <p className="text-[11px] text-text-slate">{guest.email || t('No email provided')}</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -465,7 +467,7 @@ const Reservations = () => {
                                                             className="btn-primary !py-1.5 !px-4 flex items-center gap-2 text-xs uppercase tracking-widest font-black shadow-md shadow-maroon/20 hover:shadow-lg hover:shadow-maroon/30 transition-all" 
                                                             onClick={() => handleOpenManageModal(res)}
                                                         >
-                                                            Manage
+                                                            {t('Manage')}
                                                         </button>
                                                     ) : (
                                                         <button 
@@ -488,8 +490,8 @@ const Reservations = () => {
                                                 <Search size={32} />
                                             </div>
                                             <div>
-                                                <p className="text-md font-bold text-text-dark">No reservations found</p>
-                                                <p className="text-sm text-text-slate">Try adjusting your filters or search query.</p>
+                                                <p className="text-md font-bold text-text-dark">{t('No reservations found')}</p>
+                                                <p className="text-sm text-text-slate">{t('Try adjusting your filters or search query.')}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -513,7 +515,7 @@ const Reservations = () => {
             <Modal
                 isOpen={showBookingModal}
                 onClose={() => setShowBookingModal(false)}
-                title={selectedReservation ? 'Modify Reservation' : 'Create New Booking'}
+                title={selectedReservation ? t('Modify Reservation') : t('Create New Booking')}
                 size="xl"
                 customClasses="!max-w-[1000px] !p-0"
             >
@@ -521,13 +523,13 @@ const Reservations = () => {
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <div className="flex justify-between items-center mb-1">
-                                        <label className="mb-0">Select Guest</label>
+                                        <label className="mb-0">{t('Select Guest')}</label>
                                         <button 
                                             type="button" 
                                             className="text-primary text-[11px] font-bold hover:underline"
                                             onClick={() => setShowQuickGuestModal(true)}
                                         >
-                                            + New Guest
+                                            {t('+ New Guest')}
                                         </button>
                                     </div>
                                     <select
@@ -536,7 +538,7 @@ const Reservations = () => {
                                         onChange={(e) => handleGuestChange(e.target.value)}
                                         disabled={!!selectedReservation}
                                     >
-                                        <option value="">-- Search for a Guest --</option>
+                                        <option value="">{t('-- Search for a Guest --')}</option>
                                         {guests.map(guest => (
                                             <option key={guest.id} value={guest.id}>{guest.fullName} ({guest.email})</option>
                                         ))}
@@ -544,45 +546,45 @@ const Reservations = () => {
                                 </div>
 
                                 <div className="form-group full-width">
-                                    <label>Booking Type</label>
+                                    <label>{t('Booking Type')}</label>
                                     <div className="flex flex-wrap gap-6 md:gap-10 mt-2">
                                         <label className="flex items-center gap-2.5 cursor-pointer text-[14px] font-bold text-text-dark">
-                                            <input type="radio" value="ROOM" checked={formData.bookingType === 'ROOM'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> Room Only
+                                            <input type="radio" value="ROOM" checked={formData.bookingType === 'ROOM'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> {t('Room Only')}
                                         </label>
                                         <label className="flex items-center gap-2.5 cursor-pointer text-[14px] font-bold text-text-dark">
-                                            <input type="radio" value="TABLE" checked={formData.bookingType === 'TABLE'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> Table Only
+                                            <input type="radio" value="TABLE" checked={formData.bookingType === 'TABLE'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> {t('Table Only')}
                                         </label>
                                         <label className="flex items-center gap-2.5 cursor-pointer text-[14px] font-bold text-text-dark">
-                                            <input type="radio" value="BOTH" checked={formData.bookingType === 'BOTH'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> Both
+                                            <input type="radio" value="BOTH" checked={formData.bookingType === 'BOTH'} onChange={(e) => setFormData({...formData, bookingType: e.target.value})} className="w-4 h-4 accent-maroon" /> {t('Both')}
                                         </label>
                                     </div>
                                 </div>
 
                                 {(formData.bookingType === 'ROOM' || formData.bookingType === 'BOTH') && (
                                     <>
-                                        <div className="form-section-title">Stay Configuration</div>
+                                        <div className="form-section-title">{t('Stay Configuration')}</div>
                                         <div className="form-group">
-                                            <label>Room Category</label>
+                                            <label>{t('Room Category')}</label>
                                             <select required={formData.bookingType !== 'TABLE'} value={formData.roomTypeId} onChange={(e) => setFormData({...formData, roomTypeId: parseInt(e.target.value)})}>
-                                                <option value="">-- Select Type --</option>
+                                                <option value="">{t('-- Select Type --')}</option>
                                                 {roomTypes.map(type => (
                                                     <option key={type.id} value={type.id}>{type.name} (${type.defaultRate}/night)</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className="form-group">
-                                            <label>Occupancy (Adults / Kids)</label>
+                                            <label>{t('Occupancy (Adults / Kids)')}</label>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                 <input type="number" min="1" required value={formData.adults} onChange={(e) => setFormData({...formData, adults: e.target.value})} />
                                                 <input type="number" min="0" value={formData.children} onChange={(e) => setFormData({...formData, children: e.target.value})} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label>Check-in</label>
+                                            <label>{t('Check-in')}</label>
                                             <input type="date" required={formData.bookingType !== 'TABLE'} value={formData.dateIn} onChange={(e) => setFormData({...formData, dateIn: e.target.value})} />
                                         </div>
                                         <div className="form-group">
-                                            <label>Check-out</label>
+                                            <label>{t('Check-out')}</label>
                                             <input type="date" required={formData.bookingType !== 'TABLE'} value={formData.dateOut} onChange={(e) => setFormData({...formData, dateOut: e.target.value})} />
                                         </div>
                                     </>
@@ -590,41 +592,41 @@ const Reservations = () => {
 
                                 {(formData.bookingType === 'TABLE' || formData.bookingType === 'BOTH') && (
                                     <>
-                                        <div className="form-section-title">Dining Reservation</div>
+                                        <div className="form-section-title">{t('Dining Reservation')}</div>
                                         <div className="form-group">
-                                            <label>Table Assignment</label>
+                                            <label>{t('Table Assignment')}</label>
                                             <select required={formData.bookingType !== 'ROOM'} value={formData.tableId} onChange={(e) => setFormData({...formData, tableId: parseInt(e.target.value)})}>
-                                                <option value="">-- Choose Table --</option>
+                                                <option value="">{t('-- Choose Table --')}</option>
                                                 {tables.map(table => (
                                                     <option key={table.id} value={table.id}>{table.tableName} ({table.location}) - Capacity {table.capacity}</option>
                                                 ))}
                                             </select>
                                         </div>
                                         <div className="form-group">
-                                            <label>Dining Time</label>
+                                            <label>{t('Dining Time')}</label>
                                             <input type="datetime-local" required={formData.bookingType !== 'ROOM'} value={formData.tableReservationTime} onChange={(e) => setFormData({...formData, tableReservationTime: e.target.value})} />
                                         </div>
                                         <div className="form-group">
-                                            <label>Table Pax</label>
+                                            <label>{t('Table Pax')}</label>
                                             <input type="number" min="1" required={formData.bookingType !== 'ROOM'} value={formData.tablePax} onChange={(e) => setFormData({...formData, tablePax: e.target.value})} />
                                         </div>
                                     </>
                                 )}
 
-                                <div className="form-section-title">Notes & Requests</div>
+                                <div className="form-section-title">{t('Notes & Requests')}</div>
                                 <div className="form-group full-width">
                                     <textarea 
                                         value={formData.specialRequests} 
                                         onChange={(e) => setFormData({...formData, specialRequests: e.target.value})} 
                                         className="min-h-[100px]" 
-                                        placeholder="Enter any guest requests or preferences..." 
+                                        placeholder={t('Enter any guest requests or preferences...')} 
                                     />
                                 </div>
                             </div>
 
                             <div className="modal-footer">
-                                <button type="button" onClick={() => setShowBookingModal(false)} className="btn-secondary">Discard</button>
-                                <button type="submit" className="btn-primary !px-12">{selectedReservation ? 'Update Booking' : 'Confirm Reservation'}</button>
+                                <button type="button" onClick={() => setShowBookingModal(false)} className="btn-secondary">{t('Discard')}</button>
+                                <button type="submit" className="btn-primary !px-12">{selectedReservation ? t('Update Booking') : t('Confirm Reservation')}</button>
                             </div>
                         </form>
             </Modal>
@@ -632,7 +634,7 @@ const Reservations = () => {
             <Modal
                 isOpen={showQuickGuestModal}
                 onClose={() => setShowQuickGuestModal(false)}
-                title="Quick Register Guest"
+                title={t('Quick Register Guest')}
                 size="lg"
                 customClasses="!max-w-[1000px] !p-0"
                 overlayClasses="z-[2000]"
@@ -774,8 +776,8 @@ const Reservations = () => {
                     <>
                         <div className="modal-header border-b border-slate-100 pb-4 mb-4">
                             <div>
-                                <h2 className="text-lg font-black text-slate-800">Manage Booking</h2>
-                                <p className="text-xs font-bold text-slate-400">Guest: {getGuest(actionReservation.guestId)?.fullName || 'Guest'}</p>
+                                <h2 className="text-lg font-black text-slate-800">{t('Manage Booking')}</h2>
+                                <p className="text-xs font-bold text-slate-400">{t('Guest')}: {getGuest(actionReservation.guestId)?.fullName || t('Guest')}</p>
                             </div>
                             <button className="close-modal-btn bg-slate-50 hover:bg-slate-100 rounded-full p-2 transition-colors" onClick={() => setShowActionModal(false)}>&times;</button>
                         </div>
@@ -793,7 +795,7 @@ const Reservations = () => {
                                             <LogOut size={18} className="rotate-180" />
                                         </div>
                                         <div className="flex flex-col items-start">
-                                            <span className="font-bold">Check-In Guest</span>
+                                            <span className="font-bold">{t('Check-In Guest')}</span>
                                             <span className="text-[10px] text-white/70 uppercase tracking-widest font-bold">Start Stay #Today</span>
                                         </div>
                                     </div>
@@ -812,8 +814,8 @@ const Reservations = () => {
                                         <CreditCard size={18} />
                                     </div>
                                     <div className="flex flex-col items-start">
-                                        <span className="font-bold text-slate-800">Receive Payment</span>
-                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Add to Folio</span>
+                                        <span className="font-bold text-slate-800">{t('Receive Payment')}</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">{t('Add to Folio')}</span>
                                     </div>
                                 </div>
                                 <ChevronRight size={18} className="text-slate-300 group-hover:text-maroon transition-colors" />
@@ -831,8 +833,8 @@ const Reservations = () => {
                                         <Edit size={18} />
                                     </div>
                                     <div className="flex flex-col items-start">
-                                        <span className="font-bold text-slate-800">Edit Details</span>
-                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Modify Booking</span>
+                                        <span className="font-bold text-slate-800">{t('Edit Details')}</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">{t('Modify Booking')}</span>
                                     </div>
                                 </div>
                                 <ChevronRight size={18} className="text-slate-300 group-hover:text-blue-500 transition-colors" />
@@ -850,8 +852,8 @@ const Reservations = () => {
                                         <UserX size={18} />
                                     </div>
                                     <div className="flex flex-col items-start">
-                                        <span className="font-bold text-slate-800">Mark No-Show</span>
-                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Release Room/Table</span>
+                                        <span className="font-bold text-slate-800">{t('Mark No-Show')}</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">{t('Release Room/Table')}</span>
                                     </div>
                                 </div>
                                 <ChevronRight size={18} className="text-slate-300 group-hover:text-orange-500 transition-colors" />
@@ -869,8 +871,8 @@ const Reservations = () => {
                                         <XCircle size={18} />
                                     </div>
                                     <div className="flex flex-col items-start">
-                                        <span className="font-bold text-slate-800">Cancel Booking</span>
-                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Void Reservation</span>
+                                        <span className="font-bold text-slate-800">{t('Cancel Booking')}</span>
+                                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">{t('Void Reservation')}</span>
                                     </div>
                                 </div>
                                 <ChevronRight size={18} className="text-slate-300 group-hover:text-red-500 transition-colors" />

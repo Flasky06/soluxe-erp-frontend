@@ -16,8 +16,10 @@ import {
     Coffee
 } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Restaurant = () => {
+    const { t } = useLanguage();
     const [tables, setTables] = useState([]);
     const [sessions, setSessions] = useState([]);
     const [stays, setStays] = useState([]);
@@ -203,11 +205,11 @@ const Restaurant = () => {
                         <table className="management-table" style={{ minWidth: '900px' }}>
                             <thead>
                                 <tr>
-                                    <th>Table</th>
-                                    <th>Location</th>
-                                    <th>Pax</th>
-                                    <th>Status</th>
-                                    <th>Current Guest</th>
+                                    <th>{t('Table')}</th>
+                                    <th>{t('Location')}</th>
+                                    <th>{t('Pax')}</th>
+                                    <th>{t('Status')}</th>
+                                    <th>{t('Current Guest')}</th>
                                     <th className="text-right pr-6">Management</th>
                                 </tr>
                             </thead>
@@ -320,9 +322,9 @@ const Restaurant = () => {
                         <table className="management-table" style={{ minWidth: '600px' }}>
                             <thead>
                                 <tr>
-                                    <th>Item Name</th>
-                                    <th>Category</th>
-                                    <th>Price</th>
+                                    <th>{t('Item Name')}</th>
+                                    <th>{t('Category')}</th>
+                                    <th>{t('Price')}</th>
                                     <th className="text-right pr-6">Action</th>
                                 </tr>
                             </thead>
@@ -392,7 +394,7 @@ const Restaurant = () => {
                 <form onSubmit={handleSessionSubmit}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Guest Name (Optional)</label>
+                                    <label>{t('Guest Name (Optional)')}</label>
                                     <input
                                         type="text"
                                         value={sessionFormData.guestName}
@@ -401,7 +403,7 @@ const Restaurant = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Pax Count</label>
+                                    <label>{t('Pax Count')}</label>
                                     <input
                                         type="number"
                                         min="1"
@@ -411,7 +413,7 @@ const Restaurant = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Billing Type</label>
+                                    <label>{t('Billing Type')}</label>
                                     <select
                                         value={sessionFormData.billingType}
                                         onChange={(e) => setSessionFormData({...sessionFormData, billingType: e.target.value})}
@@ -422,7 +424,7 @@ const Restaurant = () => {
                                 </div>
                                 {sessionFormData.billingType === 'CHARGE_TO_ROOM' && (
                                     <div className="form-group full-width">
-                                        <label>Select Active Room to Charge</label>
+                                        <label>{t('Select Active Room to Charge')}</label>
                                         <select
                                             required
                                             value={sessionFormData.stayId || ''}

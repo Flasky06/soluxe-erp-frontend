@@ -5,9 +5,11 @@ import useAuthStore from '../../store/authStore';
 import GuestForm from '../../components/GuestForm/GuestForm';
 import { Wallet } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const CheckIn = () => {
     const { user } = useAuthStore();
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(true);
 
     // Modal states
@@ -275,44 +277,44 @@ const CheckIn = () => {
                         setShowDirectCheckInModal(true);
                     }}
                 >
-                    + Check-in Guest
+                    + {t('Check-In Guest')}
                 </button>
             </div>
 
             {/* ACTIVE STAYS LIST */}
             <div className="premium-card">
                 <div className="px-6 py-4 border-b border-border-gray flex justify-between items-center bg-green-50/30">
-                    <h2 className="text-lg font-bold text-text-dark">Active Stays</h2>
+                    <h2 className="text-lg font-bold text-text-dark">{t('In-House Now')}</h2>
                     <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                        Currently in House
+                        {t('In-House')}
                     </span>
                 </div>
                 {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading active stays...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">{t('Loading...')}</div>
                 ) : activeStays.length === 0 ? (
-                    <div className="text-center py-20 text-text-slate italic">No active stays currently.</div>
+                    <div className="text-center py-20 text-text-slate italic">{t('No reservations found')}</div>
                 ) : (
                     <div className="overflow-x-auto w-full">
                         <table className="management-table" style={{ minWidth: '900px' }}>
                             <thead>
                                 <tr>
-                                    <th>Guest</th>
-                                    <th>Room</th>
-                                    <th>Check-in Date</th>
-                                    <th>Exp. Checkout</th>
-                                    <th>Occupancy</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>{t('Guest')}</th>
+                                    <th>{t('Room')}</th>
+                                    <th>{t('Check-in')}</th>
+                                    <th>{t('Check-out')}</th>
+                                    <th>{t('Occupancy (Adults / Kids)')}</th>
+                                    <th>{t('Status')}</th>
+                                    <th>{t('Actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {activeStays.map(stay => (
                                     <tr key={stay.id}>
                                         <td><span className="font-bold text-text-dark">{getGuestName(stay.guestId)}</span></td>
-                                        <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-bold">Room {stay.roomId}</span></td>
+                                        <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-bold">{t('Room')} {stay.roomId}</span></td>
                                         <td className="text-xs">{stay.dateIn ? new Date(stay.dateIn).toLocaleDateString() : '—'}</td>
                                         <td className="text-xs">{stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : '—'}</td>
-                                        <td className="text-xs">{stay.adults} Adults, {stay.children || 0} Children</td>
+                                        <td className="text-xs">{stay.adults} {t('Adults')}, {stay.children || 0} {t('Children')}</td>
                                         <td>
                                             <span className={`status-badge ${stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-booked'}`}>
                                                 {stay.status}
@@ -323,7 +325,7 @@ const CheckIn = () => {
                                                 className="btn-secondary !py-1 !px-3 text-[10px] !bg-slate-50 !text-slate-500 !border-slate-200 hover:!bg-slate-100"
                                                 onClick={() => handleVoidStay(stay.id)}
                                             >
-                                                Void
+                                                {t('Void')}
                                             </button>
                                         </td>
                                     </tr>
@@ -337,26 +339,26 @@ const CheckIn = () => {
             {/* RESERVATIONS LIST */}
             <div className="premium-card mt-12">
                 <div className="px-6 py-4 border-b border-border-gray flex justify-between items-center">
-                    <h2 className="text-lg font-bold text-text-dark">Pending Arrivals</h2>
+                    <h2 className="text-lg font-bold text-text-dark">{t('Pending Arrivals')}</h2>
                     <span className="bg-maroon/10 text-maroon text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                        From Reservations
+                        {t('Reservations')}
                     </span>
                 </div>
                 {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading arrivals...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">{t('Loading...')}</div>
                 ) : reservations.length === 0 ? (
-                    <div className="text-center py-20 text-text-slate italic">No pending arrivals to check in.</div>
+                    <div className="text-center py-20 text-text-slate italic">{t('No reservations pending check-in.')}</div>
                 ) : (
                     <div className="overflow-x-auto w-full">
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>Guest</th>
-                                    <th>Room Category</th>
-                                    <th>Check-in Date</th>
-                                    <th>Check-out Date</th>
-                                    <th>Occupancy</th>
-                                    <th>Actions</th>
+                                    <th>{t('Guest')}</th>
+                                    <th>{t('Room Category')}</th>
+                                    <th>{t('Check-in')}</th>
+                                    <th>{t('Check-out')}</th>
+                                    <th>{t('Occupancy (Adults / Kids)')}</th>
+                                    <th>{t('Actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -366,14 +368,14 @@ const CheckIn = () => {
                                         <td>{getRoomTypeName(res.roomTypeId)}</td>
                                         <td>{res.dateIn ? new Date(res.dateIn).toLocaleDateString() : '—'}</td>
                                         <td>{res.dateOut ? new Date(res.dateOut).toLocaleDateString() : '—'}</td>
-                                        <td>{res.adults} Adults, {res.children || 0} Children</td>
+                                        <td>{res.adults} {t('Adults')}, {res.children || 0} {t('Children')}</td>
                                         <td>
                                             <div className="table-actions">
                                                 <button className="btn-secondary !py-1 !px-3 flex items-center gap-1.5" onClick={() => handleOpenPaymentModal(res)}>
-                                                    <Wallet size={12} /> Pay
+                                                    <Wallet size={12} /> {t('Payment')}
                                                 </button>
                                                 <button className="view-btn" onClick={() => handleOpenResModal(res)}>
-                                                    Check In
+                                                    {t('Check In')}
                                                 </button>
                                             </div>
                                         </td>
@@ -389,7 +391,7 @@ const CheckIn = () => {
             <Modal
                 isOpen={showDirectCheckInModal}
                 onClose={() => setShowDirectCheckInModal(false)}
-                title="Guest Check-in"
+                title={t('Guest Check-In')}
                 size="md"
             >
                         
@@ -403,47 +405,47 @@ const CheckIn = () => {
                         <form onSubmit={handleDirectCheckIn} className="p-6">
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Select Guest</label>
+                                    <label>{t('Select Guest')}</label>
                                     <select
                                         required
                                         value={directCheckInData.guestId}
                                         onChange={e => setDirectCheckInData({ ...directCheckInData, guestId: e.target.value })}
                                     >
-                                        <option value="">-- Choose Guest --</option>
+                                        <option value="">{t('-- Search for a Guest --')}</option>
                                         {guests.map(g => (
                                             <option key={g.id} value={g.id}>{g.fullName} {g.email ? `(${g.email})` : ''}</option>
                                         ))}
                                     </select>
                                     <div className="flex justify-between items-center mt-1">
-                                        <span className="text-xs text-text-slate italic">Not in the list?</span>
+                                        <span className="text-xs text-text-slate italic">{t('Not in the list?')}</span>
                                         <button
                                             type="button"
                                             className="text-maroon hover:underline text-[11px] font-bold"
                                             onClick={() => setShowQuickGuestModal(true)}
                                         >
-                                            + REGISTER NEW GUEST
+                                            + {t('REGISTER NEW GUEST')}
                                         </button>
                                     </div>
                                 </div>
 
                                 <div className="form-group full-width">
-                                    <label>Assign Available Room</label>
+                                    <label>{t('Assign Room')}</label>
                                     <select
                                         required
                                         value={directCheckInData.roomId}
                                         onChange={e => setDirectCheckInData({ ...directCheckInData, roomId: e.target.value })}
                                     >
-                                        <option value="">-- Choose Room --</option>
+                                        <option value="">{t('-- Choose Room --')}</option>
                                         {availableDirectCheckInRooms.map(room => (
                                             <option key={room.id} value={room.id}>
-                                                Room {room.roomNumber} — Floor {room.floor} {room.roomType?.name ? `(${room.roomType.name})` : ''}
+                                                {t('Room')} {room.roomNumber} — {t('Floor')} {room.floor} {room.roomType?.name ? `(${room.roomType.name})` : ''}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Adults</label>
+                                    <label>{t('Adults')}</label>
                                     <input
                                         type="number" min="1" required
                                         value={directCheckInData.adults}
@@ -452,7 +454,7 @@ const CheckIn = () => {
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Children</label>
+                                    <label>{t('Children')}</label>
                                     <input
                                         type="number" min="0" required
                                         value={directCheckInData.children}
@@ -461,7 +463,7 @@ const CheckIn = () => {
                                 </div>
                                 
                                 <div className="form-group full-width">
-                                    <label>Expected Checkout Date</label>
+                                    <label>{t('Expected Checkout Date')}</label>
                                     <input
                                         type="date"
                                         required
@@ -470,41 +472,41 @@ const CheckIn = () => {
                                         onChange={e => setDirectCheckInData({ ...directCheckInData, dateOut: e.target.value })}
                                     />
                                     <p className="text-[10px] text-text-slate mt-1 italic leading-tight">
-                                        The total room charge will be calculated and posted to the folio automatically based on this date.
+                                        {t('The total room charge will be calculated and posted to the folio automatically based on this date.')}
                                     </p>
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Arriving From</label>
-                                    <input type="text" value={directCheckInData.arrivingFrom} onChange={e => setDirectCheckInData({ ...directCheckInData, arrivingFrom: e.target.value })} placeholder="City or Country" />
+                                    <label>{t('Arriving From')}</label>
+                                    <input type="text" value={directCheckInData.arrivingFrom} onChange={e => setDirectCheckInData({ ...directCheckInData, arrivingFrom: e.target.value })} placeholder={t('City or Country')} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Next Destination</label>
-                                    <input type="text" value={directCheckInData.nextDestination} onChange={e => setDirectCheckInData({ ...directCheckInData, nextDestination: e.target.value })} placeholder="Target Destination" />
+                                    <label>{t('Next Destination')}</label>
+                                    <input type="text" value={directCheckInData.nextDestination} onChange={e => setDirectCheckInData({ ...directCheckInData, nextDestination: e.target.value })} placeholder={t('Target Destination')} />
                                 </div>
                                 <div className="form-group">
-                                    <label>Arrival Flight #</label>
+                                    <label>{t('Arrival Flight #')}</label>
                                     <input type="text" value={directCheckInData.arrivalFlightNo} onChange={e => setDirectCheckInData({ ...directCheckInData, arrivalFlightNo: e.target.value })} placeholder="e.g. KQ101" />
                                 </div>
                                 <div className="form-group">
-                                    <label>Departure Flight #</label>
+                                    <label>{t('Departure Flight #')}</label>
                                     <input type="text" value={directCheckInData.departureFlightNo} onChange={e => setDirectCheckInData({ ...directCheckInData, departureFlightNo: e.target.value })} placeholder="e.g. KQ102" />
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Stay Notes</label>
+                                    <label>{t('Stay Notes')}</label>
                                     <textarea 
                                         className="w-full min-h-[60px]" 
                                         value={directCheckInData.notes} 
                                         onChange={e => setDirectCheckInData({ ...directCheckInData, notes: e.target.value })} 
-                                        placeholder="Special requests, billing instructions, etc."
+                                        placeholder={t('Special requests, billing instructions, etc.')}
                                     />
                                 </div>
                             </div>
 
                             <div className="modal-footer !px-0 mt-8">
-                                <button type="button" onClick={() => setShowDirectCheckInModal(false)} className="btn-secondary !px-10">Cancel</button>
+                                <button type="button" onClick={() => setShowDirectCheckInModal(false)} className="btn-secondary !px-10">{t('Cancel')}</button>
                                 <button type="submit" className="btn-primary !px-10" disabled={directCheckInLoading}>
-                                    {directCheckInLoading ? 'Loading...' : 'Complete Check-in'}
+                                    {directCheckInLoading ? t('Loading...') : t('Confirm Check-In')}
                                 </button>
                             </div>
                         </form>
@@ -514,38 +516,38 @@ const CheckIn = () => {
             <Modal
                 isOpen={showReservationModal && !!selectedReservation}
                 onClose={() => setShowReservationModal(false)}
-                title="Assign Room — Check-in"
+                title={t('Room Assignment')}
                 size="md"
                 customClasses="!w-[80%] !max-w-[700px]"
             >
                 {selectedReservation && (
                     <form onSubmit={handleResCheckIn}>
                                 <div className="bg-slate-50 p-5 rounded-xl border border-border-gray mb-6 flex flex-col gap-2">
-                                    <p className="text-text-dark"><strong>Guest:</strong> {getGuestName(selectedReservation.guestId)}</p>
-                                    <p className="text-text-dark"><strong>Category:</strong> {getRoomTypeName(selectedReservation.roomTypeId)}</p>
-                                    <p className="text-text-dark"><strong>Dates:</strong> {new Date(selectedReservation.dateIn).toLocaleDateString()} → {new Date(selectedReservation.dateOut).toLocaleDateString()}</p>
+                                    <p className="text-text-dark"><strong>{t('Guest')}:</strong> {getGuestName(selectedReservation.guestId)}</p>
+                                    <p className="text-text-dark"><strong>{t('Category')}:</strong> {getRoomTypeName(selectedReservation.roomTypeId)}</p>
+                                    <p className="text-text-dark"><strong>{t('Dates')}:</strong> {new Date(selectedReservation.dateIn).toLocaleDateString()} → {new Date(selectedReservation.dateOut).toLocaleDateString()}</p>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label>Available Rooms</label>
+                                    <label>{t('Available Rooms')}</label>
                                     {availableRooms.length === 0 ? (
-                                        <p className="text-red-500 text-sm font-medium mt-1">No available rooms match this category.</p>
+                                        <p className="text-red-500 text-sm font-medium mt-1">{t('No available rooms match this category.')}</p>
                                     ) : (
                                         <select
                                             required
                                             value={resCheckInRoomId}
                                             onChange={e => setResCheckInRoomId(e.target.value)}
                                         >
-                                            <option value="">-- Select Room Number --</option>
+                                            <option value="">{t('-- Select Room Number --')}</option>
                                             {availableRooms.map(room => (
-                                                <option key={room.id} value={room.id}>Room {room.roomNumber} — Floor {room.floor}</option>
+                                                <option key={room.id} value={room.id}>{t('Room')} {room.roomNumber} — {t('Floor')} {room.floor}</option>
                                             ))}
                                         </select>
                                     )}
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" onClick={() => setShowReservationModal(false)} className="btn-secondary">Cancel</button>
+                                    <button type="button" onClick={() => setShowReservationModal(false)} className="btn-secondary">{t('Cancel')}</button>
                                     <button type="submit" className="btn-primary" disabled={!resCheckInRoomId || availableRooms.length === 0 || resCheckInLoading}>
-                                        {resCheckInLoading ? 'Checking In...' : 'Complete Check-in'}
+                                        {resCheckInLoading ? t('Loading...') : t('Confirm Check-In')}
                                     </button>
                                 </div>
                         </form>
@@ -555,7 +557,7 @@ const CheckIn = () => {
             <Modal
                 isOpen={showQuickGuestModal}
                 onClose={() => setShowQuickGuestModal(false)}
-                title="Quick Register Guest"
+                title={t('Quick Register Guest')}
                 size="md"
                 customClasses="!w-[90%] !max-w-[800px]"
                 overlayClasses="z-[2000]"
@@ -578,7 +580,7 @@ const CheckIn = () => {
                         <div className="bg-maroon/10 p-2 rounded-lg">
                             <Wallet className="text-maroon" size={20} />
                         </div>
-                        Record Arrival Payment
+                        {t('Record Arrival Payment')}
                     </h2>
                     <button className="close-modal-btn !top-6 !right-6" onClick={() => setShowPaymentModal(false)}>&times;</button>
                 </div>
@@ -587,12 +589,12 @@ const CheckIn = () => {
                             {/* Summary Card */}
                             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8 flex items-center justify-between shadow-sm">
                                 <div className="flex flex-col">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Guest</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('Guest')}</p>
                                     <p className="text-xl font-black text-slate-900 leading-tight">{getGuestName(selectedReservation?.guestId)}</p>
-                                    <p className="text-xs text-slate-500 font-medium">Folio #{activeFolio?.id.toString().padStart(5, '0')}</p>
+                                    <p className="text-xs text-slate-500 font-medium">{t('Folio')} #{activeFolio?.id.toString().padStart(5, '0')}</p>
                                 </div>
                                 <div className="bg-white px-6 py-4 rounded-xl border border-slate-200 text-right shadow-sm">
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Current Balance</span>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">{t('Current Balance')}</span>
                                     <span className="text-2xl font-black text-maroon">$ {parseFloat(activeFolio?.totalAmount || 0).toLocaleString()}</span>
                                 </div>
                             </div>
@@ -600,7 +602,7 @@ const CheckIn = () => {
                             <form onSubmit={handleRecordPayment} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="form-group">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block text-left">Amount to Pay ($)</label>
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block text-left">{t('Amount to Pay ($)')}</label>
                                         <div className="relative">
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
                                             <input 
@@ -613,7 +615,7 @@ const CheckIn = () => {
                                         </div>
                                     </div>
                                     <div className="form-group text-left">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Payment Method</label>
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{t('Payment Method')}</label>
                                         <select 
                                             required 
                                             className="w-full !py-3 !px-4 !rounded-xl !border-slate-200 font-bold text-slate-700 h-[50px] bg-slate-50"
@@ -629,23 +631,23 @@ const CheckIn = () => {
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="form-group text-left">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Reference Code</label>
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{t('Reference Code')}</label>
                                         <input 
                                             type="text" 
                                             className="w-full !py-3 !px-4 !rounded-xl !border-slate-200 font-semibold"
                                             value={paymentData.referenceNumber} 
                                             onChange={e => setPaymentData({...paymentData, referenceNumber: e.target.value})} 
-                                            placeholder="Receipt / TXN ID" 
+                                            placeholder={t('Receipt / TXN ID')} 
                                         />
                                     </div>
                                     <div className="form-group text-left">
-                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Internal Notes</label>
+                                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{t('Internal Notes')}</label>
                                         <input 
                                             type="text" 
                                             className="w-full !py-3 !px-4 !rounded-xl !border-slate-200 font-semibold"
                                             value={paymentData.notes} 
                                             onChange={e => setPaymentData({...paymentData, notes: e.target.value})} 
-                                            placeholder="Optional comments..." 
+                                            placeholder={t('Optional comments...')} 
                                         />
                                     </div>
                                 </div>
@@ -656,13 +658,13 @@ const CheckIn = () => {
                                         onClick={() => setShowPaymentModal(false)} 
                                         className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-4 rounded-xl transition-all"
                                     >
-                                        Cancel
+                                        {t('Cancel')}
                                     </button>
                                     <button 
                                         type="submit" 
                                         className="flex-[2] bg-maroon hover:bg-[#6b0f11] text-white font-black text-lg py-4 rounded-xl shadow-lg shadow-maroon/20 transition-all flex items-center justify-center gap-2"
                                     >
-                                        <Wallet size={18} /> Confirm Payment
+                                        <Wallet size={18} /> {t('Confirm Payment')}
                                     </button>
                                 </div>
                             </form>

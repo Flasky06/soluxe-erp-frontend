@@ -3,8 +3,10 @@ import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Calendar, Plus, Clock, CheckCircle, XCircle, FileText, Search, User } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
+import { useLanguage } from '../../context/LanguageContext';
 
 const LeaveRequests = () => {
+    const { t } = useLanguage();
     const { user } = useAuthStore();
     const [requests, setRequests] = useState([]);
     const [leaveTypes, setLeaveTypes] = useState([]);
@@ -117,12 +119,12 @@ const LeaveRequests = () => {
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>Type</th>
-                                    <th>Duration</th>
-                                    <th>Status</th>
-                                    <th>Reason</th>
-                                    {isManager && <th>Employee</th>}
-                                    <th>Actions</th>
+                                    <th>{t('Type')}</th>
+                                    <th>{t('Duration')}</th>
+                                    <th>{t('Status')}</th>
+                                    <th>{t('Reason')}</th>
+                                    {isManager && <th>{t('Employee')}</th>}
+                                    <th>{t('Actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -209,7 +211,7 @@ const LeaveRequests = () => {
                 <form onSubmit={handleSubmit} className="p-4">
                             <div className="flex flex-col gap-6">
                                 <div className="form-group">
-                                    <label>Leave Category</label>
+                                    <label>{t('Leave Category')}</label>
                                     <select 
                                         required 
                                         value={formData.leaveTypeId} 
@@ -222,16 +224,16 @@ const LeaveRequests = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="form-group">
-                                        <label>Start Date</label>
+                                        <label>{t('Start Date')}</label>
                                         <input type="date" required value={formData.dateFrom} onChange={(e) => setFormData({...formData, dateFrom: e.target.value})} />
                                     </div>
                                     <div className="form-group">
-                                        <label>End Date</label>
+                                        <label>{t('End Date')}</label>
                                         <input type="date" required value={formData.dateTo} onChange={(e) => setFormData({...formData, dateTo: e.target.value})} />
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label>Reason for Absence</label>
+                                    <label>{t('Reason for Absence')}</label>
                                     <textarea 
                                         className="min-h-[100px]" 
                                         required 
