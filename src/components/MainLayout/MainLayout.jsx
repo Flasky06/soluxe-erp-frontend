@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar/Sidebar';
 import useNotifications from '../../services/useNotifications';
+import { useLanguage } from '../../context/LanguageContext';
 
 const colorMap = {
     blue:   { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-100'   },
@@ -48,6 +49,7 @@ const pageTitles = {
 
 const MainLayout = ({ children }) => {
     const { notifications, totalCount } = useNotifications();
+    const { language, toggleLanguage } = useLanguage();
     const [panelOpen, setPanelOpen] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -137,15 +139,28 @@ const MainLayout = ({ children }) => {
                     {/* Right-side actions — hidden on mobile */}
                     <div className="hidden md:flex items-center gap-6" ref={panelRef}>
                         
-                        {/* Date & Time Display */}
-                        <div className="hidden md:flex flex-col items-end border-r border-slate-100 pr-6">
+                        {/* Date & Time Display — flex row */}
+                        <div className="hidden md:flex items-center gap-2 border-r border-slate-100 pr-6">
                             <span className="text-[13px] font-bold text-slate-700 tracking-tight">
                                 {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            <span className="text-slate-300 font-light">·</span>
+                            <span className="text-[12px] font-semibold text-slate-400">
                                 {currentTime.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
                             </span>
                         </div>
+
+                        {/* Language Toggle */}
+                        <button
+                            onClick={toggleLanguage}
+                            title={language === 'en' ? 'Switch to Mandarin' : '切换至英文'}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white
+                                       text-[11px] font-extrabold text-slate-600 uppercase tracking-widest
+                                       hover:border-maroon hover:text-maroon transition-all duration-200 select-none"
+                        >
+                            <span className="text-base leading-none">{language === 'en' ? '🇨🇳' : '🇬🇧'}</span>
+                            {language === 'en' ? '中文' : 'EN'}
+                        </button>
 
                         {/* Notification Bell */}
                         <div className="relative">

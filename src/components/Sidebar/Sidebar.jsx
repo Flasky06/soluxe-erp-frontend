@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { useLocation, NavLink } from 'react-router-dom';
+import { useLocation, useNavigate, NavLink } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { useLanguage } from '../../context/LanguageContext';
 import { 
@@ -139,11 +139,12 @@ const menuGroups = [
 const Sidebar = ({ isOpen, onClose }) => {
     const { user, logout } = useAuthStore();
     const location = useLocation();
-    const { language, toggleLanguage, t } = useLanguage();
+    const navigate = useNavigate();
+    const { t } = useLanguage();
 
     const handleLogout = () => {
         logout();
-        window.location.href = 'https://soluxe.mflowpos.com';
+        navigate('/login');
     };
 
     // Helper to check if item is allowed for current user
@@ -195,7 +196,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             )}
             
             <aside className={`w-[90%] max-w-[300px] lg:w-[260px] h-screen bg-maroon border-r border-border-gray flex flex-col py-6 fixed left-0 top-0 z-[100] transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
-                <div className="px-6 mb-10 flex items-center justify-between lg:justify-start gap-4">
+                <div className="px-6 mb-4 flex items-center justify-between lg:justify-start gap-4">
                 <div className="flex items-center gap-4">
                     <img src="/logo/soluxe-logo.jpeg" alt="Soluxe Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg border border-white/20" />
                     <span className="text-xl font-extrabold -tracking-tight text-white uppercase tracking-tighter">Soluxe <span className="text-yellow">Club Hotel</span></span>
@@ -240,24 +241,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 ))}
             </nav>
 
-            {/* Language Toggle */}
-            <div className="px-6 pb-3">
-                <button
-                    onClick={toggleLanguage}
-                    title={language === 'en' ? 'Switch to Mandarin (中文)' : '切换到英文 (English)'}
-                    className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
-                >
-                    <div className="flex items-center gap-2.5">
-                        <span className="text-lg leading-none">{language === 'en' ? '🇺🇸' : '🇨🇳'}</span>
-                        <span className="text-[11px] font-bold text-white/70 uppercase tracking-widest group-hover:text-white transition-colors">
-                            {language === 'en' ? 'English' : '中文'}
-                        </span>
-                    </div>
-                    <span className="text-[10px] font-black text-white/40 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
-                        {language === 'en' ? '中文 →' : 'EN →'}
-                    </span>
-                </button>
-            </div>
+
 
             <div className="px-6 pb-6 border-t border-border-gray pt-4">
                 <div className="flex items-center gap-3">
