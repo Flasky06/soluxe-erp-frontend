@@ -3,8 +3,11 @@ import api from '../../services/api';
 import { Search, Plus, Building2 } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Departments = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [departments, setDepartments] = useState([]);
     const [error, setError] = useState(null);
@@ -73,6 +76,12 @@ const Departments = () => {
         dept.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const totalPages = Math.ceil(filteredDepartments.length / PAGE_SIZE);
+    const paginatedDepartments = filteredDepartments.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="table-tools">
@@ -83,7 +92,10 @@ const Departments = () => {
                         placeholder={t('Search departments...')}
                         className="search-input w-full"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
                     />
                 </div>
                 <button className="btn-primary" onClick={() => handleOpenModal()}>
@@ -107,7 +119,7 @@ const Departments = () => {
                             </tr>
                         </thead>
                     <tbody>
-                        {filteredDepartments.length > 0 ? filteredDepartments.map((dept) => (
+                        {paginatedDepartments.length > 0 ? paginatedDepartments.map((dept) => (
                             <tr key={dept.id}>
                                 <td>
                                     <div className="flex items-center gap-3">
@@ -132,6 +144,16 @@ const Departments = () => {
                 </table>
                 </div>
             </div>
+
+            {filteredDepartments.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredDepartments.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={isModalOpen}

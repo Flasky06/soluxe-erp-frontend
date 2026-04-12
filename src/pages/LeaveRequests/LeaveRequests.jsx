@@ -4,8 +4,11 @@ import useAuthStore from '../../store/authStore';
 import { Calendar, Plus, Clock, CheckCircle, XCircle, FileText, Search, User } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const LeaveRequests = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const { user } = useAuthStore();
     const [requests, setRequests] = useState([]);
@@ -92,6 +95,12 @@ const LeaveRequests = () => {
         }
     };
 
+    const totalPages = Math.ceil(requests.length / PAGE_SIZE);
+    const paginatedRequests = requests.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col gap-8">
             <div className="table-tools flex justify-between items-center">
@@ -134,7 +143,7 @@ const LeaveRequests = () => {
                                             <td colSpan={isManager ? 6 : 5} className="py-6"><div className="h-4 bg-slate-100 rounded"></div></td>
                                         </tr>
                                     ))
-                                ) : requests.length > 0 ? (requests.map(req => (
+                                ) : paginatedRequests.length > 0 ? (paginatedRequests.map(req => (
                                     <tr key={req.id}>
                                         <td><span className="font-bold text-text-dark">{req.leaveTypeName || t('General Leave')}</span></td>
                                         <td>
@@ -167,6 +176,17 @@ const LeaveRequests = () => {
                             </tbody>
                         </table>
                     </div>
+                    {!loading && requests.length > 0 && (
+                        <div className="p-4 border-t border-slate-100 bg-white">
+                            <Pagination 
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                                totalItems={requests.length}
+                                pageSize={PAGE_SIZE}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex flex-col gap-6">

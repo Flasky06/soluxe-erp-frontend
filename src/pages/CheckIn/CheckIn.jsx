@@ -6,9 +6,14 @@ import GuestForm from '../../components/GuestForm/GuestForm';
 import { Wallet } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const CheckIn = () => {
+    const [currentPageStays, setCurrentPageStays] = useState(1);
+    const [currentPageRes, setCurrentPageRes] = useState(1);
+    const PAGE_SIZE = 20;
     const { user } = useAuthStore();
+    const isAdmin = user?.role === 'ROLE_HOTEL_ADMIN' || user?.role === 'HOTEL_ADMIN';
     const { t } = useLanguage();
     const [loading, setLoading] = useState(true);
 
@@ -275,6 +280,18 @@ const CheckIn = () => {
         setShowQuickGuestModal(false);
     };
 
+    const totalPagesStays = Math.ceil(activeStays.length / PAGE_SIZE);
+    const paginatedStays = activeStays.slice(
+        (currentPageStays - 1) * PAGE_SIZE,
+        currentPageStays * PAGE_SIZE
+    );
+
+    const totalPagesRes = Math.ceil(reservations.length / PAGE_SIZE);
+    const paginatedRes = reservations.slice(
+        (currentPageRes - 1) * PAGE_SIZE,
+        currentPageRes * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="flex justify-end items-center mb-8">
@@ -313,11 +330,12 @@ const CheckIn = () => {
                                     <th>{t('Check-out')}</th>
                                     <th>{t('Occupancy (Adults / Kids)')}</th>
                                     <th>{t('Status')}</th>
+                                    {isAdmin && <th>{t('Audit')}</th>}
                                     <th>{t('Actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {activeStays.map(stay => (
+                                {paginatedStays.map(stay => (
                                     <tr key={stay.id}>
                                         <td><span className="font-bold text-text-dark">{getGuestName(stay.guestId)}</span></td>
                                         <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-bold">{t('Room')} {stay.roomId}</span></td>
@@ -329,6 +347,14 @@ const CheckIn = () => {
                                                 {stay.status}
                                             </span>
                                         </td>
+                                        {isAdmin && (
+                                            <td>
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-[10px] text-text-slate font-medium">{t('Created')}: <span className="font-bold text-text-dark">{stay.createdBy || '-'}</span></span>
+                                                    <span className="text-[10px] text-text-slate font-medium">{t('Modified')}: <span className="font-bold text-text-dark">{stay.modifiedBy || '-'}</span></span>
+                                                </div>
+                                            </td>
+                                        )}
                                         <td>
                                             <button 
                                                 className="btn-secondary !py-1 !px-3 text-[10px] !bg-slate-50 !text-slate-500 !border-slate-200 hover:!bg-slate-100"
@@ -341,6 +367,17 @@ const CheckIn = () => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+                {!loading && activeStays.length > 0 && (
+                    <div className="p-4 border-t border-slate-100 bg-white">
+                        <Pagination 
+                            currentPage={currentPageStays}
+                            totalPages={totalPagesStays}
+                            onPageChange={setCurrentPageStays}
+                            totalItems={activeStays.length}
+                            pageSize={PAGE_SIZE}
+                        />
                     </div>
                 )}
             </div>
@@ -367,17 +404,26 @@ const CheckIn = () => {
                                     <th>{t('Check-in')}</th>
                                     <th>{t('Check-out')}</th>
                                     <th>{t('Occupancy (Adults / Kids)')}</th>
+                                    {isAdmin && <th>{t('Audit')}</th>}
                                     <th>{t('Actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {reservations.map(res => (
+                                {paginatedRes.map(res => (
                                     <tr key={res.id}>
                                         <td><span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span></td>
                                         <td>{getRoomTypeName(res.roomTypeId)}</td>
                                         <td>{res.dateIn ? new Date(res.dateIn).toLocaleDateString() : '—'}</td>
                                         <td>{res.dateOut ? new Date(res.dateOut).toLocaleDateString() : '—'}</td>
                                         <td>{res.adults} {t('Adults')}, {res.children || 0} {t('Children')}</td>
+                                        {isAdmin && (
+                                            <td>
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-[10px] text-text-slate font-medium">{t('Created')}: <span className="font-bold text-text-dark">{res.createdBy || '-'}</span></span>
+                                                    <span className="text-[10px] text-text-slate font-medium">{t('Modified')}: <span className="font-bold text-text-dark">{res.modifiedBy || '-'}</span></span>
+                                                </div>
+                                            </td>
+                                        )}
                                         <td>
                                             <div className="table-actions">
                                                 <button className="btn-secondary !py-1 !px-3 flex items-center gap-1.5" onClick={() => handleOpenPaymentModal(res)}>
@@ -392,6 +438,17 @@ const CheckIn = () => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+                {!loading && reservations.length > 0 && (
+                    <div className="p-4 border-t border-slate-100 bg-white">
+                        <Pagination 
+                            currentPage={currentPageRes}
+                            totalPages={totalPagesRes}
+                            onPageChange={setCurrentPageRes}
+                            totalItems={reservations.length}
+                            pageSize={PAGE_SIZE}
+                        />
                     </div>
                 )}
             </div>
@@ -598,7 +655,7 @@ const CheckIn = () => {
                         <div className="p-8">
                             {/* Summary Card */}
                             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8 flex items-center justify-between shadow-sm">
-                                <div className="flex flex-col">
+                                <div>
                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('Guest')}</p>
                                     <p className="text-xl font-black text-slate-900 leading-tight">{getGuestName(selectedReservation?.guestId)}</p>
                                     <p className="text-xs text-slate-500 font-medium">{t('Folio')} #{activeFolio?.id.toString().padStart(5, '0')}</p>

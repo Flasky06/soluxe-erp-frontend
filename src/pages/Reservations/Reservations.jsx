@@ -11,10 +11,13 @@ import GuestForm from '../../components/GuestForm/GuestForm';
 import Pagination from '../../components/Pagination/Pagination';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import useAuthStore from '../../store/authStore';
 
 const Reservations = () => {
     const navigate = useNavigate();
     const { t } = useLanguage();
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'ROLE_HOTEL_ADMIN' || user?.role === 'HOTEL_ADMIN';
     const [reservations, setReservations] = useState([]);
     const [guests, setGuests] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
@@ -394,6 +397,7 @@ const Reservations = () => {
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">{t('Type & Info')}</th>
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">{t('Schedule')}</th>
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">{t('Status')}</th>
+                                {isAdmin && <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100">{t('Audit')}</th>}
                                 <th className="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] border-b border-slate-100 text-right">{t('Actions')}</th>
                             </tr>
                         </thead>
@@ -401,7 +405,7 @@ const Reservations = () => {
                             {loading ? (
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i} className="animate-pulse">
-                                        <td colSpan="5" className="px-6 py-8">
+                                        <td colSpan={isAdmin ? 6 : 5} className="px-6 py-8">
                                             <div className="h-4 bg-slate-100 rounded w-full"></div>
                                         </td>
                                     </tr>
@@ -463,6 +467,14 @@ const Reservations = () => {
                                                     {sInfo.label}
                                                 </span>
                                             </td>
+                                            {isAdmin && (
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className="text-[10px] text-text-slate font-medium">{t('Created')}: <span className="font-bold text-text-dark">{res.createdBy || '-'}</span></span>
+                                                        <span className="text-[10px] text-text-slate font-medium">{t('Modified')}: <span className="font-bold text-text-dark">{res.modifiedBy || '-'}</span></span>
+                                                    </div>
+                                                </td>
+                                            )}
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex justify-end items-center gap-2">
                                                     {res.status === 'BOOKED' ? (
@@ -487,7 +499,7 @@ const Reservations = () => {
                                 })
                             ) : (
                                 <tr>
-                                    <td colSpan="5" className="px-6 py-24 text-center">
+                                    <td colSpan={isAdmin ? 6 : 5} className="px-6 py-24 text-center">
                                         <div className="flex flex-col items-center gap-3">
                                             <div className="w-16 h-16 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center">
                                                 <Search size={32} />

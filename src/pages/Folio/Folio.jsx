@@ -5,10 +5,14 @@ import useAuthStore from '../../store/authStore';
 import { Search, Filter, Plus, FileText, CreditCard } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Folio = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const navigate = useNavigate();
     const { user } = useAuthStore();
+    const isAdmin = user?.role === 'ROLE_HOTEL_ADMIN' || user?.role === 'HOTEL_ADMIN';
     const { t } = useLanguage();
     const [folios, setFolios] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -41,6 +45,10 @@ const Folio = () => {
         amount: 0,
         referenceNumber: ''
     });
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, statusFilter]);
 
     const handleOpenChargeModal = (id) => {
         setSelectedFolioId(id);
@@ -234,32 +242,30 @@ const Folio = () => {
                                     <th>{t('Guest / Details')}</th>
                                     <th style={{ width: '100px' }}>{t('Type')}</th>
                                     <th style={{ width: '120px' }}>{t('Opened At')}</th>
-                                    <th style={{ width: '100px' }}>{t('Status')}</th>
-                                    <th style={{ width: '120px' }}>{t('Total Balance')}</th>
-                                    <th className="text-right" style={{ width: '250px' }}>{t('Actions')}</th>
+                                    <th className="px-4 py-3 font-bold text-slate-500 uppercase tracking-wider">{t('Amount')}</th>
+                                    <th className="px-4 py-3 font-bold text-slate-500 uppercase tracking-wider">{t('Status')}</th>
+                                    {isAdmin && <th className="px-4 py-3 font-bold text-slate-500 uppercase tracking-wider">{t('Audit')}</th>}
+                                    <th className="px-4 py-3 font-bold text-slate-500 text-right uppercase tracking-wider">{t('Actions')}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {folios.filter(f => {
-                                    const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
-                                    const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
-                                    const matchesSearch = f.id.toString().includes(searchQuery) || 
-                                                         f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                         guestMatch || roomMatch;
-                                    const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
-                                    return matchesSearch && matchesStatus;
-                                }).length > 0 ? (
-                                    folios
-                                        .filter(f => {
-                                            const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
-                                            const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
-                                            const matchesSearch = f.id.toString().includes(searchQuery) || 
-                                                                 f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                                 guestMatch || roomMatch;
-                                            const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
-                                            return matchesSearch && matchesStatus;
-                                        })
-                                        .map((folio) => (
+                                {(() => {
+                                    const filteredFolios = folios.filter(f => {
+                                        const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
+                                        const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+                                        const matchesSearch = f.id.toString().includes(searchQuery) || 
+                                                             f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                             guestMatch || roomMatch;
+                                        const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
+                                        return matchesSearch && matchesStatus;
+                                    });
+                                    const paginatedFolios = filteredFolios.slice(
+                                        (currentPage - 1) * PAGE_SIZE,
+                                        currentPage * PAGE_SIZE
+                                    );
+                                    
+                                    if (paginatedFolios.length > 0) {
+                                        return paginatedFolios.map((folio) => (
                                         <tr key={folio.id} className="hover:bg-slate-50 transition-colors">
                                             <td className="font-bold text-slate-700">#{folio.id.toString().padStart(5, '0')}</td>
                                             <td>
@@ -289,6 +295,14 @@ const Folio = () => {
                                                 </span>
                                             </td>
                                             <td className="font-bold text-maroon">$ {folio.totalAmount.toLocaleString()}</td>
+                                            {isAdmin && (
+                                                <td>
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className="text-[10px] text-text-slate font-medium">{t('Created')}: <span className="font-bold text-text-dark">{folio.createdBy || '-'}</span></span>
+                                                        <span className="text-[10px] text-text-slate font-medium">{t('Modified')}: <span className="font-bold text-text-dark">{folio.modifiedBy || '-'}</span></span>
+                                                    </div>
+                                                </td>
+                                            )}
                                             <td>
                                                 <div className="flex justify-end gap-2">
                                                     <button 
@@ -322,14 +336,44 @@ const Folio = () => {
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="6" className="text-center py-20 text-text-slate">{t('No active folios found.')}</td>
-                                    </tr>
-                                )}
+                                        ));
+                                    } else {
+                                        return (
+                                            <tr>
+                                                <td colSpan={isAdmin ? 8 : 7} className="text-center py-20 text-text-slate">{t('No active folios found.')}</td>
+                                            </tr>
+                                        );
+                                    }
+                                })()}
                             </tbody>
                         </table>
+                    </div>
+                )}
+                {!loading && folios.length > 0 && (
+                    <div className="p-4 border-t border-slate-100 bg-white">
+                        <Pagination 
+                            currentPage={currentPage}
+                            totalPages={Math.ceil(folios.filter(f => {
+                                const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
+                                const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+                                const matchesSearch = f.id.toString().includes(searchQuery) || 
+                                                     f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                     guestMatch || roomMatch;
+                                const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
+                                return matchesSearch && matchesStatus;
+                            }).length / PAGE_SIZE)}
+                            onPageChange={setCurrentPage}
+                            totalItems={folios.filter(f => {
+                                const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
+                                const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+                                const matchesSearch = f.id.toString().includes(searchQuery) || 
+                                                     f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                     guestMatch || roomMatch;
+                                const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
+                                return matchesSearch && matchesStatus;
+                            }).length}
+                            pageSize={PAGE_SIZE}
+                        />
                     </div>
                 )}
             </div>

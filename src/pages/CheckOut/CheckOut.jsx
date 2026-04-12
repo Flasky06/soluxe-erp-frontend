@@ -4,9 +4,13 @@ import useAuthStore from '../../store/authStore';
 import { Search, FileText, CheckCircle, Printer, X, Wallet, Plus } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const CheckOut = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { user } = useAuthStore();
+    const isAdmin = user?.role === 'ROLE_HOTEL_ADMIN' || user?.role === 'HOTEL_ADMIN';
     const { t } = useLanguage();
     const [stays, setStays] = useState([]);
     const [guests, setGuests] = useState([]);
@@ -104,6 +108,16 @@ const CheckOut = () => {
             return guestName.includes(search) || roomNum.includes(search);
         });
     }, [stays, searchTerm, getGuestName, getRoomNumber]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredStays.length / PAGE_SIZE);
+    const paginatedStays = filteredStays.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
 
     const handleCheckOut = async (stayId, approveAdjustment = false) => {
         if (!approveAdjustment && !window.confirm('Confirm check-out for this guest? Room will be set to DIRTY.')) return;
@@ -287,46 +301,48 @@ const CheckOut = () => {
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
-                                    <th>{t('Room')}</th>
-                                    <th>{t('Guest')}</th>
-                                    <th>{t('Date')}</th>
-                                    <th>{t('Check-out')}</th>
-                                    <th className="text-right">{t('Actions')}</th>
+                                    <th className="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em]">{t('Room & Guest')}</th>
+                                    <th className="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em]">{t('Stay Dates')}</th>
+                                    {isAdmin && <th className="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em]">{t('Audit')}</th>}
+                                    <th className="px-6 py-4 text-right text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em]">{t('Actions')}</th>
                                 </tr>
                             </thead>
                         <tbody>
-                            {filteredStays.length > 0 ? (
-                                filteredStays.map((stay) => (
+                            {paginatedStays.length > 0 ? (
+                                paginatedStays.map((stay) => (
                                     <tr key={stay.id}>
                                         <td>
-                                            <div className="flex flex-col">
-                                                <span className="font-bold text-slate-900">{t('Room')} {getRoomNumber(stay.roomId)}</span>
-                                                <span className="text-[11px] text-slate-500">ID: {stay.id}</span>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="font-bold text-slate-900 text-sm">{getGuestName(stay.guestId)}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">{t('Room')} {getRoomNumber(stay.roomId)}</span>
+                                                    <span className="text-[10px] text-slate-400">ID: {stay.id}</span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <div className="flex flex-col">
-                                                <span className="font-semibold text-slate-800">{getGuestName(stay.guestId)}</span>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-sm font-medium text-slate-700">{formatDate(stay.dateIn)} → <span className={stay.status === 'OVERSTAY' ? 'text-red-600 font-bold' : stay.status === 'DUE_CHECKOUT' ? 'text-amber-600 font-bold' : ''}>{formatDate(stay.dateOut)}</span></span>
                                                 {stay.status === 'OVERSTAY' && (
-                                                    <span className="bg-red-100 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded w-fit uppercase tracking-wider mt-1">
+                                                    <span className="bg-red-100 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded w-fit uppercase tracking-wider">
                                                         {t('Overdue')}
                                                     </span>
                                                 )}
                                                 {stay.status === 'DUE_CHECKOUT' && (
-                                                    <span className="bg-amber-100 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded w-fit uppercase tracking-wider mt-1">
+                                                    <span className="bg-amber-100 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded w-fit uppercase tracking-wider">
                                                         {t('Due Today')}
                                                     </span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td>{formatDate(stay.dateIn)}</td>
-                                        <td>
-                                            <div className="flex flex-col">
-                                                <span className={stay.status === 'OVERSTAY' ? 'text-red-600 font-bold' : stay.status === 'DUE_CHECKOUT' ? 'text-amber-600 font-bold' : ''}>
-                                                    {formatDate(stay.dateOut)}
-                                                </span>
-                                            </div>
-                                        </td>
+                                        {isAdmin && (
+                                            <td>
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-[10px] text-text-slate font-medium">{t('Created')}: <span className="font-bold text-text-dark">{stay.createdBy || '-'}</span></span>
+                                                    <span className="text-[10px] text-text-slate font-medium">{t('Modified')}: <span className="font-bold text-text-dark">{stay.modifiedBy || '-'}</span></span>
+                                                </div>
+                                            </td>
+                                        )}
                                         <td>
                                             <div className="table-actions">
                                                 <button 
@@ -349,6 +365,17 @@ const CheckOut = () => {
                             )}
                         </tbody>
                     </table>
+                    </div>
+                )}
+                {!loading && filteredStays.length > 0 && (
+                    <div className="p-4 border-t border-slate-100 bg-white">
+                        <Pagination 
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                            totalItems={filteredStays.length}
+                            pageSize={PAGE_SIZE}
+                        />
                     </div>
                 )}
             </div>

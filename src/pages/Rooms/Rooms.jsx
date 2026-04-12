@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Rooms = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [rooms, setRooms] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
@@ -48,6 +51,16 @@ const Rooms = () => {
         const search = searchTerm.toLowerCase();
         return roomNum.includes(search) || typeName.includes(search);
     });
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredRooms.length / PAGE_SIZE);
+    const paginatedRooms = filteredRooms.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
 
     const fetchRoomTypes = async () => {
         try {
@@ -173,8 +186,8 @@ const Rooms = () => {
                                 </tr>
                             </thead>
                         <tbody>
-                            {filteredRooms.length > 0 ? (
-                                filteredRooms.map((room) => (
+                            {paginatedRooms.length > 0 ? (
+                                paginatedRooms.map((room) => (
                                     <tr key={room.id}>
                                         <td className="font-bold text-slate-900">{t('Room')} {room.roomNumber}</td>
                                         <td>
@@ -215,6 +228,16 @@ const Rooms = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && filteredRooms.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredRooms.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

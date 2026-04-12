@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const InventoryCategories = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -71,6 +74,12 @@ const InventoryCategories = () => {
         }
     };
 
+    const totalPages = Math.ceil(categories.length / PAGE_SIZE);
+    const paginatedCategories = categories.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="flex justify-end items-center mb-8">
@@ -90,7 +99,7 @@ const InventoryCategories = () => {
                                 </tr>
                             </thead>
                         <tbody>
-                            {categories.length > 0 ? categories.map((cat) => (
+                            {paginatedCategories.length > 0 ? paginatedCategories.map((cat) => (
                                 <tr key={cat.id}>
                                     <td className="font-bold text-text-dark">{cat.name}</td>
                                     <td>
@@ -112,6 +121,16 @@ const InventoryCategories = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && categories.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={categories.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

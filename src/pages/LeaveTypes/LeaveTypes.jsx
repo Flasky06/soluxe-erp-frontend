@@ -3,8 +3,11 @@ import api from '../../services/api';
 import { Search, Plus, Calendar } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const LeaveTypes = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [leaveTypes, setLeaveTypes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -75,6 +78,16 @@ const LeaveTypes = () => {
         t.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredTypes.length / PAGE_SIZE);
+    const paginatedTypes = filteredTypes.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="table-tools">
@@ -104,7 +117,7 @@ const LeaveTypes = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredTypes.length > 0 ? filteredTypes.map((t) => (
+                            {paginatedTypes.length > 0 ? paginatedTypes.map((t) => (
                                 <tr key={t.id}>
                                     <td>
                                         <div className="flex items-center gap-3">
@@ -130,6 +143,16 @@ const LeaveTypes = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && filteredTypes.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredTypes.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

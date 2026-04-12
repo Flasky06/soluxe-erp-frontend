@@ -4,8 +4,11 @@ import { Search, Plus } from 'lucide-react';
 import Pagination from '../../components/Pagination/Pagination';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import useAuthStore from '../../store/authStore';
 
 const Expenses = () => {
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'ROLE_HOTEL_ADMIN' || user?.role === 'HOTEL_ADMIN';
     const { t } = useLanguage();
     const [expenses, setExpenses] = useState([]);
     const [types, setTypes] = useState([]);
@@ -179,6 +182,7 @@ const Expenses = () => {
                                     <th>{t('Category')}</th>
                                     <th>{t('Amount')}</th>
                                     <th>{t('Payment Info')}</th>
+                                    {isAdmin && <th>{t('Audit')}</th>}
                                     <th className="text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -203,6 +207,14 @@ const Expenses = () => {
                                             <span className="text-slate-400">{exp.referenceNumber || '-'}</span>
                                         </div>
                                     </td>
+                                    {isAdmin && (
+                                        <td>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[10px] text-text-slate font-medium">Created: <span className="font-bold text-text-dark">{exp.createdBy || '-'}</span></span>
+                                                <span className="text-[10px] text-text-slate font-medium">Modified: <span className="font-bold text-text-dark">{exp.modifiedBy || '-'}</span></span>
+                                            </div>
+                                        </td>
+                                    )}
                                     <td>
                                         <div className="table-actions">
                                             <button className="view-btn" onClick={() => handleOpenModal(exp)}>Edit</button>
@@ -212,7 +224,7 @@ const Expenses = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-12 text-slate-400 font-medium italic">
+                                    <td colSpan={isAdmin ? 7 : 6} className="text-center py-12 text-slate-400 font-medium italic">
                                         No financial records found matching "{searchTerm}"
                                     </td>
                                 </tr>

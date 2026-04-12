@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Venues = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [venues, setVenues] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -91,6 +94,12 @@ const Venues = () => {
         }
     };
 
+    const totalPages = Math.ceil(venues.length / PAGE_SIZE);
+    const paginatedVenues = venues.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="flex justify-end items-center mb-8">
@@ -114,8 +123,8 @@ const Venues = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {venues.length > 0 ? (
-                                venues.map((venue) => (
+                            {paginatedVenues.length > 0 ? (
+                                paginatedVenues.map((venue) => (
                                     <tr key={venue.id}>
                                         <td><span className="font-bold text-text-dark">{venue.name}</span></td>
                                         <td>
@@ -146,6 +155,16 @@ const Venues = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && venues.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={venues.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

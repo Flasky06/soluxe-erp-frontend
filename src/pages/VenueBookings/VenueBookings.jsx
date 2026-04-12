@@ -3,6 +3,7 @@ import api from '../../services/api';
 import { Check, X } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const EVENT_TYPES = ['CONFERENCE', 'WEDDING', 'BIRTHDAY', 'GALA', 'SEMINAR', 'WORKSHOP', 'CORPORATE', 'OTHER'];
 const SETUP_TYPES = ['THEATER', 'CLASSROOM', 'BOARDROOM', 'BANQUET', 'COCKTAIL', 'U_SHAPE', 'HOLLOW_SQUARE', 'OPEN'];
@@ -35,6 +36,8 @@ const emptyForm = {
 };
 
 const VenueBookings = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [bookings, setBookings] = useState([]);
     const [venues, setVenues] = useState([]);
@@ -138,6 +141,16 @@ const VenueBookings = () => {
         (b.clientCompany || '').toLowerCase().includes(search.toLowerCase())
     );
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search]);
+
+    const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+    const paginatedBookings = filtered.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     const set = (field, value) => setFormData(p => ({ ...p, [field]: value }));
 
     return (
@@ -194,7 +207,7 @@ const VenueBookings = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filtered.length > 0 ? filtered.map(b => (
+                            {paginatedBookings.length > 0 ? paginatedBookings.map(b => (
                                 <tr key={b.id}>
                                     <td>
                                         <div className="font-bold text-text-dark">{b.clientName}</div>
@@ -252,6 +265,16 @@ const VenueBookings = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && filtered.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filtered.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

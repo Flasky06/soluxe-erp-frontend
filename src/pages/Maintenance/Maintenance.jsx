@@ -4,8 +4,11 @@ import useAuthStore from '../../store/authStore';
 import { Plus } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Maintenance = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { user, hasRole } = useAuthStore();
     const { t } = useLanguage();
     const [tickets, setTickets] = useState([]);
@@ -14,6 +17,7 @@ const Maintenance = () => {
     const [showModal, setShowModal] = useState(false);
     const [showIssueTypeModal, setShowIssueTypeModal] = useState(false);
     const [issueTypes, setIssueTypes] = useState([]);
+    const [loading, setLoading] = useState(true);
     
     const [formData, setFormData] = useState({
         roomId: '',
@@ -59,6 +63,8 @@ const Maintenance = () => {
             }
         } catch (err) {
             console.error('Failed to fetch maintenance data:', err);
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -175,6 +181,12 @@ const Maintenance = () => {
         return <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${colors[status] || 'bg-gray-200'}`}>{status.replace('_', ' ')}</span>;
     };
 
+    const totalPages = Math.ceil(tickets.length / PAGE_SIZE);
+    const paginatedTickets = tickets.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="flex justify-end items-center gap-4 mb-8">
@@ -200,8 +212,8 @@ const Maintenance = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {tickets.length > 0 ? (
-                                tickets.map(ticket => (
+                            {paginatedTickets.length > 0 ? (
+                                paginatedTickets.map(ticket => (
                                     <tr key={ticket.id} className={ticket.status === 'RESOLVED' ? 'opacity-60' : ''}>
                                         <td>
                                             <div className="font-bold text-text-dark">{getRoomNumber(ticket.roomId)}</div>
@@ -242,6 +254,16 @@ const Maintenance = () => {
                     </table>
                 </div>
             </div>
+
+            {!loading && tickets.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={tickets.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

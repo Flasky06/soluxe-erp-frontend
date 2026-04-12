@@ -3,8 +3,11 @@ import api from '../../services/api';
 import { Search, Plus, CreditCard } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const PaymentMethods = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [methods, setMethods] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -87,6 +90,16 @@ const PaymentMethods = () => {
         m.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredMethods.length / PAGE_SIZE);
+    const paginatedMethods = filteredMethods.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="table-tools">
@@ -117,7 +130,7 @@ const PaymentMethods = () => {
                                 </tr>
                             </thead>
                         <tbody>
-                            {filteredMethods.length > 0 ? filteredMethods.map((m) => (
+                            {paginatedMethods.length > 0 ? paginatedMethods.map((m) => (
                                 <tr key={m.id}>
                                     <td>
                                         <div className="flex items-center gap-3">
@@ -148,6 +161,16 @@ const PaymentMethods = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && filteredMethods.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredMethods.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

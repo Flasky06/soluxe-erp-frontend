@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Tables = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [tables, setTables] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -91,6 +94,12 @@ const Tables = () => {
         }
     };
 
+    const totalPages = Math.ceil(tables.length / PAGE_SIZE);
+    const paginatedTables = tables.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
@@ -117,8 +126,8 @@ const Tables = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {tables.length > 0 ? (
-                                tables.map((table) => (
+                            {paginatedTables.length > 0 ? (
+                                paginatedTables.map((table) => (
                                     <tr key={table.id}>
                                         <td className="font-bold text-text-dark">{table.tableName}</td>
                                         <td>{table.capacity} Pax</td>
@@ -156,6 +165,16 @@ const Tables = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && tables.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={tables.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

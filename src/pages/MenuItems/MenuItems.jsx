@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const MenuItems = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -131,6 +134,12 @@ const MenuItems = () => {
         }
     };
 
+    const totalPages = Math.ceil(items.length / PAGE_SIZE);
+    const paginatedItems = items.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="flex justify-end items-center gap-4 mb-8">
@@ -160,7 +169,7 @@ const MenuItems = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {items.length > 0 ? items.map((item) => (
+                            {paginatedItems.length > 0 ? paginatedItems.map((item) => (
                                 <tr key={item.id}>
                                     <td>
                                         <div className="flex flex-col">
@@ -194,6 +203,16 @@ const MenuItems = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && items.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={items.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

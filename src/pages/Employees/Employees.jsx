@@ -3,8 +3,11 @@ import api from '../../services/api';
 import { Search } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Employees = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const [employees, setEmployees] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -164,6 +167,16 @@ const Employees = () => {
         getDepartmentName(emp.departmentId).toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredEmployees.length / PAGE_SIZE);
+    const paginatedEmployees = filteredEmployees.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="table-tools">
@@ -202,7 +215,7 @@ const Employees = () => {
                                 </tr>
                             </thead>
                         <tbody>
-                            {filteredEmployees.length > 0 ? filteredEmployees.map((emp) => (
+                            {paginatedEmployees.length > 0 ? paginatedEmployees.map((emp) => (
                                 <tr key={emp.id}>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
@@ -256,6 +269,16 @@ const Employees = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && filteredEmployees.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredEmployees.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             <Modal
                 isOpen={showModal}

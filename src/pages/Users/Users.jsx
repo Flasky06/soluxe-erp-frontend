@@ -3,8 +3,14 @@ import api from '../../services/api';
 import { Search } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
+import useAuthStore from '../../store/authStore';
 
 const Users = () => {
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'ROLE_HOTEL_ADMIN' || user?.role === 'HOTEL_ADMIN';
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const { t } = useLanguage();
@@ -121,6 +127,16 @@ const Users = () => {
         u.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.ceil(filteredUsers.length / PAGE_SIZE);
+    const paginatedUsers = filteredUsers.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="table-tools">
@@ -149,11 +165,12 @@ const Users = () => {
                                     <th>{t('System Role')}</th>
                                     <th>{t('Contact Details')}</th>
                                     <th>{t('Status')}</th>
+                                    {isAdmin && <th>{t('Audit')}</th>}
                                     <th className="text-right">{t('Actions')}</th>
                                 </tr>
                             </thead>
                         <tbody>
-                            {filteredUsers.length > 0 ? filteredUsers.map((u) => (
+                            {paginatedUsers.length > 0 ? paginatedUsers.map((u) => (
                                 <tr key={u.id}>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
@@ -177,6 +194,14 @@ const Users = () => {
                                         {u.isActive ? t('Authenticated') : t('Disabled')}
                                     </span>
                                     </td>
+                                    {isAdmin && (
+                                        <td>
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-[10px] text-text-slate font-medium">Created: <span className="font-bold text-text-dark">{u.createdBy || '-'}</span></span>
+                                                <span className="text-[10px] text-text-slate font-medium">Modified: <span className="font-bold text-text-dark">{u.modifiedBy || '-'}</span></span>
+                                            </div>
+                                        </td>
+                                    )}
                                     <td>
                                         <div className="table-actions">
                                             <button className="view-btn" onClick={() => handleOpenModal(u)}>{t('Configure')}</button>
@@ -186,7 +211,7 @@ const Users = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="5" className="text-center py-12 text-slate-400 font-medium italic">
+                                    <td colSpan={isAdmin ? 6 : 5} className="text-center py-12 text-slate-400 font-medium italic">
                                         No security profiles found matching "{searchTerm}"
                                     </td>
                                 </tr>
@@ -196,6 +221,16 @@ const Users = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && filteredUsers.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={filteredUsers.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             {showModal && (
             <Modal

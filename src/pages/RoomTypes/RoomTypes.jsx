@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const RoomTypes = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
     const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
     const { t } = useLanguage();
@@ -85,6 +88,12 @@ const RoomTypes = () => {
         }
     };
 
+    const totalPages = Math.ceil(roomTypes.length / PAGE_SIZE);
+    const paginatedTypes = roomTypes.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
     return (
         <div className="flex flex-col">
             <div className="flex justify-between items-center mb-8">
@@ -109,7 +118,7 @@ const RoomTypes = () => {
                                 </tr>
                             </thead>
                         <tbody>
-                            {roomTypes.length > 0 ? roomTypes.map((type) => (
+                            {paginatedTypes.length > 0 ? paginatedTypes.map((type) => (
                                 <tr key={type.id}>
                                     <td><span className="font-bold text-slate-800">{type.name}</span></td>
                                     <td>
@@ -140,6 +149,16 @@ const RoomTypes = () => {
                 )}
                 </div>
             </div>
+
+            {!loading && roomTypes.length > 0 && (
+                <Pagination 
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalItems={roomTypes.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
 
             {showModal && (
             <Modal
