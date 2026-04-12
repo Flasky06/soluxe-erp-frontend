@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
-import { Search, FileText, CheckCircle, Printer, X, Wallet } from 'lucide-react';
+import { Search, FileText, CheckCircle, Printer, X, Wallet, Plus } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -42,20 +42,34 @@ const CheckOut = () => {
     const [overrideNote, setOverrideNote] = useState('');
     const [isManagerOverride, setIsManagerOverride] = useState(false);
 
+    // Post Charge State
+    const [chargeTypes, setChargeTypes] = useState([]);
+    const [showPostChargeModal, setShowPostChargeModal] = useState(false);
+    const [newCharge, setNewCharge] = useState({
+        chargeTypeId: '',
+        description: '',
+        quantity: 1,
+        unitPrice: 0,
+        taxPct: 0,
+        discountPct: 0
+    });
+
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [staysRes, guestsRes, roomsRes, paymentMethodsRes] = await Promise.all([
+            const [staysRes, guestsRes, roomsRes, paymentMethodsRes, chargeTypesRes] = await Promise.all([
                 api.get('/stays/active'),
                 api.get('/guests'),
                 api.get('/rooms'),
-                api.get('/folios/payment-methods')
+                api.get('/folios/payment-methods'),
+                api.get('/charge-types')
             ]);
             
             setStays(staysRes.data);
             setGuests(guestsRes.data);
             setRooms(roomsRes.data);
             setPaymentMethods(paymentMethodsRes.data);
+            setChargeTypes(chargeTypesRes.data);
         } catch (err) {
             console.error('Failed to fetch check-out data:', err);
         } finally {
@@ -144,7 +158,8 @@ const CheckOut = () => {
                 api.get(`/folios/${folioData.id}/charges`),
                 api.get(`/folios/${folioData.id}/payments`)
             ]);
-            setCharges(chargesRes.data);
+            // Filter out voided charges so they don't inflate the balance
+            setCharges(chargesRes.data.filter(c => !c.voided));
             setPayments(paymentsRes.data);
         } catch (err) {
             console.error('Failed to load invoice details:', err);
@@ -216,6 +231,38 @@ const CheckOut = () => {
         }
     };
 
+    const handleOpenPostCharge = () => {
+        setNewCharge({
+            chargeTypeId: chargeTypes[0]?.id || '',
+            description: '',
+            quantity: 1,
+            unitPrice: 0,
+            taxPct: 0,
+            discountPct: 0
+        });
+        setShowPostChargeModal(true);
+    };
+
+    const handlePostCharge = async (e) => {
+        e.preventDefault();
+        try {
+            const payload = {
+                ...newCharge,
+                chargeTypeId: parseInt(newCharge.chargeTypeId) > 0 ? parseInt(newCharge.chargeTypeId) : null,
+                quantity: parseFloat(newCharge.quantity) || 0,
+                unitPrice: parseFloat(newCharge.unitPrice) || 0,
+                taxPct: parseFloat(newCharge.taxPct) || 0,
+                discountPct: parseFloat(newCharge.discountPct) || 0
+            };
+            await api.post(`/folios/${folio.id}/charges?userId=${user?.id || 1}`, payload);
+            setShowPostChargeModal(false);
+            // Refresh invoice data
+            handleViewInvoice(selectedStay);
+        } catch (err) {
+            console.error('Failed to post charge:', err);
+            alert(err.response?.data?.message || err.response?.data?.error || 'Failed to post charge.');
+        }
+    };
 
     return (
         <div className="flex flex-col">
@@ -534,12 +581,20 @@ const CheckOut = () => {
 
                                 {/* Actions Block */}
                                 <div className="mt-6 pt-6 border-t border-slate-200 flex justify-between items-center print:hidden shrink-0">
-                                    <button 
-                                        className="btn-secondary !bg-slate-100" 
-                                        onClick={handlePrintInvoice}
-                                    >
-                                        {t('Export')}
-                                    </button>
+                                    <div className="flex gap-2">
+                                        <button 
+                                            className="btn-secondary !bg-slate-100" 
+                                            onClick={handlePrintInvoice}
+                                        >
+                                            {t('Export')}
+                                        </button>
+                                        <button 
+                                            className="bg-slate-100 text-maroon hover:bg-slate-200 px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2"
+                                            onClick={handleOpenPostCharge}
+                                        >
+                                            <Plus size={16} /> {t('Post Charge')}
+                                        </button>
+                                    </div>
                                     
                                     {finalBalanceDue !== 0 ? (
                                         <div className="flex flex-col gap-2 w-full max-w-[400px]">
@@ -783,6 +838,44 @@ const CheckOut = () => {
                         </div>
                     </>
                 )}
+            </Modal>
+            {/* Post Charge Modal */}
+            <Modal
+                isOpen={showPostChargeModal}
+                onClose={() => setShowPostChargeModal(false)}
+                title={<span className="flex items-center gap-2"><Plus className="text-maroon" /> Post Charge to #{folio?.id?.toString().padStart(5, '0')}</span>}
+                size="md"
+                customClasses="!w-[85%] !max-w-[700px]"
+            >
+                <form onSubmit={handlePostCharge}>
+                    <div className="form-grid">
+                        <div className="form-group full-width">
+                            <label>{t('Charge Type')}</label>
+                            <select required value={newCharge.chargeTypeId} onChange={(e) => setNewCharge({...newCharge, chargeTypeId: e.target.value})}>
+                                <option value="">{t('Select Charge Type')}</option>
+                                {chargeTypes.map(type => (
+                                    <option key={type.id} value={type.id}>{type.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="form-group full-width">
+                            <label>{t('Description')}</label>
+                            <input type="text" required value={newCharge.description} onChange={(e) => setNewCharge({...newCharge, description: e.target.value})} placeholder="e.g. Minibar, Restaurant" />
+                        </div>
+                        <div className="form-group">
+                            <label>{t('Quantity')}</label>
+                            <input type="number" step="0.01" required value={newCharge.quantity} onChange={(e) => setNewCharge({...newCharge, quantity: parseFloat(e.target.value) || 0})} />
+                        </div>
+                        <div className="form-group">
+                            <label>{t('Unit Price ($)')}</label>
+                            <input type="number" step="0.01" required value={newCharge.unitPrice} onChange={(e) => setNewCharge({...newCharge, unitPrice: parseFloat(e.target.value) || 0})} />
+                        </div>
+                    </div>
+                    <div className="modal-footer mt-6">
+                        <button type="button" onClick={() => setShowPostChargeModal(false)} className="btn-secondary !px-8">{t('Cancel')}</button>
+                        <button type="submit" className="btn-primary !px-8">{t('Submit Charge')}</button>
+                    </div>
+                </form>
             </Modal>
         </div>
     );

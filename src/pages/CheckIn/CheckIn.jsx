@@ -101,7 +101,16 @@ const CheckIn = () => {
 
             // If resId in URL, auto-open modal
             if (resIdParam) {
-                const res = resRes.data.find(r => r.id === parseInt(resIdParam));
+                let res = resRes.data.find(r => r.id === parseInt(resIdParam));
+                if (!res) {
+                    // Reservation not in today's arrivals (future date?) — fetch directly
+                    try {
+                        const singleRes = await api.get(`/reservations/${resIdParam}`);
+                        res = singleRes.data;
+                    } catch {
+                        console.warn('Could not load reservation by ID:', resIdParam);
+                    }
+                }
                 if (res) {
                     setSelectedReservation(res);
                     setResCheckInRoomId('');
@@ -563,6 +572,7 @@ const CheckIn = () => {
                 overlayClasses="z-[2000]"
             >
                 <GuestForm 
+                            isQuickMode={true}
                             onSuccess={handleQuickGuestSuccess} 
                     onCancel={() => setShowQuickGuestModal(false)} 
                 />

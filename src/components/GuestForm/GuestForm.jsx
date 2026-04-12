@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { User, Camera, X, Check } from 'lucide-react';
 import api from '../../services/api';
 
-const GuestForm = ({ initialData, onSuccess, onCancel, isSaving: externalIsSaving }) => {
+const GuestForm = ({ initialData, onSuccess, onCancel, isSaving: externalIsSaving, isQuickMode = false }) => {
     const [formData, setFormData] = useState(initialData || {
         fullName: '', phone: '', email: '', nationality: '', dateOfBirth: '', gender: 'MALE', 
         idType: 'NATIONAL_ID', idNumber: '', address: '', companyName: '', 
@@ -237,8 +237,8 @@ const GuestForm = ({ initialData, onSuccess, onCancel, isSaving: externalIsSavin
                     {serverErrors.fullName && <p className="text-red-500 text-[10px] mt-1">{serverErrors.fullName}</p>}
                 </div>
                 <div className="form-group leading-tight">
-                    <label>Email Address</label>
-                    <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" />
+                    <label>Email Address {isQuickMode && <span className="text-slate-400 font-normal text-[10px]">(optional)</span>}</label>
+                    <input type="email" required={!isQuickMode} value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" />
                     {serverErrors.email && <p className="text-red-500 text-[10px] mt-1">{serverErrors.email}</p>}
                 </div>
                 <div className="form-group leading-tight">

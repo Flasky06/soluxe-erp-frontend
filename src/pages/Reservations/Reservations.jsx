@@ -213,11 +213,13 @@ const Reservations = () => {
     const handleSubmitBooking = async (e) => {
         e.preventDefault();
         try {
+            const roomTypeIdParsed = formData.roomTypeId ? parseInt(formData.roomTypeId) : null;
+            const tableIdParsed = formData.tableId ? parseInt(formData.tableId) : null;
             const payload = {
                 ...formData,
                 guestId: parseInt(formData.guestId) || 0,
-                roomTypeId: formData.roomTypeId ? parseInt(formData.roomTypeId) : null,
-                tableId: formData.tableId ? parseInt(formData.tableId) : null,
+                roomTypeId: (!isNaN(roomTypeIdParsed) && roomTypeIdParsed) ? roomTypeIdParsed : null,
+                tableId: (!isNaN(tableIdParsed) && tableIdParsed) ? tableIdParsed : null,
                 adults: parseInt(formData.adults) || 1,
                 children: parseInt(formData.children) || 0,
                 tablePax: parseInt(formData.tablePax) || 1
@@ -239,6 +241,7 @@ const Reservations = () => {
             fetchAllData();
         } catch (err) {
             console.error('Failed to save booking:', err);
+            alert(err.response?.data?.message || err.response?.data?.error || 'Failed to save booking. Please check all required fields.');
         }
     };
 
@@ -565,7 +568,7 @@ const Reservations = () => {
                                         <div className="form-section-title">{t('Stay Configuration')}</div>
                                         <div className="form-group">
                                             <label>{t('Room Category')}</label>
-                                            <select required={formData.bookingType !== 'TABLE'} value={formData.roomTypeId} onChange={(e) => setFormData({...formData, roomTypeId: parseInt(e.target.value)})}>
+                                            <select required={formData.bookingType !== 'TABLE'} value={formData.roomTypeId} onChange={(e) => setFormData({...formData, roomTypeId: e.target.value})}>
                                                 <option value="">{t('-- Select Type --')}</option>
                                                 {roomTypes.map(type => (
                                                     <option key={type.id} value={type.id}>{type.name} (${type.defaultRate}/night)</option>
@@ -595,7 +598,7 @@ const Reservations = () => {
                                         <div className="form-section-title">{t('Dining Reservation')}</div>
                                         <div className="form-group">
                                             <label>{t('Table Assignment')}</label>
-                                            <select required={formData.bookingType !== 'ROOM'} value={formData.tableId} onChange={(e) => setFormData({...formData, tableId: parseInt(e.target.value)})}>
+                                            <select required={formData.bookingType !== 'ROOM'} value={formData.tableId} onChange={(e) => setFormData({...formData, tableId: e.target.value})}>
                                                 <option value="">{t('-- Choose Table --')}</option>
                                                 {tables.map(table => (
                                                     <option key={table.id} value={table.id}>{table.tableName} ({table.location}) - Capacity {table.capacity}</option>
@@ -640,6 +643,7 @@ const Reservations = () => {
                 overlayClasses="z-[2000]"
             >
                 <GuestForm 
+                            isQuickMode={true}
                             onSuccess={(newGuest) => {
                                 setGuests(prev => [...prev, newGuest]);
                                 setFormData(prev => ({ ...prev, guestId: newGuest.id }));
