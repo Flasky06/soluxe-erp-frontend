@@ -5,6 +5,7 @@ import { Search, FileText, CheckCircle, Printer, X, Wallet, Plus } from 'lucide-
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatDate } from '../../services/formatters';
 
 const CheckOut = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -95,10 +96,7 @@ const CheckOut = () => {
         return room ? room.roomNumber : '-';
     }, [rooms]);
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        return new Date(dateString).toLocaleDateString();
-    };
+    // Using imported formatDate
 
     const filteredStays = useMemo(() => {
         return stays.filter(stay => {
@@ -433,7 +431,7 @@ const CheckOut = () => {
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Date Issued</p>
-                                                <p className="font-black text-slate-900 text-[12px] mt-1">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                                                <p className="font-black text-slate-900 text-[12px] mt-1">{formatDate(new Date())}</p>
                                             </div>
                                         </div>
 
@@ -447,10 +445,10 @@ const CheckOut = () => {
                                             <div className="flex flex-col gap-2 text-right">
                                                 <p className="text-slate-400 font-bold text-[9px] uppercase tracking-wider">Stay Period</p>
                                                 <p className="font-bold text-slate-800">
-                                                    {new Date(selectedStay.dateIn).toLocaleDateString()} — {
+                                                    {formatDate(selectedStay.dateIn)} — {
                                                         new Date(selectedStay.dateOut) > new Date() 
-                                                        ? new Date().toLocaleDateString() + ' (Early)' 
-                                                        : new Date(selectedStay.dateOut).toLocaleDateString()
+                                                        ? formatDate(new Date()) + ' (Early)' 
+                                                        : formatDate(selectedStay.dateOut)
                                                     }
                                                 </p>
                                                 <p className="text-slate-500 font-medium">
@@ -497,7 +495,7 @@ const CheckOut = () => {
                                                             <tr key={charge.id} className="align-top">
                                                                 <td className="py-1">
                                                                     <div className="font-bold truncate max-w-[120px] print:max-w-[150px]">{charge.description}</div>
-                                                                    <div className="text-[9px] print:text-[8px] text-slate-500">{new Date(charge.chargedAt).toLocaleDateString()}</div>
+                                                                    <div className="text-[9px] print:text-[8px] text-slate-500">{formatDate(charge.chargedAt)}</div>
                                                                 </td>
                                                                 <td className="py-1 text-center">{charge.quantity}</td>
                                                                 <td className="py-1 text-right font-bold">
@@ -525,7 +523,7 @@ const CheckOut = () => {
                                                                         </div>
                                                                         <div>
                                                                             <p className="font-bold text-slate-800">{payment.paymentMethodName || 'Payment'}</p>
-                                                                            <p className="text-[9px] text-slate-400 font-medium uppercase tracking-wider">{new Date(payment.recordedAt).toLocaleDateString()} • {payment.referenceNumber || 'N/A'}</p>
+                                                                            <p className="text-[9px] text-slate-400 font-medium uppercase tracking-wider">{formatDate(payment.recordedAt)} • {payment.referenceNumber || 'N/A'}</p>
                                                                         </div>
                                                                     </div>
                                                                 </td>
@@ -806,7 +804,7 @@ const CheckOut = () => {
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-maroon/20 blur-[60px] rounded-full -mr-10 -mt-10"></div>
                                 <div className="flex flex-col relative z-10">
                                     <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-2">Current Check-out</p>
-                                    <p className="text-3xl font-black text-white leading-none">{new Date(selectedStay.dateOut).toLocaleDateString()}</p>
+                                    <p className="text-3xl font-black text-white leading-none">{formatDate(selectedStay.dateOut)}</p>
                                     <p className="text-[11px] text-white/60 font-medium mt-3">Room {getRoomNumber(selectedStay.roomId)} • {getGuestName(selectedStay.guestId)}</p>
                                 </div>
                                 <div className="w-16 h-16 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex items-center justify-center relative z-10">

@@ -12,6 +12,7 @@ import Pagination from '../../components/Pagination/Pagination';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import useAuthStore from '../../store/authStore';
+import { formatDate, formatDateTime } from '../../services/formatters';
 
 const Reservations = () => {
     const navigate = useNavigate();
@@ -447,18 +448,18 @@ const Reservations = () => {
                                                 {res.dateIn ? (
                                                     <div className="flex items-center gap-3">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[14px] font-bold text-slate-800 leading-none">{new Date(res.dateIn).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
+                                                            <span className="text-[14px] font-bold text-slate-800 leading-none">{formatDate(res.dateIn)}</span>
                                                             <span className="text-[10px] text-slate-400 mt-1 uppercase font-bold text-center">In</span>
                                                         </div>
                                                         <span className="text-slate-300 font-bold leading-none">-</span>
                                                         <div className="flex flex-col">
-                                                            <span className="text-[14px] font-bold text-slate-800 leading-none">{new Date(res.dateOut).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
+                                                            <span className="text-[14px] font-bold text-slate-800 leading-none">{formatDate(res.dateOut)}</span>
                                                             <span className="text-[10px] text-slate-400 mt-1 uppercase font-bold text-center">Out</span>
                                                         </div>
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center gap-2 text-[14px] font-bold text-slate-800 leading-none">
-                                                        {res.tableReservationTime ? new Date(res.tableReservationTime).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
+                                                        {res.tableReservationTime ? formatDateTime(res.tableReservationTime) : '-'}
                                                     </div>
                                                 )}
                                             </td>

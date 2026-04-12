@@ -3,6 +3,7 @@ import api from '../../services/api';
 import useAuthStore from '../../store/authStore';
 import { Clock, LogIn, LogOut, Calendar, User, Search } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDate } from '../../services/formatters';
 
 const Attendance = () => {
     const { t } = useLanguage();
@@ -100,7 +101,7 @@ const Attendance = () => {
                 <div className="flex items-center gap-6 relative z-10">
                     <div className="flex flex-col items-end">
                         <span className="text-3xl font-mono font-black">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">{new Date().toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-white/50">{formatDate(new Date())}</span>
                     </div>
                     
                     <button 
@@ -171,7 +172,7 @@ const Attendance = () => {
                                                     <span className="font-bold text-text-dark">{getEmployeeName(record.employeeId)}</span>
                                                 </div>
                                             </td>
-                                            <td><span className="text-text-slate font-medium">{record.date}</span></td>
+                                            <td><span className="text-text-slate font-medium">{formatDate(record.date)}</span></td>
                                             <td><span className="text-green-600 font-bold">{record.clockIn || '--:--'}</span></td>
                                             <td><span className="text-maroon font-bold">{record.clockOut || '--:--'}</span></td>
                                             <td><span className="font-mono text-text-dark">{record.hoursWorked ? `${record.hoursWorked} ${t('hrs')}` : '--'}</span></td>

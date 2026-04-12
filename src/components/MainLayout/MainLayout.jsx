@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar/Sidebar';
 import useNotifications from '../../services/useNotifications';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDate } from '../../services/formatters';
 
 const colorMap = {
     blue:   { bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-100'   },
@@ -146,7 +147,7 @@ const MainLayout = ({ children }) => {
                             </span>
                             <span className="text-slate-300 font-light">·</span>
                             <span className="text-[12px] font-semibold text-slate-400">
-                                {currentTime.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+                                {formatDate(currentTime)}
                             </span>
                         </div>
 

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDateTime } from '../../services/formatters';
 
 const FinancialReports = () => {
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
@@ -281,13 +282,13 @@ const FinancialReports = () => {
                             {financeData?.auditTrail?.map((item, idx) => (
                                 <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="text-xs text-slate-500 whitespace-nowrap">
-                                        {new Date(item.timestamp).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                                        {formatDateTime(item.timestamp)}
                                     </td>
                                     <td>
                                         <span className={`status-badge ${
-                                            item.type === 'REVENUE' || item.type === 'COLLECTION' ? 'success' : 'error'
+                                            ['REVENUE', 'COLLECTION'].includes(item.type) ? 'success' : 'error'
                                         }`}>
-                                            {item.type}
+                                            {item.account || item.type}
                                         </span>
                                     </td>
                                     <td className="text-sm font-bold text-slate-700">{item.reference}</td>

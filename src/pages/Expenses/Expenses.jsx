@@ -5,6 +5,7 @@ import Pagination from '../../components/Pagination/Pagination';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import useAuthStore from '../../store/authStore';
+import { formatDate } from '../../services/formatters';
 
 const Expenses = () => {
     const { user } = useAuthStore();
@@ -190,7 +191,7 @@ const Expenses = () => {
                             {paginatedExpenses.length > 0 ? paginatedExpenses.map((exp) => (
                                 <tr key={exp.id}>
                                     <td>
-                                        <span className="font-medium text-text-slate">{exp.expenseDate}</span>
+                                        <span className="font-medium text-text-slate">{formatDate(exp.expenseDate)}</span>
                                     </td>
                                     <td>
                                         <span className="font-bold text-text-dark">{exp.description}</span>

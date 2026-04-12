@@ -3,6 +3,7 @@ import api from '../../services/api';
 import { ShoppingCart, Plus, Calendar, User, Search, Filter, CheckCircle, Clock, Truck, MoreVertical } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDate } from '../../services/formatters';
 
 const PurchaseOrders = () => {
     const { t } = useLanguage();
@@ -143,11 +144,11 @@ const PurchaseOrders = () => {
                                 <div className="grid grid-cols-2 gap-4 py-2 border-y border-slate-50">
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-bold text-slate-400 uppercase">Ordered</span>
-                                        <span className="text-sm font-bold text-slate-700">{order.orderDate}</span>
+                                        <span className="text-sm font-bold text-slate-700">{formatDate(order.orderDate)}</span>
                                     </div>
                                     <div className="flex flex-col items-end">
                                         <span className="text-[10px] font-bold text-slate-400 uppercase">Expected</span>
-                                        <span className="text-sm font-bold text-maroon">{order.expectedDate || 'TBD'}</span>
+                                        <span className="text-sm font-bold text-maroon">{order.expectedDate ? formatDate(order.expectedDate) : 'TBD'}</span>
                                     </div>
                                 </div>
 

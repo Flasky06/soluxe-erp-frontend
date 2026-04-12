@@ -5,6 +5,7 @@ import { Calendar, Plus, Clock, CheckCircle, XCircle, FileText, Search, User } f
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatDate } from '../../services/formatters';
 
 const LeaveRequests = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -148,7 +149,7 @@ const LeaveRequests = () => {
                                         <td><span className="font-bold text-text-dark">{req.leaveTypeName || t('General Leave')}</span></td>
                                         <td>
                                             <div className="flex flex-col">
-                                                <span className="font-bold text-[13px] text-slate-700">{req.dateFrom} → {req.dateTo}</span>
+                                                <span className="font-bold text-[13px] text-slate-700">{formatDate(req.dateFrom)} → {formatDate(req.dateTo)}</span>
                                                 <span className="text-[10px] font-bold text-slate-400">{t('Total duration:')} 0 {t('days')}</span>
                                             </div>
                                         </td>

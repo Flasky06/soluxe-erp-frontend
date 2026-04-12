@@ -6,6 +6,7 @@ import { Search, Filter, Plus, FileText, CreditCard } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatDate, formatDateTime } from '../../services/formatters';
 
 const Folio = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -285,7 +286,7 @@ const Folio = () => {
                                                     {folio.folioType}
                                                 </span>
                                             </td>
-                                            <td>{new Date(folio.openedAt).toLocaleDateString()}</td>
+                                            <td>{formatDate(folio.openedAt)}</td>
                                             <td>
                                                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${
                                                     folio.status === 'OPEN' ? 'bg-maroon/5 text-maroon' : 
@@ -543,7 +544,7 @@ const Folio = () => {
                                             </div>
                                             <div className="flex justify-between text-slate-700">
                                                 <span className="text-[13px] font-medium uppercase text-slate-400">Date:</span>
-                                                <span className="font-medium">{new Date(receipt.issuedAt).toLocaleString()}</span>
+                                                <span className="font-medium">{formatDateTime(receipt.issuedAt)}</span>
                                             </div>
                                             <div className="flex justify-between text-slate-700">
                                                 <span className="text-[13px] font-medium uppercase text-slate-400">Folio ID:</span>

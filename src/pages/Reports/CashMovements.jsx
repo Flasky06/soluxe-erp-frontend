@@ -10,6 +10,7 @@ import {
     DollarSign
 } from 'lucide-react';
 import api from '../../services/api';
+import { formatDate } from '../../services/formatters';
 
 const CashMovements = () => {
     const [movements, setMovements] = useState([]);
@@ -104,7 +105,7 @@ const CashMovements = () => {
                     <tbody className="divide-y divide-slate-50">
                         {movements.map((m) => (
                             <tr key={m.id} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="px-6 py-4 text-sm text-slate-600">{m.movementDate}</td>
+                                <td className="px-6 py-4 text-sm text-slate-600">{formatDate(m.movementDate)}</td>
                                 <td className="px-6 py-4">
                                     <span className={`status-badge ${
                                         m.type === 'DRAWING' ? 'warning' : m.type === 'SAVING' ? 'success' : 'info'

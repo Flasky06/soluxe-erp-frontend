@@ -10,6 +10,7 @@ import {
     ArrowRight
 } from 'lucide-react';
 import api from '../../services/api';
+import { formatDate } from '../../services/formatters';
 
 const ProfitAndLoss = () => {
     const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
@@ -88,7 +89,7 @@ const ProfitAndLoss = () => {
                     <h2 className="text-3xl font-black text-slate-800 uppercase tracking-widest">Soluxe Club Hotel Limited</h2>
                     <p className="text-slate-400 font-bold mt-2">STATEMENT OF COMPREHENSIVE INCOME</p>
                     <p className="text-xs font-bold text-primary mt-1 uppercase tracking-tighter">
-                        For the period: {startDate} to {endDate}
+                        For the period: {formatDate(startDate)} to {formatDate(endDate)}
                     </p>
                 </div>
 

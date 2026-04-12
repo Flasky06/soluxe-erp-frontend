@@ -9,6 +9,7 @@ import {
     User
 } from 'lucide-react';
 import api from '../../services/api';
+import { formatDate } from '../../services/formatters';
 
 const PettyCash = () => {
     const [pettyCashEntries, setPettyCashEntries] = useState([]);
@@ -105,7 +106,7 @@ const PettyCash = () => {
                                 <td className="text-sm text-slate-600 font-medium">
                                     <div className="flex items-center gap-2">
                                         <Calendar size={14} className="text-slate-400" />
-                                        {e.expenseDate}
+                                        {formatDate(e.expenseDate)}
                                     </div>
                                 </td>
                                 <td>

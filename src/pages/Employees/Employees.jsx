@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatDate } from '../../services/formatters';
 
 const Employees = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -232,7 +233,7 @@ const Employees = () => {
                                     <td>
                                         <div className="flex flex-col gap-0.5">
                                             <span className="font-semibold text-slate-800">$ {parseFloat(emp.basicSalary || 0).toLocaleString()}</span>
-                                            <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining || '-'}</span>
+                                            <span className="text-[12px] text-text-slate italic">Joined: {emp.dateOfJoining ? formatDate(emp.dateOfJoining) : '-'}</span>
                                         </div>
                                     </td>
                                     <td>

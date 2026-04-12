@@ -7,6 +7,7 @@ import { Wallet } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatDate } from '../../services/formatters';
 
 const CheckIn = () => {
     const [currentPageStays, setCurrentPageStays] = useState(1);
@@ -339,8 +340,8 @@ const CheckIn = () => {
                                     <tr key={stay.id}>
                                         <td><span className="font-bold text-text-dark">{getGuestName(stay.guestId)}</span></td>
                                         <td><span className="px-2 py-0.5 bg-slate-100 rounded text-xs font-bold">{t('Room')} {stay.roomId}</span></td>
-                                        <td className="text-xs">{stay.dateIn ? new Date(stay.dateIn).toLocaleDateString() : '—'}</td>
-                                        <td className="text-xs">{stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : '—'}</td>
+                                        <td className="text-xs">{formatDate(stay.dateIn)}</td>
+                                        <td className="text-xs">{formatDate(stay.dateOut)}</td>
                                         <td className="text-xs">{stay.adults} {t('Adults')}, {stay.children || 0} {t('Children')}</td>
                                         <td>
                                             <span className={`status-badge ${stay.status === 'OVERSTAY' ? 'status-cancelled' : 'status-booked'}`}>
@@ -413,8 +414,8 @@ const CheckIn = () => {
                                     <tr key={res.id}>
                                         <td><span className="font-bold text-text-dark">{getGuestName(res.guestId)}</span></td>
                                         <td>{getRoomTypeName(res.roomTypeId)}</td>
-                                        <td>{res.dateIn ? new Date(res.dateIn).toLocaleDateString() : '—'}</td>
-                                        <td>{res.dateOut ? new Date(res.dateOut).toLocaleDateString() : '—'}</td>
+                                        <td>{formatDate(res.dateIn)}</td>
+                                        <td>{formatDate(res.dateOut)}</td>
                                         <td>{res.adults} {t('Adults')}, {res.children || 0} {t('Children')}</td>
                                         {isAdmin && (
                                             <td>
@@ -591,7 +592,7 @@ const CheckIn = () => {
                                 <div className="bg-slate-50 p-5 rounded-xl border border-border-gray mb-6 flex flex-col gap-2">
                                     <p className="text-text-dark"><strong>{t('Guest')}:</strong> {getGuestName(selectedReservation.guestId)}</p>
                                     <p className="text-text-dark"><strong>{t('Category')}:</strong> {getRoomTypeName(selectedReservation.roomTypeId)}</p>
-                                    <p className="text-text-dark"><strong>{t('Dates')}:</strong> {new Date(selectedReservation.dateIn).toLocaleDateString()} → {new Date(selectedReservation.dateOut).toLocaleDateString()}</p>
+                                    <p className="text-text-dark"><strong>{t('Dates')}:</strong> {formatDate(selectedReservation.dateIn)} → {formatDate(selectedReservation.dateOut)}</p>
                                 </div>
                                 <div className="form-group full-width">
                                     <label>{t('Available Rooms')}</label>

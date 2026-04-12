@@ -3,6 +3,7 @@ import api from '../../services/api';
 import { FileText } from 'lucide-react';
 import Pagination from '../../components/Pagination/Pagination';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDate } from '../../services/formatters';
 
 // ─── Section Tab Button ───────────────────────────────────────────────────────
 const TabBtn = ({ label, active, onClick }) => (
@@ -158,7 +159,7 @@ const Reports = () => {
         acc[dept] = (acc[dept] || 0) + 1;
         return acc;
     }, {});
-    const periodLabel = startDate === endDate ? startDate : `${startDate} → ${endDate}`;
+    const periodLabel = startDate === endDate ? formatDate(startDate) : `${formatDate(startDate)} → ${formatDate(endDate)}`;
 
     const tabs = [
         { id: 'revenue', label: t('Revenue') },
@@ -203,7 +204,7 @@ const Reports = () => {
                     <div className="flex justify-between items-center w-full">
                         <div>
                             <h1 className="text-2xl font-black text-text-dark tracking-tight">{t('Management Reports')}</h1>
-                            <p className="text-text-slate mt-1">{t('From')}: {startDate} · {t('To')}: {endDate}</p>
+                            <p className="text-text-slate mt-1">{t('From')}: {formatDate(startDate)} · {t('To')}: {formatDate(endDate)}</p>
                         </div>
                         <button 
                             className="btn-secondary !bg-white !px-6 border border-slate-200 flex items-center gap-2"
@@ -352,8 +353,8 @@ const Reports = () => {
                                                     <td className="text-slate-400 text-xs">{r.id}</td>
                                                     <td className="font-bold text-text-dark">{g?.fullName || `${t('Guest')} ${r.guestId}`}</td>
                                                     <td>{r.roomTypeId ? t('Room') : t('Table')}</td>
-                                                    <td>{r.dateIn || '—'}</td>
-                                                    <td>{r.dateOut || '—'}</td>
+                                                    <td>{r.dateIn ? formatDate(r.dateIn) : '—'}</td>
+                                                    <td>{r.dateOut ? formatDate(r.dateOut) : '—'}</td>
                                                     <td><span className={`status-badge ${r.status?.toLowerCase().replace('_', '-')}`}>{r.status}</span></td>
                                                     <td className="text-center font-semibold">{nights}</td>
                                                 </tr>
@@ -580,7 +581,7 @@ const Reports = () => {
                                                 <td className="font-bold text-text-dark">{b.clientName}<br /><span className="text-[11px] text-slate-400 font-normal">{b.clientCompany}</span></td>
                                                 <td><span className="status-badge info text-[11px]">{b.venueName || `#${b.venueId}`}</span></td>
                                                 <td className="text-sm text-slate-600">{b.eventType?.replace(/_/g, ' ')}</td>
-                                                <td className="text-sm font-medium">{b.dateIn}</td>
+                                                <td className="text-sm font-medium">{formatDate(b.dateIn)}</td>
                                                 <td className="text-center">{b.expectedGuests || '—'}</td>
                                                 <td className="font-semibold">{b.totalAmount ? parseFloat(b.totalAmount).toLocaleString() : '—'}</td>
                                                 <td>

@@ -5,6 +5,7 @@ import Modal from '../../components/Modal/Modal';
 import GuestForm from '../../components/GuestForm/GuestForm';
 import Pagination from '../../components/Pagination/Pagination';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDate } from '../../services/formatters';
 
 const Guests = () => {
     const { t } = useLanguage();
@@ -135,7 +136,7 @@ const Guests = () => {
                                                 <span className="font-bold text-text-dark">{guest.fullName || '-'}</span>
                                                 {guest.companyName && <span className="text-[12px] text-primary font-medium">{guest.companyName}</span>}
                                                 <span className="text-[12px] text-text-slate font-medium uppercase tracking-tight">
-                                                    {guest.gender || '-'} • {guest.dateOfBirth || '-'}
+                                                    {guest.gender || '-'} • {guest.dateOfBirth ? formatDate(guest.dateOfBirth) : '-'}
                                                 </span>
                                             </div>
                                         </div>
@@ -257,7 +258,7 @@ const Guests = () => {
                                         <tr key={stay.id}>
                                             <td><span className="font-bold text-text-dark">{t('Room')} {stay.roomId}</span></td>
                                             <td className="text-xs">
-                                                {new Date(stay.dateIn).toLocaleDateString()} — {stay.actualDateOut ? new Date(stay.actualDateOut).toLocaleDateString() : (stay.dateOut ? new Date(stay.dateOut).toLocaleDateString() : 'Active')}
+                                                {formatDate(stay.dateIn)} — {stay.actualDateOut ? formatDate(stay.actualDateOut) : (stay.dateOut ? formatDate(stay.dateOut) : 'Active')}
                                             </td>
                                             <td className="text-xs font-medium">
                                                 {Math.ceil((new Date(stay.actualDateOut || stay.dateOut || new Date()) - new Date(stay.dateIn)) / (1000 * 60 * 60 * 24))} Night(s)

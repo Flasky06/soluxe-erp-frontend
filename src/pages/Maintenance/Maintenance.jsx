@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
+import { formatDate } from '../../services/formatters';
 
 const Maintenance = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -217,7 +218,7 @@ const Maintenance = () => {
                                     <tr key={ticket.id} className={ticket.status === 'RESOLVED' ? 'opacity-60' : ''}>
                                         <td>
                                             <div className="font-bold text-text-dark">{getRoomNumber(ticket.roomId)}</div>
-                                            <div className="text-xs text-text-slate">TK-{ticket.id} • {new Date(ticket.createdAt).toLocaleDateString()}</div>
+                                            <div className="text-xs text-text-slate">TK-{ticket.id} • {formatDate(ticket.createdAt)}</div>
                                         </td>
                                         <td>
                                             <div className="font-bold text-[13px]">{ticket.issueTypeName}</div>
