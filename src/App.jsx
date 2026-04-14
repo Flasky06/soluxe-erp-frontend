@@ -54,7 +54,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="/login" element={<Login />} />
         
         {/* Protected Routes - All require at least being logged in */}
         <Route element={<ProtectedRoute />}>
