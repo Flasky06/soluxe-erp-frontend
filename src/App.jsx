@@ -46,7 +46,6 @@ import LeaveRequests from './pages/LeaveRequests/LeaveRequests';
 import PurchaseOrders from './pages/PurchaseOrders/PurchaseOrders';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import BookingSync from './pages/Integrations/BookingSync';
-import './index.css';
 
 function App() {
 

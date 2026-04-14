@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@source "../src/**/*.jsx";
+@source "../src/**/*.js";
+@source "../index.html";
 
 @theme {
   --color-maroon: #7B1113;
@@ -29,8 +32,6 @@
 }
 
 @layer base {
-  * { @apply m-0 p-0 box-border; }
-
   body {
     @apply font-inter bg-[#f5f6f8] text-text-dark antialiased leading-relaxed;
   }
