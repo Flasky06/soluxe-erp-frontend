@@ -44,8 +44,6 @@ const menuGroups = [
         icon: LayoutDashboard,
         items: [
             { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-            { label: 'Maintenance', path: '/maintenance', icon: Wrench, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_MAINTENANCE', 'ROLE_RECEPTIONIST'] },
-            { label: 'Issue Types', path: '/maintenance-issue-types', icon: Settings2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
         ]
     },
     {
@@ -57,21 +55,7 @@ const menuGroups = [
             { label: 'Check-out', path: '/check-out', icon: LogOut, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Guests', path: '/guests', icon: Users, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Rooms', path: '/rooms', icon: Bed, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Venues', path: '/venues', icon: MapPin, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Venue Bookings', path: '/venue-bookings', icon: CalendarPlus, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Housekeeping', path: '/housekeeping', icon: Sparkles, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST'] },
-        ]
-    },
-    {
-        title: 'Kitchen & Dining',
-        icon: Utensils,
-        items: [
-            { label: 'Restaurant POS', path: '/restaurant', icon: Utensils, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER'] },
-            { label: 'Quick POS', path: '/pos', icon: CreditCard, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_WAITER', 'ROLE_CASHIER', 'ROLE_RECEPTIONIST'] },
-            { label: 'Kitchen Orders', path: '/kitchen', icon: ChefHat, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_CHEF'] },
-            { label: 'Menu Items', path: '/menu-items', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
-            { label: 'Menu Categories', path: '/menu-categories', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
-            { label: 'Tables', path: '/tables', icon: Utensils, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
         ]
     },
     {
@@ -81,10 +65,6 @@ const menuGroups = [
             { label: 'Folio & Billing', path: '/folio', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT'] },
             { label: 'Charge Types', path: '/charge-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
             { label: 'Payment Methods', path: '/payment-methods', icon: CreditCard, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Expenses', path: '/expenses', icon: Wallet, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Cash Movements', path: '/cash-movements', icon: PiggyBank, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Petty Cash', path: '/petty-cash', icon: HandCoins, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Debtor Alerts', path: '/debtors', icon: Users2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
         ]
     },
     {
@@ -92,26 +72,6 @@ const menuGroups = [
         icon: FileSpreadsheet,
         items: [
             { label: 'Operational Reports', path: '/reports', icon: FileText, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-            { label: 'Financial Audit', path: '/financial-reports', icon: ShieldCheck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT'] },
-        ]
-    },
-    {
-        title: 'Inventory',
-        icon: Box,
-        items: [
-            { label: 'Stock Management', path: '/inventory', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-            { label: 'Stock Categories', path: '/inventory-categories', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-            { label: 'Inventory Units', path: '/inventory-units', icon: Box, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-            { label: 'Suppliers', path: '/suppliers', icon: Truck, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-            { label: 'Purchase Orders', path: '/purchase-orders', icon: ShoppingCart, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_STORE_KEEPER'] },
-        ]
-    },
-    {
-        title: 'Human Resources',
-        icon: UsersRound,
-        items: [
-            { label: 'Attendance', path: '/attendance', icon: Clock9 },
-            { label: 'Leave Requests', path: '/leave-requests', icon: CalendarDays },
         ]
     },
     {
@@ -119,10 +79,7 @@ const menuGroups = [
         icon: Settings,
         items: [
             { label: 'User Management', path: '/users', icon: UsersRound, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Employees', path: '/employees', icon: UsersRound, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Departments', path: '/departments', icon: Building2, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Room Types', path: '/room-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
-            { label: 'Leave Types', path: '/leave-types', icon: CalendarPlus, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Settings', path: '/settings', icon: Settings2, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
         ]
     },
@@ -130,7 +87,6 @@ const menuGroups = [
         title: 'Integrations',
         icon: Globe,
         items: [
-            { label: 'Booking.com', path: '/booking-sync', icon: Globe, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
             { label: 'Keycards', path: '/keycards', icon: CreditCard, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
         ]
     }
