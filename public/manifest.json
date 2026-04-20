@@ -30,13 +30,21 @@
   "shortcuts": [
     {
       "name": "Reservations",
+      "short_name": "Reservations",
       "url": "/reservations",
       "description": "View and manage reservations"
     },
     {
-      "name": "Front Desk",
-      "url": "/front-desk",
-      "description": "Check in and check out guests"
+      "name": "Check-In",
+      "short_name": "Check-In",
+      "url": "/check-in",
+      "description": "Process guest check-ins"
+    },
+    {
+      "name": "Check-Out",
+      "short_name": "Check-Out",
+      "url": "/check-out",
+      "description": "Process guest check-outs"
     }
   ],
   "screenshots": [

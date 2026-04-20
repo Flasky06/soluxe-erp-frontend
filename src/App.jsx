@@ -17,6 +17,9 @@ import CheckIn from './pages/CheckIn/CheckIn';
 import CheckOut from './pages/CheckOut/CheckOut';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Keycards from './pages/Keycards/Keycards';
+import Overview from './pages/Overview/Overview';
+import Venues from './pages/Venues/Venues';
+import VenueBookings from './pages/VenueBookings/VenueBookings';
 
 
 function App() {
@@ -33,6 +36,7 @@ function App() {
               {/* Main */}
               <Route element={<ProtectedRoute />}>
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/overview" element={<Overview />} />
               </Route>
 
               {/* Operations */}
@@ -43,6 +47,8 @@ function App() {
                   <Route path="/guests" element={<Guests />} />
                   <Route path="/check-out" element={<CheckOut />} />
                   <Route path="/keycards" element={<Keycards />} />
+                  <Route path="/venues" element={<Venues />} />
+                  <Route path="/venue-bookings" element={<VenueBookings />} />
               </Route>
               <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST']} />}>
                   <Route path="/housekeeping" element={<Housekeeping />} />
@@ -63,7 +69,6 @@ function App() {
                   <Route path="/users" element={<Users />} />
               </Route>
 
-              <ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER']} />
           </Route>
         </Route>
         

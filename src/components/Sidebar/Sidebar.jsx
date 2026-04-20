@@ -44,6 +44,7 @@ const menuGroups = [
         icon: LayoutDashboard,
         items: [
             { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+            { label: 'Operations Overview', path: '/overview', icon: LayoutDashboard },
         ]
     },
     {
@@ -56,6 +57,8 @@ const menuGroups = [
             { label: 'Guests', path: '/guests', icon: Users, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Rooms', path: '/rooms', icon: Bed, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Housekeeping', path: '/housekeeping', icon: Sparkles, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST'] },
+            { label: 'Venues', path: '/venues', icon: Building2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Venue Bookings', path: '/venue-bookings', icon: CalendarDays, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
         ]
     },
     {

@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Sparkles, CheckCircle, Clock, AlertCircle, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import Pagination from '../../components/Pagination/Pagination';
 
 const Housekeeping = () => {
     const { t } = useLanguage();
     const [rooms, setRooms] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 12;
 
     const fetchRooms = async () => {
         setLoading(true);
@@ -62,11 +65,13 @@ const Housekeeping = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
-                    [1,2,3].map(i => (
+                    [1,2,3].map(i =>
                         <div key={i} className="premium-card h-40 animate-pulse bg-slate-50 border-slate-100"></div>
-                    ))
+                    )
                 ) : rooms.length > 0 ? (
-                    rooms.map((room) => (
+                    rooms
+                        .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+                        .map((room) => (
                         <div key={room.id} className="premium-card !bg-white group hover:shadow-lg transition-all duration-300">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
@@ -116,6 +121,15 @@ const Housekeeping = () => {
                     </div>
                 )}
             </div>
+            {!loading && rooms.length > PAGE_SIZE && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(rooms.length / PAGE_SIZE)}
+                    onPageChange={setCurrentPage}
+                    totalItems={rooms.length}
+                    pageSize={PAGE_SIZE}
+                />
+            )}
         </div>
     );
 };
