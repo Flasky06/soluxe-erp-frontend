@@ -1,7 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
+import useAuthStore from '../../store/authStore';
+import {
+    CalendarCheck, LogIn, LogOut, FileText, Sparkles, Users,
+} from 'lucide-react';
+
+// ─── Quick Action Card ────────────────────────────────────────────────────────
+function QuickActionCard({ icon, label, subtitle, color, bgColor, borderColor, onClick }) {
+    const Icon = icon;
+    return (
+        <button
+            onClick={onClick}
+            className={`group flex flex-col items-center gap-3 p-5 rounded-2xl border-2 ${borderColor} bg-white hover:${bgColor} transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer w-full text-center`}
+        >
+            <div className={`w-14 h-14 rounded-2xl ${bgColor} flex items-center justify-center transition-all duration-200 group-hover:scale-110`}>
+                <Icon size={26} className={color} />
+            </div>
+            <div className="flex flex-col gap-0.5">
+                <span className={`text-sm font-extrabold text-slate-800 group-hover:${color} transition-colors`}>{label}</span>
+                <span className="text-[11px] text-slate-400 font-medium leading-tight">{subtitle}</span>
+            </div>
+        </button>
+    );
+}
+
 const Dashboard = () => {
+    const navigate = useNavigate();
+    const { user } = useAuthStore();
     const { t } = useLanguage();
     const [stats, setStats] = useState({
         totalArrivalsToday: 0,
@@ -45,8 +72,98 @@ const Dashboard = () => {
         fetchDashboardData();
     }, []);
 
+    const hasRole = (...roles) => roles.some(r => user?.roles?.includes(r));
+
+    const quickActions = [
+        {
+            icon: CalendarCheck,
+            label: t('Reservations'),
+            subtitle: t('Book & manage stays'),
+            route: '/reservations',
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50',
+            borderColor: 'border-blue-100',
+            allowed: hasRole('ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'),
+        },
+        {
+            icon: LogIn,
+            label: t('Check-In'),
+            subtitle: t('Welcome arriving guests'),
+            route: '/check-in',
+            color: 'text-green-600',
+            bgColor: 'bg-green-50',
+            borderColor: 'border-green-100',
+            allowed: hasRole('ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'),
+        },
+        {
+            icon: LogOut,
+            label: t('Check-Out'),
+            subtitle: t('Process departing guests'),
+            route: '/check-out',
+            color: 'text-orange-600',
+            bgColor: 'bg-orange-50',
+            borderColor: 'border-orange-100',
+            allowed: hasRole('ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'),
+        },
+        {
+            icon: FileText,
+            label: t('Folio & Billing'),
+            subtitle: t('Charges & payments'),
+            route: '/folio',
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-50',
+            borderColor: 'border-purple-100',
+            allowed: hasRole('ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST', 'ROLE_ACCOUNTANT'),
+        },
+        {
+            icon: Sparkles,
+            label: t('Housekeeping'),
+            subtitle: t('Room cleaning status'),
+            route: '/housekeeping',
+            color: 'text-teal-600',
+            bgColor: 'bg-teal-50',
+            borderColor: 'border-teal-100',
+            allowed: hasRole('ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST'),
+        },
+        {
+            icon: Users,
+            label: t('Guests'),
+            subtitle: t('View guest profiles'),
+            route: '/guests',
+            color: 'text-indigo-600',
+            bgColor: 'bg-indigo-50',
+            borderColor: 'border-indigo-100',
+            allowed: hasRole('ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'),
+        },
+    ].filter(a => a.allowed);
+
     return (
         <div className="flex flex-col gap-8">
+
+            {/* ── Quick Actions ── */}
+            {quickActions.length > 0 && (
+                <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                        <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">{t('Quick Actions')}</h2>
+                        <div className="flex-1 h-px bg-slate-100" />
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                        {quickActions.map(action => (
+                            <QuickActionCard
+                                key={action.route}
+                                icon={action.icon}
+                                label={action.label}
+                                subtitle={action.subtitle}
+                                color={action.color}
+                                bgColor={action.bgColor}
+                                borderColor={action.borderColor}
+                                onClick={() => navigate(action.route)}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Priority Housekeeping Section */}
             {stats.pendingHousekeeping > 0 && (
                 <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-4 md:p-6 bg-white border border-orange-100 rounded-2xl shadow-sm animate-pulse">
