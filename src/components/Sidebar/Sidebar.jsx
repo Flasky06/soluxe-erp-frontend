@@ -131,6 +131,7 @@ const menuGroups = [
         icon: Globe,
         items: [
             { label: 'Booking.com', path: '/booking-sync', icon: Globe, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
+            { label: 'Keycards', path: '/keycards', icon: CreditCard, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
         ]
     }
 ];

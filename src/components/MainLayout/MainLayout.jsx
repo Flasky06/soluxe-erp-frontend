@@ -46,6 +46,7 @@ const pageTitles = {
     '/leave-types':       'Leave Types',
     '/maintenance-issue-types': 'Maintenance Issue Types',
     '/settings':          'Settings',
+    '/keycards':          'Door Keycards',
 };
 
 const MainLayout = ({ children }) => {

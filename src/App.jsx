@@ -46,6 +46,8 @@ import LeaveRequests from './pages/LeaveRequests/LeaveRequests';
 import PurchaseOrders from './pages/PurchaseOrders/PurchaseOrders';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import BookingSync from './pages/Integrations/BookingSync';
+import Keycards from './pages/Keycards/Keycards';
+
 
 function App() {
 
@@ -72,7 +74,9 @@ function App() {
                   <Route path="/check-out" element={<CheckOut />} />
                   <Route path="/venues" element={<Venues />} />
                   <Route path="/venue-bookings" element={<VenueBookings />} />
+                  <Route path="/keycards" element={<Keycards />} />
               </Route>
+
               <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST']} />}>
                   <Route path="/housekeeping" element={<Housekeeping />} />
               </Route>
