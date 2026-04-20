@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './components/MainLayout/MainLayout';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Rooms from './pages/Rooms/Rooms';
