@@ -44,7 +44,6 @@ const menuGroups = [
         icon: LayoutDashboard,
         items: [
             { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-            { label: 'Operations Overview', path: '/overview', icon: LayoutDashboard },
         ]
     },
     {

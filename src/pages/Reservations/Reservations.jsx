@@ -8,7 +8,6 @@ import {
     Plus, Receipt, Loader2
 } from 'lucide-react';
 import GuestForm from '../../components/GuestForm/GuestForm';
-import Pagination from '../../components/Pagination/Pagination';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import useAuthStore from '../../store/authStore';
@@ -28,8 +27,6 @@ const Reservations = () => {
     // Filters & Search
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
-    const [currentPage, setCurrentPage] = useState(1);
-    const PAGE_SIZE = 20;
 
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [showQuickGuestModal, setShowQuickGuestModal] = useState(false);
@@ -94,7 +91,7 @@ const Reservations = () => {
     useEffect(() => { fetchAllData(); }, []);
 
     useEffect(() => {
-        setCurrentPage(1);
+        // No pagination reset needed
     }, [searchQuery, statusFilter]);
 
     const handleGuestChange = (guestId) => {
@@ -298,12 +295,14 @@ const Reservations = () => {
     };
 
     // Filtering logic
-    const filteredReservations = reservations.filter(res => {
-        const guest = getGuest(res.guestId);
-        const matchesSearch = guest.fullName.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesStatus = statusFilter === 'ALL' || res.status === statusFilter;
-        return matchesSearch && matchesStatus;
-    });
+    const filteredReservations = reservations
+        .filter(res => {
+            const guest = getGuest(res.guestId);
+            const matchesSearch = guest.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesStatus = statusFilter === 'ALL' || res.status === statusFilter;
+            return matchesSearch && matchesStatus;
+        })
+        .sort((a, b) => b.id - a.id); // Most recent on top
 
     const stats = {
         total: reservations.length,
@@ -311,11 +310,7 @@ const Reservations = () => {
         inHouse: reservations.filter(r => r.status === 'CHECKED_IN').length,
     };
 
-    const totalPages = Math.ceil(filteredReservations.length / PAGE_SIZE);
-    const paginatedReservations = filteredReservations.slice(
-        (currentPage - 1) * PAGE_SIZE,
-        currentPage * PAGE_SIZE
-    );
+    // Removed pagination slicing
 
     return (
         <div className="flex flex-col gap-6">
@@ -411,8 +406,8 @@ const Reservations = () => {
                                         </td>
                                     </tr>
                                 ))
-                            ) : paginatedReservations.length > 0 ? (
-                                paginatedReservations.map((res) => {
+                            ) : filteredReservations.length > 0 ? (
+                                filteredReservations.map((res) => {
                                     const guest = getGuest(res.guestId);
                                     const sInfo = getStatusInfo(res.status);
                                     return (
@@ -516,15 +511,6 @@ const Reservations = () => {
                         </tbody>
                     </table>
                 </div>
-                {!loading && filteredReservations.length > 0 && (
-                    <Pagination 
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        totalItems={filteredReservations.length}
-                        pageSize={PAGE_SIZE}
-                    />
-                )}
             </div>
 
             {/* Booking Modal */}

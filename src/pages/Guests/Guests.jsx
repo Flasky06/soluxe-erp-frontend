@@ -3,7 +3,6 @@ import api from '../../services/api';
 import { User, Search } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import GuestForm from '../../components/GuestForm/GuestForm';
-import Pagination from '../../components/Pagination/Pagination';
 import { useLanguage } from '../../context/LanguageContext';
 import { formatDate } from '../../services/formatters';
 
@@ -16,8 +15,6 @@ const Guests = () => {
     const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'history'
     const [stayHistory, setStayHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const PAGE_SIZE = 20;
 
     const refreshData = async () => {
         try {
@@ -68,22 +65,20 @@ const Guests = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredGuests = guests.filter(g => 
-        g.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        g.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        g.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        g.idNumber?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredGuests = guests
+        .filter(g => 
+            g.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            g.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            g.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            g.idNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => b.id - a.id); // Most recent on top
 
     useEffect(() => {
-        setCurrentPage(1);
+        // No pagination reset needed
     }, [searchTerm]);
 
-    const totalPages = Math.ceil(filteredGuests.length / PAGE_SIZE);
-    const paginatedGuests = filteredGuests.slice(
-        (currentPage - 1) * PAGE_SIZE,
-        currentPage * PAGE_SIZE
-    );
+    // Removed pagination slicing
 
     return (
         <div className="flex flex-col">
@@ -119,7 +114,7 @@ const Guests = () => {
                                 </tr>
                             </thead>
                         <tbody>
-                            {paginatedGuests.length > 0 ? paginatedGuests.map((guest) => (
+                            {filteredGuests.length > 0 ? filteredGuests.map((guest) => (
                                 <tr key={guest.id}>
                                     <td>
                                         <div className="flex items-center gap-3">
@@ -192,15 +187,6 @@ const Guests = () => {
                 )}
                 </div>
             </div>
-            {!loading && filteredGuests.length > 0 && (
-                <Pagination 
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                    totalItems={filteredGuests.length}
-                    pageSize={PAGE_SIZE}
-                />
-            )}
 
             <Modal
                 isOpen={showModal}

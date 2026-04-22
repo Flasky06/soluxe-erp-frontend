@@ -7,8 +7,6 @@ import RoomDetailsModal from '../../components/RoomDetailsModal/RoomDetailsModal
 import { LayoutGrid, List as ListIcon, History, Search, Plus, Settings } from 'lucide-react';
 
 const Rooms = () => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const PAGE_SIZE = 20;
     const { t } = useLanguage();
     const [rooms, setRooms] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
@@ -68,16 +66,6 @@ const Rooms = () => {
         const search = searchTerm.toLowerCase();
         return roomNum.includes(search) || typeName.includes(search);
     });
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchTerm]);
-
-    const totalPages = Math.ceil(filteredRooms.length / PAGE_SIZE);
-    const paginatedRooms = filteredRooms.slice(
-        (currentPage - 1) * PAGE_SIZE,
-        currentPage * PAGE_SIZE
-    );
 
     const fetchRoomTypes = async () => {
         try {
@@ -291,7 +279,7 @@ const Rooms = () => {
                 <div className="text-center py-20 text-text-slate animate-pulse font-medium">{t('Loading rooms...')}</div>
             ) : viewMode === 'grid' ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-                    {paginatedRooms.map((room) => (
+                    {filteredRooms.map((room) => (
                         <div 
                             key={room.id}
                             onClick={() => handleRoomClick(room)}
@@ -321,7 +309,7 @@ const Rooms = () => {
                             <span className="absolute -bottom-4 -right-2 text-6xl font-black opacity-10 select-none">{room.roomNumber}</span>
                         </div>
                     ))}
-                    {paginatedRooms.length === 0 && (
+                    {filteredRooms.length === 0 && (
                         <div className="col-span-full text-center py-20 text-slate-400 font-medium italic">
                             {searchTerm ? t('No rooms match your search.') : t('No rooms found.')}
                         </div>
@@ -342,7 +330,7 @@ const Rooms = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {paginatedRooms.map((room) => (
+                                {filteredRooms.map((room) => (
                                     <tr key={room.id}>
                                         <td className="font-bold text-slate-900">{t('Room')} {room.roomNumber}</td>
                                         <td>
@@ -378,15 +366,6 @@ const Rooms = () => {
                 </div>
             )}
 
-            {!loading && filteredRooms.length > 0 && (
-                <Pagination 
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                    totalItems={filteredRooms.length}
-                    pageSize={PAGE_SIZE}
-                />
-            )}
 
             <RoomDetailsModal 
                 isOpen={showDetailsModal}

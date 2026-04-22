@@ -5,12 +5,9 @@ import useAuthStore from '../../store/authStore';
 import { Search, Filter, Plus, FileText, CreditCard } from 'lucide-react';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
-import Pagination from '../../components/Pagination/Pagination';
 import { formatDate, formatDateTime } from '../../services/formatters';
 
 const Folio = () => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const PAGE_SIZE = 20;
     const navigate = useNavigate();
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'ROLE_HOTEL_ADMIN' || user?.role === 'HOTEL_ADMIN';
@@ -48,7 +45,7 @@ const Folio = () => {
     });
 
     useEffect(() => {
-        setCurrentPage(1);
+        // No pagination reset needed
     }, [searchQuery, statusFilter]);
 
     const handleOpenChargeModal = (id) => {
@@ -251,22 +248,20 @@ const Folio = () => {
                             </thead>
                             <tbody>
                                 {(() => {
-                                    const filteredFolios = folios.filter(f => {
-                                        const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
-                                        const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
-                                        const matchesSearch = f.id.toString().includes(searchQuery) || 
-                                                             f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                             guestMatch || roomMatch;
-                                        const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
-                                        return matchesSearch && matchesStatus;
-                                    });
-                                    const paginatedFolios = filteredFolios.slice(
-                                        (currentPage - 1) * PAGE_SIZE,
-                                        currentPage * PAGE_SIZE
-                                    );
+                                    const filteredFolios = folios
+                                        .filter(f => {
+                                            const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
+                                            const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+                                            const matchesSearch = f.id.toString().includes(searchQuery) || 
+                                                                 f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                                                 guestMatch || roomMatch;
+                                            const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
+                                            return matchesSearch && matchesStatus;
+                                        })
+                                        .sort((a, b) => b.id - a.id); // Most recent on top
                                     
-                                    if (paginatedFolios.length > 0) {
-                                        return paginatedFolios.map((folio) => (
+                                    if (filteredFolios.length > 0) {
+                                        return filteredFolios.map((folio) => (
                                         <tr key={folio.id} className="hover:bg-slate-50 transition-colors">
                                             <td className="font-bold text-slate-700">#{folio.id.toString().padStart(5, '0')}</td>
                                             <td>
@@ -348,33 +343,6 @@ const Folio = () => {
                                 })()}
                             </tbody>
                         </table>
-                    </div>
-                )}
-                {!loading && folios.length > 0 && (
-                    <div className="p-4 border-t border-slate-100 bg-white">
-                        <Pagination 
-                            currentPage={currentPage}
-                            totalPages={Math.ceil(folios.filter(f => {
-                                const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
-                                const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
-                                const matchesSearch = f.id.toString().includes(searchQuery) || 
-                                                     f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                     guestMatch || roomMatch;
-                                const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
-                                return matchesSearch && matchesStatus;
-                            }).length / PAGE_SIZE)}
-                            onPageChange={setCurrentPage}
-                            totalItems={folios.filter(f => {
-                                const guestMatch = f.guestName?.toLowerCase().includes(searchQuery.toLowerCase());
-                                const roomMatch = f.roomNumber?.toLowerCase().includes(searchQuery.toLowerCase());
-                                const matchesSearch = f.id.toString().includes(searchQuery) || 
-                                                     f.folioType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                     guestMatch || roomMatch;
-                                const matchesStatus = statusFilter === 'ALL' || f.status === statusFilter;
-                                return matchesSearch && matchesStatus;
-                            }).length}
-                            pageSize={PAGE_SIZE}
-                        />
                     </div>
                 )}
             </div>

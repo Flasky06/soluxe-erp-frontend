@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Sparkles, CheckCircle, Clock, AlertCircle, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-import Pagination from '../../components/Pagination/Pagination';
 
 const Housekeeping = () => {
     const { t } = useLanguage();
     const [rooms, setRooms] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const PAGE_SIZE = 12;
 
     const fetchRooms = async () => {
         setLoading(true);
@@ -70,24 +67,30 @@ const Housekeeping = () => {
                     )
                 ) : rooms.length > 0 ? (
                     rooms
-                        .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
                         .map((room) => (
-                        <div key={room.id} className="premium-card !bg-white group hover:shadow-lg transition-all duration-300">
+                        <div key={room.id} className="premium-card !bg-white group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                            <div className={`absolute top-0 left-0 w-1.5 h-full ${
+                                room.status === 'DIRTY' ? 'bg-red-500' : 
+                                room.status === 'CLEANING' ? 'bg-amber-500' : 
+                                room.status === 'INSPECTED' ? 'bg-blue-500' : 'bg-green-500'
+                            }`}></div>
                             <div className="flex justify-between items-start mb-4">
                                 <div>
-                                    <h3 className="text-xl font-black text-slate-800">{t('Room')} {room.roomNumber}</h3>
+                                    <h3 className="text-xl font-black text-slate-800 flex items-center gap-2">
+                                        {t('Room')} {room.roomNumber}
+                                    </h3>
                                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{room.roomType?.name || 'Standard Room'}</p>
                                 </div>
-                                <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter border ${getStatusColor(room.status)}`}>
+                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border shadow-sm ${getStatusColor(room.status)}`}>
                                     {room.status}
                                 </span>
                             </div>
 
-                            <div className="flex flex-col gap-3 mt-6">
+                            <div className="flex flex-col gap-3 mt-6 relative z-10">
                                 {room.status === 'DIRTY' && (
                                     <button 
                                         onClick={() => updateStatus(room.id, 'CLEANING')}
-                                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-sm shadow-sm transition-all"
+                                        className="w-full flex items-center justify-center gap-2 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-[13px] shadow-lg shadow-slate-900/10 transition-all"
                                     >
                                         <Clock size={16} /> {t('Start Cleaning')}
                                     </button>
@@ -95,7 +98,7 @@ const Housekeeping = () => {
                                 {room.status === 'CLEANING' && (
                                     <button 
                                         onClick={() => updateStatus(room.id, 'INSPECTED')}
-                                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold text-sm shadow-sm transition-all"
+                                        className="w-full flex items-center justify-center gap-2 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-[13px] shadow-lg shadow-amber-500/20 transition-all"
                                     >
                                         <CheckCircle size={16} /> {t('Mark as Inspected')}
                                     </button>
@@ -103,7 +106,7 @@ const Housekeeping = () => {
                                 {room.status === 'INSPECTED' && (
                                     <button 
                                         onClick={() => updateStatus(room.id, 'AVAILABLE')}
-                                        className="w-full flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm shadow-sm transition-all"
+                                        className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-[13px] shadow-lg shadow-emerald-600/20 transition-all"
                                     >
                                         <Sparkles size={16} /> {t('Ready for Guests')}
                                     </button>
@@ -121,15 +124,6 @@ const Housekeeping = () => {
                     </div>
                 )}
             </div>
-            {!loading && rooms.length > PAGE_SIZE && (
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={Math.ceil(rooms.length / PAGE_SIZE)}
-                    onPageChange={setCurrentPage}
-                    totalItems={rooms.length}
-                    pageSize={PAGE_SIZE}
-                />
-            )}
         </div>
     );
 };

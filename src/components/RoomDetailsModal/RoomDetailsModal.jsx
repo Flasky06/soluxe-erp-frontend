@@ -67,19 +67,34 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                         ? new Date(new Date(s.dateOut).getTime() + 86400000)
                             .toISOString().split('T')[0]
                         : s.dateIn.split('T')[0];
+
+                    let color = '#10b981'; // Default: Emerald-500 (Active)
+                    const status = s.status ? s.status.toUpperCase() : '';
+
+                    if (status === 'CHECKED_OUT') {
+                        color = '#94a3b8'; // Slate-400 (Previous)
+                    } else if (status === 'CANCELLED' || status === 'VOIDED') {
+                        return; // Don't show cancelled/voided stays on calendar
+                    }
+
                     events.push({
                         title: '',
                         start: s.dateIn.split('T')[0],
                         end,
                         display: 'background',
-                        backgroundColor: '#15803d',
-                        extendedProps: { type: 'STAY' }
+                        backgroundColor: color,
+                        extendedProps: { type: 'STAY', status }
                     });
                 }
             });
 
             roomReservations.forEach(r => {
                 if (r.dateIn) {
+                    const status = r.status ? r.status.toUpperCase() : '';
+                    if (status === 'CANCELLED' || status === 'VOIDED') {
+                        return;
+                    }
+
                     const end = r.dateOut
                         ? new Date(new Date(r.dateOut).getTime() + 86400000)
                             .toISOString().split('T')[0]
@@ -89,8 +104,8 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                         start: r.dateIn,
                         end,
                         display: 'background',
-                        backgroundColor: '#7c3aed',
-                        extendedProps: { type: 'RESERVATION' }
+                        backgroundColor: '#8b5cf6', // Violet-500
+                        extendedProps: { type: 'RESERVATION', status }
                     });
                 }
             });
@@ -144,13 +159,17 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                             displayEventTime={false}
                         />
                     </div>
-                    <div className="mt-3 pt-3 border-t border-slate-100 flex gap-5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap gap-x-5 gap-y-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded bg-green-700 opacity-70"></div>
-                            {t('Stay / Occupied')}
+                            <div className="w-3 h-3 rounded bg-[#10b981] opacity-70"></div>
+                            {t('Active Stay')}
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded bg-violet-600 opacity-70"></div>
+                            <div className="w-3 h-3 rounded bg-[#94a3b8] opacity-70"></div>
+                            {t('Previous Stay')}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded bg-[#8b5cf6] opacity-70"></div>
                             {t('Reserved')}
                         </div>
                     </div>
