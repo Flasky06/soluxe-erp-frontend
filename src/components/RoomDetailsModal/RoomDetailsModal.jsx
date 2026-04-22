@@ -5,33 +5,94 @@ import interactionPlugin from '@fullcalendar/interaction';
 import api from '../../services/api';
 import Modal from '../Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
-import { X, Calendar, Clock, User, Info } from 'lucide-react';
+import { Calendar, LogIn, LogOut, Info } from 'lucide-react';
+
+const fmt = (dt) => {
+    if (!dt) return '—';
+    const d = new Date(dt);
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+        + '  '
+        + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+};
+
+const statusColor = (s) => {
+    if (!s) return 'bg-slate-100 text-slate-500';
+    const m = s.toLowerCase();
+    if (m === 'checked_in' || m === 'active') return 'bg-emerald-100 text-emerald-700';
+    if (m === 'checked_out') return 'bg-slate-100 text-slate-500';
+    if (m.includes('overdue')) return 'bg-red-100 text-red-700';
+    return 'bg-blue-100 text-blue-700';
+};
 
 const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
     const { t } = useLanguage();
-    const [history, setHistory] = useState([]);
+    const [stays, setStays] = useState([]);
+    const [reservations, setReservations] = useState([]);
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
     const fetchRoomData = React.useCallback(async () => {
+        if (!roomId) return;
         setLoading(true);
         try {
-            const [historyRes, calendarRes] = await Promise.all([
-                api.get(`/rooms/${roomId}/history`),
-                api.get(`/rooms/${roomId}/calendar`)
+            const [staysRes, reservationsRes] = await Promise.all([
+                api.get('/stays').catch(() => ({ data: [] })),
+                api.get('/reservations').catch(() => ({ data: [] }))
             ]);
-            setHistory(historyRes.data.items);
-            
-            // Map calendar events for FullCalendar
-            const events = calendarRes.data.map(item => ({
-                title: item.type === 'STAY' ? 'Occupied' : 'Reserved',
-                start: item.timestamp,
-                end: item.description.includes('until') ? item.description.split('until ')[1] : item.timestamp,
-                backgroundColor: item.type === 'STAY' ? '#14532d' : '#a855f7',
-                borderColor: 'transparent',
-                extendedProps: { ...item }
-            }));
+
+            const allStays = Array.isArray(staysRes.data)
+                ? staysRes.data
+                : (staysRes.data?.content || []);
+            const allReservations = Array.isArray(reservationsRes.data)
+                ? reservationsRes.data
+                : (reservationsRes.data?.content || []);
+
+            const roomStays = allStays.filter(
+                s => String(s.roomId) === String(roomId)
+            );
+            const roomReservations = allReservations.filter(
+                r => String(r.roomId) === String(roomId)
+            );
+
+            setStays(roomStays);
+            setReservations(roomReservations);
+
+            // Build background calendar events
+            const events = [];
+
+            roomStays.forEach(s => {
+                if (s.dateIn) {
+                    // FullCalendar end is exclusive, so add 1 day to include checkout day
+                    const end = s.dateOut
+                        ? new Date(new Date(s.dateOut).getTime() + 86400000)
+                            .toISOString().split('T')[0]
+                        : s.dateIn.split('T')[0];
+                    events.push({
+                        start: s.dateIn.split('T')[0],
+                        end,
+                        display: 'background',
+                        backgroundColor: '#15803d',
+                        extendedProps: { type: 'STAY' }
+                    });
+                }
+            });
+
+            roomReservations.forEach(r => {
+                if (r.dateIn) {
+                    const end = r.dateOut
+                        ? new Date(new Date(r.dateOut).getTime() + 86400000)
+                            .toISOString().split('T')[0]
+                        : r.dateIn;
+                    events.push({
+                        start: r.dateIn,
+                        end,
+                        display: 'background',
+                        backgroundColor: '#7c3aed',
+                        extendedProps: { type: 'RESERVATION' }
+                    });
+                }
+            });
+
             setCalendarEvents(events);
         } catch (err) {
             console.error('Failed to fetch room details:', err);
@@ -40,118 +101,123 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
         }
     }, [roomId]);
 
-    const fetchHistoryByDate = React.useCallback(async () => {
-        try {
-            const res = await api.get(`/rooms/${roomId}/history`, { params: { date: selectedDate } });
-            setHistory(res.data.items);
-        } catch (err) {
-            console.error('Failed to fetch history for date:', err);
-        }
-    }, [roomId, selectedDate]);
-
     useEffect(() => {
         if (isOpen && roomId) {
             fetchRoomData();
         }
     }, [isOpen, roomId, fetchRoomData]);
 
-    useEffect(() => {
-        if (isOpen && roomId && selectedDate) {
-            fetchHistoryByDate();
-        }
-    }, [isOpen, roomId, selectedDate, fetchHistoryByDate]);
-
-    const handleDateClick = (arg) => {
-        setSelectedDate(arg.dateStr);
-    };
+    const allRecords = [
+        ...stays.map(s => ({ ...s, _type: 'STAY' })),
+        ...reservations.map(r => ({ ...r, _type: 'RESERVATION' }))
+    ].sort((a, b) => new Date(b.dateIn) - new Date(a.dateIn));
 
     return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={onClose} 
-            title={`${t('Room')} ${roomNumber} - ${t('History & Calendar')}`}
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={`${t('Room')} ${roomNumber} — ${t('History & Calendar')}`}
             size="lg"
             customClasses="!w-[90%] !max-w-[1200px]"
         >
-            <div className="flex flex-col lg:flex-row gap-6 p-2 h-[75vh]">
-                {/* Left Side: Calendar */}
-                <div className="flex-1 bg-white rounded-xl border border-slate-100 p-4 shadow-sm overflow-hidden flex flex-col">
-                    <div className="flex items-center gap-2 mb-4 text-slate-800 font-bold uppercase tracking-wider text-xs">
-                        <Calendar size={14} className="text-maroon" />
+            <div className="flex flex-col lg:flex-row gap-6 p-4 h-[75vh]">
+
+                {/* Left: Calendar */}
+                <div className="flex-1 bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col overflow-hidden">
+                    <div className="flex items-center gap-2 mb-3 text-slate-700 font-bold uppercase tracking-wider text-xs">
+                        <Calendar size={13} className="text-maroon" />
                         {t('Occupancy Calendar')}
                     </div>
-                    <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+                    <div className="flex-1">
                         <FullCalendar
                             plugins={[dayGridPlugin, interactionPlugin]}
                             initialView="dayGridMonth"
                             events={calendarEvents}
-                            dateClick={handleDateClick}
                             headerToolbar={{
                                 left: 'prev,next today',
                                 center: 'title',
                                 right: ''
                             }}
                             height="100%"
-                            themeSystem="standard"
+                            displayEventTime={false}
                         />
                     </div>
-                    <div className="mt-4 pt-4 border-t border-slate-50 flex gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <div className="mt-3 pt-3 border-t border-slate-100 flex gap-5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#14532d]"></div>
-                            {t('Stay')}
+                            <div className="w-3 h-3 rounded bg-green-700 opacity-70"></div>
+                            {t('Stay / Occupied')}
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#a855f7]"></div>
+                            <div className="w-3 h-3 rounded bg-violet-600 opacity-70"></div>
                             {t('Reserved')}
                         </div>
                     </div>
                 </div>
 
-                {/* Right Side: History Timeline */}
-                <div className="w-full lg:w-[400px] bg-slate-50 rounded-xl border border-slate-100 p-4 flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-2 text-slate-800 font-bold uppercase tracking-wider text-xs">
-                            <Clock size={14} className="text-maroon" />
-                            {t('History')}
-                        </div>
-                        {selectedDate && (
-                            <span className="text-[10px] bg-white px-2 py-1 rounded-lg border border-slate-200 text-slate-500 font-bold">
-                                {selectedDate}
-                            </span>
-                        )}
+                {/* Right: Stay History */}
+                <div className="w-full lg:w-[420px] bg-slate-50 rounded-xl border border-slate-100 p-4 flex flex-col overflow-hidden">
+                    <div className="flex items-center gap-2 mb-4 text-slate-700 font-bold uppercase tracking-wider text-xs">
+                        <Calendar size={13} className="text-maroon" />
+                        {t('Stay & Reservation History')}
+                        <span className="ml-auto bg-white border border-slate-200 text-slate-500 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                            {allRecords.length}
+                        </span>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-4">
+                    <div className="flex-1 overflow-y-auto flex flex-col gap-3 pr-1">
                         {loading ? (
-                            <div className="text-center py-20 text-slate-400 animate-pulse">{t('Loading history...')}</div>
-                        ) : history.length > 0 ? (
-                            history.map((item, idx) => (
-                                <div key={idx} className="relative pl-6 pb-2 group">
-                                    {/* Timeline line */}
-                                    <div className="absolute left-[7px] top-2 bottom-0 w-[2px] bg-slate-200 group-last:hidden"></div>
-                                    {/* Timeline dot */}
-                                    <div className="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm ring-2 ring-slate-100 bg-maroon z-10"></div>
-                                    
-                                    <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-                                        <div className="flex justify-between items-start mb-1">
-                                            <span className="text-[10px] font-black uppercase text-maroon/60 tracking-widest">{item.type}</span>
-                                            <span className="text-[9px] font-bold text-slate-400">{new Date(item.timestamp).toLocaleString()}</span>
-                                        </div>
-                                        <p className="text-sm text-slate-700 font-semibold leading-relaxed">{item.description}</p>
-                                        {item.status && (
-                                            <div className="mt-2 flex items-center gap-1.5">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{item.status}</span>
-                                            </div>
+                            <div className="text-center py-16 text-slate-400 text-xs animate-pulse">{t('Loading...')}</div>
+                        ) : allRecords.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-16 text-slate-300 opacity-60">
+                                <Info size={30} strokeWidth={1.5} className="mb-2" />
+                                <p className="text-xs font-bold uppercase tracking-widest">{t('No records found')}</p>
+                            </div>
+                        ) : (
+                            allRecords.map((rec, idx) => (
+                                <div
+                                    key={idx}
+                                    className="bg-white rounded-xl border border-slate-100 shadow-[0_1px_4px_rgba(0,0,0,0.04)] p-3.5"
+                                >
+                                    {/* Type badge + status */}
+                                    <div className="flex items-center justify-between mb-2.5">
+                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${rec._type === 'STAY' ? 'bg-green-100 text-green-700' : 'bg-violet-100 text-violet-700'}`}>
+                                            {rec._type === 'STAY' ? t('Stay') : t('Reservation')}
+                                        </span>
+                                        {rec.status && (
+                                            <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${statusColor(rec.status)}`}>
+                                                {rec.status.replace('_', ' ')}
+                                            </span>
                                         )}
+                                    </div>
+
+                                    {/* Check-in row */}
+                                    <div className="flex items-start gap-2 mb-1.5">
+                                        <div className="w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0 mt-0.5">
+                                            <LogIn size={11} className="text-emerald-600" />
+                                        </div>
+                                        <div>
+                                            <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{t('Check-In')}</div>
+                                            <div className="text-[12px] font-bold text-slate-700">{fmt(rec.dateIn)}</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Check-out row */}
+                                    <div className="flex items-start gap-2">
+                                        <div className="w-5 h-5 rounded-full bg-orange-50 flex items-center justify-center shrink-0 mt-0.5">
+                                            <LogOut size={11} className="text-orange-500" />
+                                        </div>
+                                        <div>
+                                            <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{t('Check-Out')}</div>
+                                            <div className="text-[12px] font-bold text-slate-700">
+                                                {fmt(rec.actualDateOut || rec.dateOut)}
+                                                {rec.actualDateOut && rec.dateOut && rec.actualDateOut !== rec.dateOut && (
+                                                    <span className="ml-1.5 text-[9px] text-slate-400 font-medium">(planned: {fmt(rec.dateOut)})</span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))
-                        ) : (
-                            <div className="flex flex-col items-center justify-center py-20 text-slate-300 opacity-60">
-                                <Info size={32} strokeWidth={1.5} className="mb-2" />
-                                <p className="text-xs font-bold uppercase tracking-widest">{t('No activity found')}</p>
-                            </div>
                         )}
                     </div>
                 </div>
