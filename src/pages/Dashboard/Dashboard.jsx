@@ -7,7 +7,7 @@ import useAuthStore from '../../store/authStore';
 import {
     CalendarCheck, LogIn, LogOut, FileText, Sparkles, Users,
     Bed, BarChart2, Settings, KeyRound, CreditCard, Layers,
-    Building2, CalendarDays, History, Info, AlertTriangle, CheckCircle2
+    Building2, CalendarDays, History, Info, AlertTriangle, CheckCircle2, Wrench
 } from 'lucide-react';
 import { formatDate } from '../../services/formatters';
 

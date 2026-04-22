@@ -38,14 +38,9 @@ import {
     Globe
 } from 'lucide-react';
 
+const dashboardItem = { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard };
+
 const menuGroups = [
-    {
-        title: 'Overview',
-        icon: LayoutDashboard,
-        items: [
-            { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-        ]
-    },
     {
         title: 'Front Desk',
         icon: CalendarCheck,
@@ -140,6 +135,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         openGroup = activeGroupTitle;
     }
 
+
     const toggleGroup = (title) => {
         setOpenGroupState(openGroup === title ? null : title);
     };
@@ -168,7 +164,21 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </button>
             </div>
             
-            <nav className="flex-1 flex flex-col overflow-y-auto">
+            <nav className="flex-1 flex flex-col overflow-y-auto pt-2">
+                {/* Standalone Dashboard Link */}
+                <NavLink 
+                    to={dashboardItem.path} 
+                    onClick={() => window.innerWidth < 1024 && onClose()}
+                    className={({ isActive }) => 
+                        `flex items-center gap-3 px-6 py-4 no-underline text-white font-bold text-sm transition-all duration-300 border-l-4 border-transparent hover:text-yellow hover:bg-yellow/5 ${isActive ? 'text-yellow bg-yellow/10 border-l-yellow' : 'opacity-80 hover:opacity-100'}`
+                    }
+                >
+                    <LayoutDashboard size={18} />
+                    <span>{t(dashboardItem.label)}</span>
+                </NavLink>
+
+                <div className="h-px bg-white/10 mx-6 my-2" />
+
                 {filteredGroups.map((group) => (
                     <div key={group.title} className="flex flex-col mb-2">
                         <div 
