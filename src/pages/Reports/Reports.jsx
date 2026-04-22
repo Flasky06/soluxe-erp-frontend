@@ -18,7 +18,6 @@ const TabBtn = ({ label, active, onClick }) => (
         {label}
     </button>
 );
-
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, sub, accent }) => (
     <div className={`premium-card p-5 flex flex-col gap-1 border-l-4 ${accent || 'border-l-primary'}`}>
@@ -58,10 +57,8 @@ const Reports = () => {
     const [revenueByType, setRevenueByType] = useState({});
     const [reservations, setReservations] = useState([]);
     const [guests, setGuests] = useState([]);
-    const [folios, setFolios] = useState([]);
     const [rooms, setRooms] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
     const PAGE_SIZE = 20;
 
     const today = new Date().toISOString().split('T')[0];
@@ -103,17 +100,15 @@ const Reports = () => {
         const fetchAll = async () => {
             setLoading(true);
             try {
-                const [revRes, resRes, guestRes, folioRes, roomRes] = await Promise.allSettled([
+                const [revRes, resRes, guestRes, roomRes] = await Promise.allSettled([
                     api.get(`/reports/revenue-report?startDate=${startDate}&endDate=${endDate}`),
                     api.get('/reservations'),
                     api.get('/guests'),
-                    api.get('/folios'),
                     api.get('/rooms'),
                 ]);
                 if (revRes.status === 'fulfilled') { setRevenue(revRes.value.data); setRevenueByType(revRes.value.data?.revenueByChargeType || {}); }
                 if (resRes.status === 'fulfilled') setReservations(resRes.value.data || []);
                 if (guestRes.status === 'fulfilled') setGuests(guestRes.value.data || []);
-                if (folioRes.status === 'fulfilled') setFolios(folioRes.value.data || []);
                 if (roomRes.status === 'fulfilled') setRooms(roomRes.value.data || []);
             } catch (err) {
                 console.error(err);
@@ -122,7 +117,6 @@ const Reports = () => {
             }
         };
         fetchAll();
-        setCurrentPage(1);
     }, [startDate, endDate, activeTab]);
 
     // Derived stats
@@ -131,20 +125,19 @@ const Reports = () => {
     const occupancyPct = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
     const arrivalsToday = reservations.filter(r => r.dateIn === today && r.status === 'BOOKED').length;
     const departuresToday = reservations.filter(r => r.dateOut === today).length;
-    const folioTotal = folios.reduce((s, f) => s + (parseFloat(f.totalAmount) || 0), 0);
     const periodLabel = startDate === endDate ? formatDate(startDate) : `${formatDate(startDate)} → ${formatDate(endDate)}`;
 
     const tabs = [
-        { id: 'revenue', label: t('Revenue') },
-        { id: 'reservations', label: t('Reservations') },
-        { id: 'guests', label: t('Guests') },
+        { id: 'financial', label: t('Financial Summary') },
+        { id: 'ledger', label: t('General Ledger') },
+        { id: 'operational', label: t('Operational Data') },
     ];
 
     const getActiveDataForCSV = () => {
         switch (activeTab) {
-            case 'revenue': return revenue ? [revenue] : [];
-            case 'reservations': return reservations;
-            case 'guests': return guests;
+            case 'financial': return revenue ? [revenue] : [];
+            case 'ledger': return revenue?.auditTray || [];
+            case 'operational': return reservations;
             default: return [];
         }
     };
@@ -165,8 +158,8 @@ const Reports = () => {
                 <div className="flex justify-between items-center mb-6 no-print">
                     <div className="flex justify-between items-center w-full">
                         <div>
-                            <h1 className="text-2xl font-black text-text-dark tracking-tight">{t('Management Reports')}</h1>
-                            <p className="text-text-slate mt-1">{t('From')}: {formatDate(startDate)} · {t('To')}: {formatDate(endDate)}</p>
+                            <h1 className="text-2xl font-black text-text-dark tracking-tight">{t('Financial & Operational Reports')}</h1>
+                            <p className="text-text-slate mt-1">{t('Period')}: {formatDate(startDate)} → {formatDate(endDate)}</p>
                         </div>
                         <button 
                             className="btn-secondary !bg-white !px-6 border border-slate-200 flex items-center gap-2"
@@ -176,23 +169,23 @@ const Reports = () => {
                             }}
                         >
                             <FileText size={18} />
-                            {t('Download CSV')}
+                            {t('Export Data')}
                         </button>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4 no-print mb-6">
                     <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase">{t('From')}:</span>
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('Start Date')}:</span>
                         <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
                             className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 outline-none shadow-sm" />
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase">{t('To')}:</span>
+                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('End Date')}:</span>
                         <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)}
                             className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 outline-none shadow-sm" />
                     </div>
-                    <button onClick={() => window.print()} className="btn-secondary !px-5">
+                    <button onClick={() => window.print()} className="btn-secondary !px-5 transition-all hover:bg-maroon hover:text-white">
                         {t('Print Report')}
                     </button>
                 </div>
@@ -205,18 +198,27 @@ const Reports = () => {
                 </div>
 
                 {/* Content */}
-                {activeTab === 'revenue' && (
-                    <Section title={t('Revenue Report')} period={periodLabel}>
+                {activeTab === 'financial' && (
+                    <Section title={t('Financial Performance Overview')} period={periodLabel}>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                            <StatCard label={t('Net Revenue')} value={`$ ${parseFloat(revenue?.netRevenue || 0).toLocaleString()}`} sub={`${t('Gross')}: $ ${parseFloat(revenue?.totalRevenue || 0).toLocaleString()}`} accent="border-l-green-500" />
-                            <StatCard label={t('Occupancy Rate')} value={`${occupancyPct}%`} sub={`${occupiedRooms} ${t('occupied')} · ${totalRooms - occupiedRooms} ${t('available')}`} accent="border-l-indigo-500" />
-                            <StatCard label={t('Arrivals Today')} value={arrivalsToday} sub={t('Guests checking in today')} accent="border-l-blue-500" />
-                            <StatCard label={t('Departures Today')} value={departuresToday} sub={t('Guests checking out today')} accent="border-l-slate-400" />
+                            <StatCard label={t('Gross Revenue')} value={`$ ${parseFloat(revenue?.totalRevenue || 0).toLocaleString()}`} sub={`${t('Net')}: $ ${parseFloat(revenue?.netRevenue || 0).toLocaleString()}`} accent="border-l-green-500" />
+                            <StatCard label={t('Total Collections')} value={`$ ${parseFloat(revenue?.totalPayments || 0).toLocaleString()}`} sub={t('Actual cash received')} accent="border-l-blue-500" />
+                            <StatCard label={t('Total Expenses')} value={`$ ${parseFloat(revenue?.totalExpenses || 0).toLocaleString()}`} sub={`${t('OpEx')}: $ ${parseFloat(revenue?.operationalExpenses || 0).toLocaleString()}`} accent="border-l-red-500" />
+                            <StatCard label={t('Net Cash Flow')} value={`$ ${((parseFloat(revenue?.totalPayments || 0)) - (parseFloat(revenue?.totalExpenses || 0))).toLocaleString()}`} sub={t('Collections - Expenses')} accent="border-l-indigo-500" />
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
+                            <StatCard label={t('Accounts Receivable')} value={`$ ${parseFloat(revenue?.accountsReceivable || 0).toLocaleString()}`} sub={t('Pending from closed folios')} accent="border-l-amber-500" />
+                            <StatCard label={t('Accounts Payable')} value={`$ ${parseFloat(revenue?.accountsPayable || 0).toLocaleString()}`} sub={t('Unpaid purchase orders')} accent="border-l-slate-400" />
+                            <StatCard label={t('Supply Costs')} value={`$ ${parseFloat(revenue?.supplyCosts || 0).toLocaleString()}`} sub={t('Procurement & Inventory')} accent="border-l-rose-400" />
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
                             <div className="premium-card p-6">
-                                <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">{t('Revenue by Charge Type')}</h3>
+                                <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
+                                    {t('Revenue Distribution')}
+                                    <span className="text-[10px] font-bold px-2 py-1 bg-green-50 text-green-600 rounded-full uppercase">{t('Details')}</span>
+                                </h3>
                                 {Object.keys(revenueByType).length === 0 ? (
                                     <p className="py-10 text-center text-slate-400 italic text-sm">No charges recorded for this period.</p>
                                 ) : (
@@ -224,15 +226,15 @@ const Reports = () => {
                                         <table className="management-table">
                                             <thead>
                                                 <tr>
-                                                    <th>{t('Charge Type')}</th>
+                                                    <th>{t('Category')}</th>
                                                     <th className="text-right">{t('Amount ($)')}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {Object.entries(revenueByType).map(([type, amount]) => (
                                                     <tr key={type}>
-                                                        <td className="capitalize">{type.replace(/_/g, ' ').toLowerCase()}</td>
-                                                        <td className="text-right font-bold text-slate-800">{parseFloat(amount).toLocaleString()}</td>
+                                                        <td className="capitalize font-medium text-slate-600">{type.replace(/_/g, ' ').toLowerCase()}</td>
+                                                        <td className="text-right font-black text-slate-800">{parseFloat(amount).toLocaleString()}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -242,19 +244,94 @@ const Reports = () => {
                             </div>
 
                             <div className="premium-card p-6">
-                                <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100">{t('Folio Summary')}</h3>
-                                <div className="flex items-center justify-between py-3">
-                                    <span className="text-sm font-bold text-slate-600">{t('Total Folio Value')}</span>
-                                    <span className="font-extrabold text-primary text-lg">$ {folioTotal.toLocaleString()}</span>
+                                <h3 className="text-base font-bold text-slate-700 mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
+                                    {t('Asset & Liability Summary')}
+                                    <span className="text-[10px] font-bold px-2 py-1 bg-blue-50 text-blue-600 rounded-full uppercase">{t('Balance')}</span>
+                                </h3>
+                                <div className="space-y-4 pt-2">
+                                    <div className="flex items-center justify-between py-2 border-b border-slate-50">
+                                        <span className="text-sm font-semibold text-slate-600">{t('Capital Assets Purchased')}</span>
+                                        <span className="font-bold text-slate-800">$ {parseFloat(revenue?.totalAssets || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between py-2 border-b border-slate-50">
+                                        <span className="text-sm font-semibold text-slate-600">{t('Maintenance Reserve')}</span>
+                                        <span className="font-bold text-slate-800">$ {parseFloat(revenue?.maintenanceCosts || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between py-2 border-b border-slate-50">
+                                        <span className="text-sm font-semibold text-slate-600">{t('Petty Cash Balance')}</span>
+                                        <span className="font-bold text-slate-800">$ {parseFloat(revenue?.pettyCash || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-sm font-semibold text-slate-600">{t('Total Payroll Obligations')}</span>
+                                        <span className="font-bold text-slate-800">$ {parseFloat(revenue?.payrollExpenses || 0).toLocaleString()}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </Section>
                 )}
 
-                {activeTab === 'reservations' && (
-                    <Section title={t('Reservations Report')}>
-                        <div className="premium-card mt-6">
+                {activeTab === 'ledger' && (
+                    <Section title={t('Financial Transaction Ledger')} period={periodLabel}>
+                        <div className="premium-card overflow-hidden">
+                            <div className="overflow-x-auto w-full">
+                                <table className="management-table">
+                                    <thead>
+                                        <tr>
+                                            <th>{t('Date & Time')}</th>
+                                            <th>{t('Type')}</th>
+                                            <th>{t('Account / Reference')}</th>
+                                            <th>{t('Description')}</th>
+                                            <th className="text-right">{t('Amount ($)')}</th>
+                                            <th className="text-right">{t('Running Balance ($)')}</th>
+                                            <th className="text-center">{t('Status')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {loading ? <LoadingRow /> : (revenue?.auditTray || []).length === 0 ? (
+                                            <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No ledger entries for this period.</td></tr>
+                                        ) : revenue.auditTray.map((item, idx) => (
+                                            <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                                                <td className="whitespace-nowrap text-[12px] font-medium text-slate-500">{new Date(item.timestamp).toLocaleString()}</td>
+                                                <td>
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase
+                                                        ${item.type === 'REVENUE' || item.type === 'COLLECTION' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                        {item.type}
+                                                    </span>
+                                                </td>
+                                                <td className="font-semibold text-slate-700">{item.account}</td>
+                                                <td className="text-[13px] text-slate-600 max-w-xs truncate">{item.description}</td>
+                                                <td className={`text-right font-bold ${item.type === 'REVENUE' || item.type === 'COLLECTION' ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {item.type === 'REVENUE' || item.type === 'COLLECTION' ? '+' : '-'}{parseFloat(item.amount).toLocaleString()}
+                                                </td>
+                                                <td className="text-right font-black text-slate-800">
+                                                    {parseFloat(item.runningBalance).toLocaleString()}
+                                                </td>
+                                                <td className="text-center">
+                                                    <span className="text-[11px] font-bold text-slate-400">{item.status}</span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </Section>
+                )}
+
+                {activeTab === 'operational' && (
+                    <Section title={t('Operational Statistics')}>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                            <StatCard label={t('Occupancy Rate')} value={`${occupancyPct}%`} sub={`${occupiedRooms} ${t('occupied Rooms')}`} accent="border-l-indigo-500" />
+                            <StatCard label={t('Arrivals Today')} value={arrivalsToday} sub={t('Expected Check-ins')} accent="border-l-blue-500" />
+                            <StatCard label={t('Departures Today')} value={departuresToday} sub={t('Expected Check-outs')} accent="border-l-slate-400" />
+                        </div>
+
+                        <div className="premium-card">
+                            <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+                                <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">{t('Recent Reservations')}</h3>
+                                <div className="text-[11px] text-slate-400 font-medium">{reservations.length} {t('total found')}</div>
+                            </div>
                             <div className="overflow-x-auto w-full">
                                 <table className="management-table">
                                     <thead>
@@ -263,10 +340,10 @@ const Reports = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {loading ? <LoadingRow /> : reservations.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(r => (
+                                        {loading ? <LoadingRow /> : reservations.slice(0, 50).map(r => (
                                             <tr key={r.id}>
-                                                <td>{r.id}</td>
-                                                <td>{guests.find(g => g.id === r.guestId)?.fullName || '—'}</td>
+                                                <td className="font-bold text-slate-400">#{r.id}</td>
+                                                <td className="font-semibold text-slate-700">{guests.find(g => g.id === r.guestId)?.fullName || '—'}</td>
                                                 <td>{formatDate(r.dateIn)}</td>
                                                 <td>{formatDate(r.dateOut)}</td>
                                                 <td><span className={`status-badge ${r.status?.toLowerCase()}`}>{r.status}</span></td>
@@ -274,38 +351,6 @@ const Reports = () => {
                                         ))}
                                     </tbody>
                                 </table>
-                            </div>
-                            <div className="p-4">
-                                <Pagination currentPage={currentPage} totalPages={Math.ceil(reservations.length / PAGE_SIZE)} onPageChange={setCurrentPage} totalItems={reservations.length} pageSize={PAGE_SIZE} />
-                            </div>
-                        </div>
-                    </Section>
-                )}
-
-                {activeTab === 'guests' && (
-                    <Section title={t('Guest Report')}>
-                        <div className="premium-card mt-6">
-                            <div className="overflow-x-auto w-full">
-                                <table className="management-table">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th><th>{t('Full Name')}</th><th>{t('Email')}</th><th>{t('Phone')}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {loading ? <LoadingRow /> : guests.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(g => (
-                                            <tr key={g.id}>
-                                                <td>{g.id}</td>
-                                                <td>{g.fullName}</td>
-                                                <td>{g.email || '—'}</td>
-                                                <td>{g.phone || g.phoneNumber || '—'}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="p-4">
-                                <Pagination currentPage={currentPage} totalPages={Math.ceil(guests.length / PAGE_SIZE)} onPageChange={setCurrentPage} totalItems={guests.length} pageSize={PAGE_SIZE} />
                             </div>
                         </div>
                     </Section>
