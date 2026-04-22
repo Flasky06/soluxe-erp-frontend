@@ -68,6 +68,7 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                             .toISOString().split('T')[0]
                         : s.dateIn.split('T')[0];
                     events.push({
+                        title: '',
                         start: s.dateIn.split('T')[0],
                         end,
                         display: 'background',
@@ -84,6 +85,7 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                             .toISOString().split('T')[0]
                         : r.dateIn;
                     events.push({
+                        title: '',
                         start: r.dateIn,
                         end,
                         display: 'background',
