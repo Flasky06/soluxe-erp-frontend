@@ -3,6 +3,8 @@ import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
+import RoomDetailsModal from '../../components/RoomDetailsModal/RoomDetailsModal';
+import { LayoutGrid, List as ListIcon, History, Search, Plus, Settings } from 'lucide-react';
 
 const Rooms = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -11,8 +13,19 @@ const Rooms = () => {
     const [rooms, setRooms] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [dashStats, setDashStats] = useState({
+        occupancyRate: 0,
+        activeStays: 0,
+        totalArrivalsToday: 0,
+        totalDeparturesToday: 0,
+        cleanRooms: 0,
+    });
     const [showModal, setShowModal] = useState(false);
     const [showTypeModal, setShowTypeModal] = useState(false);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [selectedRoomId, setSelectedRoomId] = useState(null);
+    const [selectedRoomNumber, setSelectedRoomNumber] = useState('');
+    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
     const [editingRoom, setEditingRoom] = useState(null);
     const [formData, setFormData] = useState({
         roomNumber: '',
@@ -32,12 +45,16 @@ const Rooms = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [roomsRes, typesRes] = await Promise.all([
+            const [roomsRes, typesRes, dashRes] = await Promise.all([
                 api.get('/rooms'),
-                api.get('/room-types')
+                api.get('/room-types'),
+                api.get('/dashboard/summary').catch(() => ({ data: {} }))
             ]);
             setRooms(roomsRes.data);
             setRoomTypes(typesRes.data);
+            if (dashRes.data) {
+                setDashStats(prev => ({ ...prev, ...dashRes.data }));
+            }
         } catch (err) {
             console.error('Failed to fetch data:', err);
         } finally {
@@ -148,32 +165,171 @@ const Rooms = () => {
         return status.toLowerCase().replace('_', '-');
     };
 
+    const getRoomColor = (room) => {
+        // Status Mapping based on client request:
+        // Green: In-house (OCCUPIED)
+        // Dark Jungle Green: Occupied (DIRTY/OCCUPIED)
+        // Red: Check out (DIRTY/AVAILABLE)
+        // Orange: Maintenance (MAINTENANCE)
+        // Purple: Reserved (RESERVED)
+        
+        const status = room.status || 'AVAILABLE';
+        
+        switch (status) {
+            case 'OCCUPIED': return 'bg-[#22c55e] text-white'; // Green (In-house)
+            case 'DIRTY': return 'bg-[#ef4444] text-white'; // Red (Check-out)
+            case 'MAINTENANCE': return 'bg-[#f97316] text-white'; // Orange
+            case 'RESERVED': return 'bg-[#a855f7] text-white'; // Purple
+            case 'CLEANING': return 'bg-[#14532d] text-white'; // Dark Jungle Green (Occupied/Cleaning)
+            default: return 'bg-white border-slate-200 text-slate-700'; // Available
+        }
+    };
+
+    const handleRoomClick = (room) => {
+        setSelectedRoomId(room.id);
+        setSelectedRoomNumber(room.roomNumber);
+        setShowDetailsModal(true);
+    };
+
+    const roomStats = {
+        total: rooms.length,
+        available: rooms.filter(r => r.status === 'AVAILABLE').length,
+        occupied: rooms.filter(r => r.status === 'OCCUPIED').length,
+        dirty: rooms.filter(r => r.status === 'DIRTY' || r.status === 'CLEANING').length,
+        maintenance: rooms.filter(r => r.status === 'MAINTENANCE').length,
+        reserved: rooms.filter(r => r.status === 'RESERVED').length
+    };
+
     return (
-        <div className="flex flex-col">
-            <div className="table-tools">
-                <div className="table-search">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <div className="flex flex-col gap-6">
+            {/* Operational Stats Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="bg-gradient-to-br from-maroon to-[#7a1a2e] text-white p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-red-200 mb-0.5">{t('Occupancy')}</span>
+                    <span className="text-2xl font-black">{dashStats.occupancyRate}%</span>
+                </div>
+                <div className="bg-gradient-to-br from-blue-600 to-blue-700 text-white p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-blue-200 mb-0.5">{t('In-House')}</span>
+                    <span className="text-2xl font-black">{dashStats.activeStays}</span>
+                </div>
+                <div className="bg-gradient-to-br from-green-600 to-green-700 text-white p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-green-200 mb-0.5">{t('Arrivals')}</span>
+                    <span className="text-2xl font-black">{dashStats.totalArrivalsToday}</span>
+                </div>
+                <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-orange-200 mb-0.5">{t('Departures')}</span>
+                    <span className="text-2xl font-black">{dashStats.totalDeparturesToday}</span>
+                </div>
+                <div className="bg-gradient-to-br from-teal-600 to-teal-700 text-white p-4 rounded-2xl flex flex-col items-center justify-center shadow-sm">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-teal-200 mb-0.5">{t('Clean')}</span>
+                    <span className="text-2xl font-black">{dashStats.cleanRooms}</span>
+                </div>
+            </div>
+
+            {/* Room Status Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:shadow-md cursor-default">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-emerald-600 mb-0.5">{t('Available')}</span>
+                    <span className="text-2xl font-black text-emerald-700">{roomStats.available}</span>
+                </div>
+                <div className="bg-purple-50 border border-purple-100 p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:shadow-md cursor-default">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-purple-600 mb-0.5">{t('Reserved')}</span>
+                    <span className="text-2xl font-black text-purple-700">{roomStats.reserved}</span>
+                </div>
+                <div className="bg-blue-50 border border-blue-100 p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:shadow-md cursor-default">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-blue-600 mb-0.5">{t('In-House')}</span>
+                    <span className="text-2xl font-black text-blue-700">{roomStats.occupied}</span>
+                </div>
+                <div className="bg-orange-50 border border-orange-100 p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:shadow-md cursor-default">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-orange-600 mb-0.5">{t('Dirty')}</span>
+                    <span className="text-2xl font-black text-orange-700">{roomStats.dirty}</span>
+                </div>
+                <div className="bg-red-50 border border-red-100 p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:shadow-md cursor-default">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-red-600 mb-0.5">{t('Maintenance')}</span>
+                    <span className="text-2xl font-black text-red-700">{roomStats.maintenance}</span>
+                </div>
+                <div className="bg-slate-100 border border-slate-200 p-3 rounded-2xl flex flex-col items-center justify-center transition-all hover:shadow-md cursor-default">
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 mb-0.5">{t('All Rooms')}</span>
+                    <span className="text-2xl font-black text-slate-600">{roomStats.total}</span>
+                </div>
+            </div>
+
+            <div className="table-tools !bg-transparent !p-0 !border-none">
+                <div className="table-search !bg-white">
+                    <Search size={18} className="text-slate-400" />
                     <input 
                         type="text" 
-                        placeholder="Search Room Number or Type..." 
+                        placeholder={t('Search Room Number or Type...')} 
                         className="search-input"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
                 <div className="flex items-center gap-4">
-                    <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors" onClick={() => setShowTypeModal(true)}>
+                    <div className="flex bg-white rounded-xl border border-slate-200 p-1">
+                        <button 
+                            className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-maroon text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            onClick={() => setViewMode('grid')}
+                        >
+                            <LayoutGrid size={18} />
+                        </button>
+                        <button 
+                            className={`p-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-maroon text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            onClick={() => setViewMode('table')}
+                        >
+                            <ListIcon size={18} />
+                        </button>
+                    </div>
+                    <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm bg-white hover:bg-slate-50 transition-colors" onClick={() => setShowTypeModal(true)}>
                         {t('Configure Types')}
                     </button>
                     <button className="btn-primary" onClick={() => handleOpenModal()}>{t('Add New Room')}</button>
                 </div>
             </div>
 
-            <div className="premium-card">
-                <div className="overflow-x-auto w-full">
-                    {loading && rooms.length === 0 ? (
-                        <div className="text-center py-20 text-text-slate animate-pulse font-medium">{t('Loading rooms...')}</div>
-                    ) : (
+            {loading && rooms.length === 0 ? (
+                <div className="text-center py-20 text-text-slate animate-pulse font-medium">{t('Loading rooms...')}</div>
+            ) : viewMode === 'grid' ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                    {paginatedRooms.map((room) => (
+                        <div 
+                            key={room.id}
+                            onClick={() => handleRoomClick(room)}
+                            className={`relative h-24 p-3 rounded-xl shadow-sm border transition-all hover:scale-105 hover:shadow-lg cursor-pointer flex flex-col justify-between group ${getRoomColor(room)} overflow-hidden`}
+                        >
+                            <div className="flex justify-between items-start z-10">
+                                <span className="font-black text-base tracking-tighter">{room.roomNumber}</span>
+                                <div className="p-1 rounded-md bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <History size={12} />
+                                </div>
+                            </div>
+                            <div className="z-10">
+                                <p className="text-[10px] font-bold uppercase tracking-tight truncate opacity-80 leading-none mb-1">
+                                    {room.roomType?.name || '-'}
+                                </p>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[9px] font-black uppercase tracking-[0.1em] opacity-60">FL {room.floor}</span>
+                                    <button 
+                                        className="p-1 text-black/40 hover:text-black/80 transition-colors"
+                                        onClick={(e) => { e.stopPropagation(); handleOpenModal(room); }}
+                                    >
+                                        <Settings size={10} />
+                                    </button>
+                                </div>
+                            </div>
+                            {/* Decorative background number */}
+                            <span className="absolute -bottom-4 -right-2 text-6xl font-black opacity-10 select-none">{room.roomNumber}</span>
+                        </div>
+                    ))}
+                    {paginatedRooms.length === 0 && (
+                        <div className="col-span-full text-center py-20 text-slate-400 font-medium italic">
+                            {searchTerm ? t('No rooms match your search.') : t('No rooms found.')}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="premium-card">
+                    <div className="overflow-x-auto w-full">
                         <table className="management-table" style={{ minWidth: '800px' }}>
                             <thead>
                                 <tr>
@@ -185,9 +341,8 @@ const Rooms = () => {
                                     <th className="text-right">{t('Actions')}</th>
                                 </tr>
                             </thead>
-                        <tbody>
-                            {paginatedRooms.length > 0 ? (
-                                paginatedRooms.map((room) => (
+                            <tbody>
+                                {paginatedRooms.map((room) => (
                                     <tr key={room.id}>
                                         <td className="font-bold text-slate-900">{t('Room')} {room.roomNumber}</td>
                                         <td>
@@ -210,24 +365,18 @@ const Rooms = () => {
                                         </td>
                                         <td>
                                             <div className="table-actions">
+                                                <button className="view-btn" onClick={() => handleRoomClick(room)}>{t('View History')}</button>
                                                 <button className="view-btn" onClick={() => handleOpenModal(room)}>{t('Edit')}</button>
                                                 <button className="delete-btn" onClick={() => handleDelete(room.id)}>{t('Delete')}</button>
                                             </div>
                                         </td>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="6" className="text-center py-20 text-slate-400 font-medium italic">
-                                        {searchTerm ? t('No rooms match your search.') : t('No rooms found.')}
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                )}
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {!loading && filteredRooms.length > 0 && (
                 <Pagination 
@@ -238,6 +387,13 @@ const Rooms = () => {
                     pageSize={PAGE_SIZE}
                 />
             )}
+
+            <RoomDetailsModal 
+                isOpen={showDetailsModal}
+                onClose={() => setShowDetailsModal(false)}
+                roomId={selectedRoomId}
+                roomNumber={selectedRoomNumber}
+            />
 
             <Modal
                 isOpen={showModal}
