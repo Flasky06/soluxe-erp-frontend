@@ -243,7 +243,7 @@ const RoomDetails = () => {
                                 center: 'title',
                                 right: ''
                             }}
-                            height="600px"
+                            height="450px"
                             displayEventTime={false}
                         />
                     </div>
