@@ -273,13 +273,12 @@ const RoomDetails = () => {
                                     <th>{t('Check-Out')}</th>
                                     <th>{t('Duration')}</th>
                                     <th>{t('Status')}</th>
-                                    <th className="text-right">{t('System ID')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {allRecords.length === 0 ? (
                                     <tr>
-                                        <td colSpan="7" className="text-center py-20 text-slate-300">
+                                        <td colSpan="6" className="text-center py-20 text-slate-300">
                                             <Info size={40} strokeWidth={1} className="mx-auto mb-2 opacity-50" />
                                             <p className="text-xs uppercase font-black tracking-widest">{t('No history records found for this room')}</p>
                                         </td>
@@ -318,9 +317,6 @@ const RoomDetails = () => {
                                                 <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${statusColor(rec.status)}`}>
                                                     {rec.status?.replace('_', ' ')}
                                                 </span>
-                                            </td>
-                                            <td className="text-right text-[11px] font-bold text-slate-400">
-                                                #{rec.id}
                                             </td>
                                         </tr>
                                     ))
