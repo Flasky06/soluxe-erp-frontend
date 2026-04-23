@@ -9,6 +9,7 @@ import { Calendar, Info, ArrowLeft, User, Clock, FileText, ReceiptText, LogOut, 
 import FolioModal from '../../components/Folio/FolioModal';
 import Modal from '../../components/Modal/Modal';
 import useAuthStore from '../../store/authStore';
+import Pagination from '../../components/Pagination/Pagination';
 
 
 const fmt = (dt) => {
@@ -42,6 +43,8 @@ const RoomDetails = () => {
     const [extensionDate, setExtensionDate] = useState('');
     const [extensionLoading, setExtensionLoading] = useState(false);
     const { user } = useAuthStore();
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -148,6 +151,7 @@ const RoomDetails = () => {
 
     useEffect(() => {
         fetchData();
+        setCurrentPage(1); // Reset page on room change
     }, [fetchData]);
 
     const allRecords = [
@@ -355,7 +359,9 @@ const RoomDetails = () => {
                                         </td>
                                     </tr>
                                 ) : (
-                                    allRecords.map((rec, idx) => (
+                                    allRecords
+                                        .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+                                        .map((rec, idx) => (
                                         <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
                                             <td>
                                                 <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm
@@ -395,6 +401,17 @@ const RoomDetails = () => {
                             </tbody>
                         </table>
                     </div>
+                    {allRecords.length > PAGE_SIZE && (
+                        <div className="p-4 border-t border-slate-100 bg-slate-50/30">
+                            <Pagination 
+                                currentPage={currentPage}
+                                totalPages={Math.ceil(allRecords.length / PAGE_SIZE)}
+                                onPageChange={setCurrentPage}
+                                totalItems={allRecords.length}
+                                pageSize={PAGE_SIZE}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
