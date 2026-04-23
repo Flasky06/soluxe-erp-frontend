@@ -5,7 +5,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import { Calendar, Info, ArrowLeft, User, Clock, FileText } from 'lucide-react';
+import { Calendar, Info, ArrowLeft, User, Clock, FileText, ReceiptText, LogOut } from 'lucide-react';
+import FolioModal from '../../components/Folio/FolioModal';
 
 const fmt = (dt) => {
     if (!dt) return '—';
@@ -33,6 +34,7 @@ const RoomDetails = () => {
     const [reservations, setReservations] = useState([]);
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showFolio, setShowFolio] = useState(false);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -106,6 +108,17 @@ const RoomDetails = () => {
         }
     }, [id]);
 
+    const handleCheckout = async () => {
+        if (!confirm(t('Are you sure you want to checkout this room?'))) return;
+        try {
+            await api.post(`/stays/${id}/checkout`);
+            fetchData();
+        } catch (err) {
+            console.error('Checkout failed:', err);
+            alert(t('Checkout failed: ') + (err.response?.data?.message || err.message));
+        }
+    };
+
     useEffect(() => {
         fetchData();
     }, [fetchData]);
@@ -150,7 +163,25 @@ const RoomDetails = () => {
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('Floor')} {room?.floor}</span>
                     </div>
                 </div>
-                <div className="ml-auto flex items-center gap-4">
+                 <div className="ml-auto flex items-center gap-6">
+                    {room?.status === 'OCCUPIED' && (
+                        <div className="flex items-center gap-2 border-r border-slate-200 pr-6 mr-2">
+                             <button 
+                                onClick={() => setShowFolio(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-black uppercase tracking-widest hover:bg-blue-100 transition-colors"
+                            >
+                                <ReceiptText size={14} />
+                                {t('Folio')}
+                            </button>
+                            <button 
+                                onClick={handleCheckout}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-[11px] font-black uppercase tracking-widest hover:bg-red-100 transition-colors"
+                            >
+                                <LogOut size={14} />
+                                {t('Checkout')}
+                            </button>
+                        </div>
+                    )}
                    <div className="flex flex-col items-end">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('Current Status')}</span>
                         <span className={`text-xs font-black uppercase tracking-widest ${
@@ -326,6 +357,12 @@ const RoomDetails = () => {
                     </div>
                 </div>
             </div>
+
+            <FolioModal 
+                isOpen={showFolio}
+                onClose={() => setShowFolio(false)}
+                roomId={id}
+            />
         </div>
     );
 };
