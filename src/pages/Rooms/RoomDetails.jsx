@@ -65,9 +65,9 @@ const RoomDetails = () => {
                         ? new Date(new Date(s.dateOut).getTime() + 86400000).toISOString().split('T')[0]
                         : s.dateIn.split('T')[0];
 
-                    let color = '#059669'; // Emerald-600 (Active)
+                    let color = '#16a34a'; // Vibrant Green-600 (Active)
                     if (s.status?.toUpperCase() === 'CHECKED_OUT') {
-                        color = '#dc2626'; // Red-600 (Previous)
+                        color = '#dc2626'; // Strong Red-600 (Previous)
                     }
 
                     events.push({
@@ -220,8 +220,8 @@ const RoomDetails = () => {
                         </h3>
                         <div className="flex gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                             <div className="flex items-center gap-1.5">
-                                <div className="w-2.5 h-2.5 rounded bg-[#059669]"></div>
-                                {t('Past Stay')}
+                                <div className="w-2.5 h-2.5 rounded bg-[#16a34a]"></div>
+                                {t('Active Stay')}
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <div className="w-2.5 h-2.5 rounded bg-[#9333ea]"></div>
@@ -290,7 +290,7 @@ const RoomDetails = () => {
                                             <td>
                                                 <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm
                                                     ${rec._type === 'RESERVATION' ? 'bg-purple-600 text-white' : 
-                                                      (rec.status === 'CHECKED_OUT' ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white')
+                                                      (rec.status === 'CHECKED_OUT' ? 'bg-red-600 text-white' : 'bg-green-600 text-white')
                                                     }`}>
                                                     {rec._type === 'STAY' ? t('Stay') : t('Booked')}
                                                 </span>
