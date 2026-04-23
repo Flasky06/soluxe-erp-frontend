@@ -6,7 +6,6 @@ import interactionPlugin from '@fullcalendar/interaction';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { Calendar, Info, ArrowLeft, User, Clock, FileText, ReceiptText, LogOut, CalendarPlus } from 'lucide-react';
-import FolioModal from '../../components/Folio/FolioModal';
 import Modal from '../../components/Modal/Modal';
 import useAuthStore from '../../store/authStore';
 import Pagination from '../../components/Pagination/Pagination';
@@ -38,7 +37,6 @@ const RoomDetails = () => {
     const [reservations, setReservations] = useState([]);
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showFolio, setShowFolio] = useState(false);
     const [showExtensionModal, setShowExtensionModal] = useState(false);
     const [extensionDate, setExtensionDate] = useState('');
     const [extensionLoading, setExtensionLoading] = useState(false);
@@ -200,7 +198,7 @@ const RoomDetails = () => {
                     {room?.status === 'OCCUPIED' && (
                         <div className="flex items-center gap-2 border-r border-slate-200 pr-6 mr-2">
                              <button 
-                                onClick={() => setShowFolio(true)}
+                                onClick={() => navigate(`/folio?search=${room?.roomNumber}`)}
                                 className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-black uppercase tracking-widest hover:bg-blue-100 transition-colors"
                             >
                                 <ReceiptText size={14} />
@@ -455,11 +453,6 @@ const RoomDetails = () => {
                 )}
             </div>
 
-            <FolioModal 
-                isOpen={showFolio}
-                onClose={() => setShowFolio(false)}
-                roomId={id}
-            />
 
             {/* Extension Modal */}
             <Modal

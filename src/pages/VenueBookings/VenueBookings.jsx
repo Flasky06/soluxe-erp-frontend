@@ -139,7 +139,7 @@ const VenueBookings = () => {
         (b.clientName || '').toLowerCase().includes(search.toLowerCase()) ||
         (b.venueName || '').toLowerCase().includes(search.toLowerCase()) ||
         (b.clientCompany || '').toLowerCase().includes(search.toLowerCase())
-    );
+    ).sort((a, b) => b.id - a.id);
 
     useEffect(() => {
         setCurrentPage(1);

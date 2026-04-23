@@ -47,8 +47,14 @@ const LoadingRow = () => (
 //  REPORTS PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 const Reports = () => {
+    const getFirstOfMonth = () => {
+        const d = new Date();
+        d.setDate(1);
+        return d.toISOString().split('T')[0];
+    };
+
     const [activeTab, setActiveTab] = useState('revenue');
-    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+    const [startDate, setStartDate] = useState(getFirstOfMonth());
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const { t } = useLanguage();
 
