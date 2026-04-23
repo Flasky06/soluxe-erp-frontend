@@ -154,21 +154,21 @@
 
   .status-badge.booked,
   .status-badge.confirmed,
-  .status-badge.info        { @apply bg-slate-100 text-maroon border border-maroon/20; }
+  .status-badge.info        { @apply bg-purple-100 text-purple-800 border border-purple-200; }
 
   .status-badge.checked_in,
   .status-badge.checked-in,
-  .status-badge.success     { @apply bg-emerald-50 text-emerald-700 border border-emerald-200; }
+  .status-badge.success     { @apply bg-emerald-100 text-emerald-800 border border-emerald-200; }
 
   .status-badge.checked_out,
   .status-badge.checked-out,
-  .status-badge.secondary   { @apply bg-slate-100 text-slate-500 border border-slate-300; }
+  .status-badge.secondary   { @apply bg-red-100 text-red-800 border border-red-200; }
 
   .status-badge.pending,
-  .status-badge.warning     { @apply bg-amber-50 text-amber-700 border border-amber-200; }
+  .status-badge.warning     { @apply bg-amber-100 text-amber-800 border border-amber-200; }
 
   .status-badge.cancelled,
-  .status-badge.danger      { @apply bg-red-50 text-red-700 border border-red-200; }
+  .status-badge.danger      { @apply bg-slate-100 text-slate-800 border border-slate-200; }
 
   /* ─── Table Tools & Search ─────────────────────────────────────────────────── */
   .table-tools {

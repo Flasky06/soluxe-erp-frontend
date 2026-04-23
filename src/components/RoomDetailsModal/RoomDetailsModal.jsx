@@ -68,11 +68,11 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                             .toISOString().split('T')[0]
                         : s.dateIn.split('T')[0];
 
-                    let color = '#10b981'; // Default: Emerald-500 (Active)
+                    let color = '#059669'; // Strong Emerald-600 (Active)
                     const status = s.status ? s.status.toUpperCase() : '';
 
                     if (status === 'CHECKED_OUT') {
-                        color = '#94a3b8'; // Slate-400 (Previous)
+                        color = '#dc2626'; // Strong Red-600 (Previous)
                     } else if (status === 'CANCELLED' || status === 'VOIDED') {
                         return; // Don't show cancelled/voided stays on calendar
                     }
@@ -104,7 +104,7 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                         start: r.dateIn,
                         end,
                         display: 'background',
-                        backgroundColor: '#8b5cf6', // Violet-500
+                        backgroundColor: '#9333ea', // Strong Purple-600 (Future)
                         extendedProps: { type: 'RESERVATION', status }
                     });
                 }
@@ -161,15 +161,15 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                     </div>
                     <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap gap-x-5 gap-y-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded bg-[#10b981] opacity-70"></div>
+                            <div className="w-3 h-3 rounded bg-[#059669] opacity-80"></div>
                             {t('Active Stay')}
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded bg-[#94a3b8] opacity-70"></div>
+                            <div className="w-3 h-3 rounded bg-[#dc2626] opacity-80"></div>
                             {t('Previous Stay')}
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <div className="w-3 h-3 rounded bg-[#8b5cf6] opacity-70"></div>
+                            <div className="w-3 h-3 rounded bg-[#9333ea] opacity-80"></div>
                             {t('Reserved')}
                         </div>
                     </div>
@@ -201,7 +201,10 @@ const RoomDetailsModal = ({ isOpen, onClose, roomId, roomNumber }) => {
                                 >
                                     {/* Type badge + status */}
                                     <div className="flex items-center justify-between mb-2.5">
-                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${rec._type === 'STAY' ? 'bg-green-100 text-green-700' : 'bg-violet-100 text-violet-700'}`}>
+                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full 
+                                            ${rec._type === 'RESERVATION' ? 'bg-purple-600 text-white' : 
+                                              (rec.status === 'CHECKED_OUT' ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white')
+                                            }`}>
                                             {rec._type === 'STAY' ? t('Stay') : t('Reservation')}
                                         </span>
                                         {rec.status && (
