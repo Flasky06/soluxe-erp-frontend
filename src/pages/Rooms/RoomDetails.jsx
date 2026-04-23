@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import { Calendar, LogIn, LogOut, Info, ArrowLeft, Building2, User, Phone, MapPin } from 'lucide-react';
+import { Calendar, LogIn, LogOut, Info, ArrowLeft } from 'lucide-react';
 
 const fmt = (dt) => {
     if (!dt) return '—';
@@ -34,7 +34,7 @@ const RoomDetails = () => {
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const [roomRes, staysRes, reservationsRes] = await Promise.all([
@@ -58,7 +58,6 @@ const RoomDetails = () => {
             setStays(roomStays);
             setReservations(roomReservations);
 
-            // Build calendar events
             const events = [];
             roomStays.forEach(s => {
                 if (s.dateIn) {
@@ -105,11 +104,11 @@ const RoomDetails = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
 
     useEffect(() => {
         fetchData();
-    }, [id]);
+    }, [fetchData]);
 
     const allRecords = [
         ...stays.map(s => ({ ...s, _type: 'STAY' })),
@@ -156,7 +155,6 @@ const RoomDetails = () => {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                {/* Left: Occupancy & Calendar */}
                 <div className="xl:col-span-2 flex flex-col gap-6">
                     <div className="premium-card !p-6">
                         <div className="flex items-center justify-between mb-6">
@@ -196,9 +194,7 @@ const RoomDetails = () => {
                     </div>
                 </div>
 
-                {/* Right: History & Info */}
                 <div className="flex flex-col gap-6">
-                    {/* Quick Info */}
                     <div className="premium-card !p-6 bg-slate-900 text-white border-none shadow-xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-maroon/20 blur-[60px] rounded-full -mr-10 -mt-10"></div>
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-4">{t('Quick Stats')}</h3>
@@ -214,7 +210,6 @@ const RoomDetails = () => {
                         </div>
                     </div>
 
-                    {/* History List */}
                     <div className="premium-card !p-0 flex flex-col h-[550px]">
                         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
                              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
@@ -21,9 +21,6 @@ const Rooms = () => {
     });
     const [showModal, setShowModal] = useState(false);
     const [showTypeModal, setShowTypeModal] = useState(false);
-    const [showDetailsModal, setShowDetailsModal] = useState(false);
-    const [selectedRoomId, setSelectedRoomId] = useState(null);
-    const [selectedRoomNumber, setSelectedRoomNumber] = useState('');
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
     const [editingRoom, setEditingRoom] = useState(null);
     const [formData, setFormData] = useState({
@@ -41,7 +38,7 @@ const Rooms = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const [roomsRes, typesRes, dashRes] = await Promise.all([
@@ -59,7 +56,7 @@ const Rooms = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     const filteredRooms = rooms.filter(room => {
         const roomNum = room.roomNumber.toLowerCase();
@@ -79,7 +76,7 @@ const Rooms = () => {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleCreateType = async (e) => {
         e.preventDefault();
