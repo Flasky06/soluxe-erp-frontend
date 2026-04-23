@@ -3,11 +3,12 @@ import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
-import RoomDetailsModal from '../../components/RoomDetailsModal/RoomDetailsModal';
 import { LayoutGrid, List as ListIcon, History, Search, Plus, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Rooms = () => {
     const { t } = useLanguage();
+    const navigate = useNavigate();
     const [rooms, setRooms] = useState([]);
     const [roomTypes, setRoomTypes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -174,9 +175,7 @@ const Rooms = () => {
     };
 
     const handleRoomClick = (room) => {
-        setSelectedRoomId(room.id);
-        setSelectedRoomNumber(room.roomNumber);
-        setShowDetailsModal(true);
+        navigate(`/rooms/${room.id}`);
     };
 
     const roomStats = {
@@ -367,12 +366,6 @@ const Rooms = () => {
             )}
 
 
-            <RoomDetailsModal 
-                isOpen={showDetailsModal}
-                onClose={() => setShowDetailsModal(false)}
-                roomId={selectedRoomId}
-                roomNumber={selectedRoomNumber}
-            />
 
             <Modal
                 isOpen={showModal}

@@ -18,6 +18,7 @@ import CheckOut from './pages/CheckOut/CheckOut';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import Keycards from './pages/Keycards/Keycards';
 import Venues from './pages/Venues/Venues';
+import RoomDetails from './pages/Rooms/RoomDetails';
 import VenueBookings from './pages/VenueBookings/VenueBookings';
 
 
@@ -42,6 +43,7 @@ function App() {
                   <Route path="/reservations" element={<Reservations />} />
                   <Route path="/check-in" element={<CheckIn />} />
                   <Route path="/rooms" element={<Rooms />} />
+                  <Route path="/rooms/:id" element={<RoomDetails />} />
                   <Route path="/guests" element={<Guests />} />
                   <Route path="/check-out" element={<CheckOut />} />
                   <Route path="/keycards" element={<Keycards />} />
