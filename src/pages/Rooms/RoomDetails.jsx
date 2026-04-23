@@ -194,12 +194,12 @@ const RoomDetails = () => {
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('Floor')} {room?.floor}</span>
                     </div>
                 </div>
-                 <div className="ml-auto flex items-center gap-6">
+                 <div className="flex flex-wrap items-center gap-3 mt-4 md:mt-0 md:ml-auto">
                     {room?.status === 'OCCUPIED' && (
-                        <div className="flex items-center gap-2 border-r border-slate-200 pr-6 mr-2">
+                        <div className="flex flex-wrap items-center gap-2 border-slate-200 md:border-r md:pr-4">
                              <button 
                                 onClick={() => navigate(`/folio?search=${room?.roomNumber}`)}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[11px] font-black uppercase tracking-widest hover:bg-blue-100 transition-colors"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-100 transition-colors"
                             >
                                 <ReceiptText size={14} />
                                 {t('Folio')}
@@ -212,34 +212,34 @@ const RoomDetails = () => {
                                     }
                                     setShowExtensionModal(true);
                                 }}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-600 rounded-lg text-[11px] font-black uppercase tracking-widest hover:bg-purple-100 transition-colors"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-purple-100 transition-colors"
                             >
                                 <CalendarPlus size={14} />
                                 {t('Extend')}
                             </button>
                             <button 
                                 onClick={handleCheckout}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-[11px] font-black uppercase tracking-widest hover:bg-red-100 transition-colors"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-100 transition-colors"
                             >
                                 <LogOut size={14} />
                                 {t('Checkout')}
                             </button>
                         </div>
                     )}
-                   <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('Current Status')}</span>
-                        <span className={`text-xs font-black uppercase tracking-widest ${
+                   <div className="flex flex-col items-start md:items-end">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t('Current Status')}</span>
+                        <span className={`text-[11px] font-black uppercase tracking-widest ${
                             room?.status === 'AVAILABLE' ? 'text-emerald-600' :
                             room?.status === 'OCCUPIED' ? 'text-blue-600' :
                             'text-red-600'
-                        }`}>{room?.status}</span>
+                        }`}>{t(room?.status)}</span>
                    </div>
                 </div>
             </div>
 
             <div className="flex flex-col gap-6">
                 {/* Top Statistics Strip */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="premium-card !p-4 bg-slate-900 text-white border-none shadow-lg">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white/60">

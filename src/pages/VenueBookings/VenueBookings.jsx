@@ -155,22 +155,26 @@ const VenueBookings = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="flex justify-end items-center mb-8">
-                <div className="flex items-center gap-3">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tight">{t('Venue Bookings')}</h1>
+                    <p className="text-slate-500 mt-1 font-medium italic">{t('Manage and track venue bookings and event schedules.')}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
                     <input
                         type="text"
-                        placeholder="Search client, venue..."
+                        placeholder={t('Search client, venue...')}
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm w-56"
+                        className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm w-full md:w-56"
                     />
                     <button 
                         className="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors shadow-sm" 
                         onClick={() => window.location.href = '/venues'}
                     >
-                        Manage Venues
+                        {t('Manage Venues')}
                     </button>
-                    <button className="btn-primary" onClick={() => openModal()}>+ New Booking</button>
+                    <button className="btn-primary" onClick={() => openModal()}>{t('+ New Booking')}</button>
                 </div>
             </div>
 
@@ -179,9 +183,9 @@ const VenueBookings = () => {
                 {STATUSES.map(s => {
                     const count = bookings.filter(b => b.status === s).length;
                     return (
-                        <div key={s} className="premium-card p-4 flex items-center gap-3">
-                            <span className={`status-badge ${statusColors[s]} text-xs`}>{s}</span>
-                            <span className="text-2xl font-extrabold text-primary">{count}</span>
+                        <div key={s} className="premium-card p-4 flex items-center justify-between gap-3">
+                            <span className={`status-badge ${statusColors[s]} text-[10px] font-black uppercase tracking-wider`}>{t(s)}</span>
+                            <span className="text-2xl font-black text-primary">{count}</span>
                         </div>
                     );
                 })}
@@ -190,7 +194,7 @@ const VenueBookings = () => {
             <div className="premium-card">
                 <div className="overflow-x-auto w-full">
                 {loading ? (
-                    <div className="text-center py-20 text-text-slate animate-pulse">Loading bookings...</div>
+                    <div className="text-center py-20 text-text-slate animate-pulse">{t('Loading bookings...')}</div>
                 ) : (
                     <table className="management-table" style={{ minWidth: '1000px' }}>
                         <thead>
@@ -203,7 +207,7 @@ const VenueBookings = () => {
                                 <th>{t('Total ($)')}</th>
                                 <th>{t('Deposit')}</th>
                                 <th>{t('Status')}</th>
-                                <th className="text-right">Actions</th>
+                                <th className="text-right">{t('Actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -218,12 +222,12 @@ const VenueBookings = () => {
                                         <span className="status-badge info text-xs">{b.venueName || `Venue #${b.venueId}`}</span>
                                     </td>
                                     <td>
-                                        <div className="text-sm font-semibold text-slate-700">{b.eventType?.replace(/_/g,' ')}</div>
-                                        <div className="text-xs text-slate-400">{b.setupType?.replace(/_/g,' ')}</div>
+                                        <div className="text-sm font-semibold text-slate-700">{t(b.eventType)}</div>
+                                        <div className="text-xs text-slate-400">{t(b.setupType)}</div>
                                     </td>
                                     <td>
                                         <div className="text-sm font-medium text-text-dark">{b.dateIn}</div>
-                                        {b.dateOut && b.dateOut !== b.dateIn && <div className="text-xs text-text-slate">to {b.dateOut}</div>}
+                                        {b.dateOut && b.dateOut !== b.dateIn && <div className="text-xs text-text-slate">{t('to')} {b.dateOut}</div>}
                                         {b.startTime && <div className="text-xs text-slate-400">{b.startTime} – {b.endTime}</div>}
                                     </td>
                                     <td className="text-center font-bold text-slate-700">{b.expectedGuests || '—'}</td>
@@ -233,19 +237,19 @@ const VenueBookings = () => {
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-sm font-semibold">{parseFloat(b.deposit).toLocaleString()}</span>
                                                 <span className={`text-[10px] font-bold uppercase flex items-center gap-1 ${b.depositPaid ? 'text-green-600' : 'text-red-500'}`}>
-                                                    {b.depositPaid ? <><Check size={10} /> Paid</> : <><X size={10} /> Unpaid</>}
+                                                    {b.depositPaid ? <><Check size={10} /> {t('Paid')}</> : <><X size={10} /> {t('Unpaid')}</>}
                                                 </span>
                                             </div>
                                         ) : '—'}
                                     </td>
                                     <td>
-                                        <span className={`status-badge ${statusColors[b.status] || ''}`}>{b.status}</span>
+                                        <span className={`status-badge ${statusColors[b.status] || ''} text-[10px] font-black uppercase tracking-wider`}>{t(b.status)}</span>
                                     </td>
                                     <td>
                                         <div className="table-actions flex-wrap gap-1">
-                                            <button className="view-btn" onClick={() => openModal(b)}>Edit</button>
+                                            <button className="view-btn" onClick={() => openModal(b)}>{t('Edit')}</button>
                                             {b.status === 'PENDING' && (
-                                                <button className="bg-white text-green-700 border border-green-200 hover:bg-green-50 px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors duration-150" onClick={() => handleStatusChange(b.id, 'CONFIRMED')}>Confirm</button>
+                                                <button className="bg-white text-green-700 border border-green-200 hover:bg-green-50 px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors duration-150" onClick={() => handleStatusChange(b.id, 'CONFIRMED')}>{t('Confirm')}</button>
                                             )}
                                             {(b.status === 'PENDING' || b.status === 'CONFIRMED') && (
                                                 <button className="bg-white text-red-600 border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors duration-150" onClick={() => handleStatusChange(b.id, 'CANCELLED')}>Cancel</button>

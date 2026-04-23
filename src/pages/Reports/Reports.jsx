@@ -295,14 +295,14 @@ const Reports = () => {
                                     </thead>
                                     <tbody>
                                         {loading ? <LoadingRow /> : (revenue?.auditTray || []).length === 0 ? (
-                                            <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">No ledger entries for this period.</td></tr>
+                                            <tr><td colSpan="7" className="py-16 text-center text-slate-400 italic">{t('No ledger entries for this period.')}</td></tr>
                                         ) : revenue.auditTray.map((item, idx) => (
                                             <tr key={idx} className="hover:bg-slate-50 transition-colors">
                                                 <td className="whitespace-nowrap text-[12px] font-medium text-slate-500">{new Date(item.timestamp).toLocaleString()}</td>
                                                 <td>
                                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase
                                                         ${item.type === 'REVENUE' || item.type === 'COLLECTION' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                        {item.type}
+                                                        {t(item.type)}
                                                     </span>
                                                 </td>
                                                 <td className="font-semibold text-slate-700">{item.account}</td>
@@ -314,7 +314,7 @@ const Reports = () => {
                                                     {parseFloat(item.runningBalance).toLocaleString()}
                                                 </td>
                                                 <td className="text-center">
-                                                    <span className="text-[11px] font-bold text-slate-400">{item.status}</span>
+                                                    <span className="text-[11px] font-bold text-slate-400">{t(item.status)}</span>
                                                 </td>
                                             </tr>
                                         ))}
@@ -352,7 +352,7 @@ const Reports = () => {
                                                 <td className="font-semibold text-slate-700">{guests.find(g => g.id === r.guestId)?.fullName || '—'}</td>
                                                 <td>{formatDate(r.dateIn)}</td>
                                                 <td>{formatDate(r.dateOut)}</td>
-                                                <td><span className={`status-badge ${r.status?.toLowerCase()}`}>{r.status}</span></td>
+                                                <td><span className={`status-badge ${r.status?.toLowerCase()}`}>{t(r.status)}</span></td>
                                             </tr>
                                         ))}
                                     </tbody>
