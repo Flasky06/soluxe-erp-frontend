@@ -44,6 +44,7 @@ const RoomDetails = () => {
     const [extensionLoading, setExtensionLoading] = useState(false);
     const { user } = useAuthStore();
     const [currentPage, setCurrentPage] = useState(1);
+    const [activeTab, setActiveTab] = useState('LEDGER'); // New tab state
     const PAGE_SIZE = 20;
 
     const fetchData = useCallback(async () => {
@@ -152,6 +153,7 @@ const RoomDetails = () => {
     useEffect(() => {
         fetchData();
         setCurrentPage(1); // Reset page on room change
+        setActiveTab('LEDGER'); // Reset tab on room change
     }, [fetchData]);
 
     const allRecords = [
@@ -324,95 +326,133 @@ const RoomDetails = () => {
                     </div>
                 </div>
 
-                {/* History Table below Calendar */}
-                <div className="premium-card !p-0">
-                    <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                         <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                            <Info size={16} className="text-maroon" />
-                            {t('Complete Stay & Reservation History')}
-                        </h3>
-                        <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('Total Records')}:</span>
-                            <span className="bg-slate-900 text-white text-[11px] px-3 py-0.5 rounded-full font-black">
-                                {allRecords.length}
-                            </span>
+                {/* Tabs Navigation */}
+                <div className="flex px-8 border-b border-slate-100 bg-white sticky top-0 z-10 overflow-x-auto">
+                    {[
+                        { id: 'FINANCIAL', label: t('Financial Summary'), icon: ReceiptText },
+                        { id: 'LEDGER', label: t('General Ledger'), icon: FileText },
+                        { id: 'OPERATIONAL', label: t('Operational Data'), icon: Info }
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center gap-2 px-6 py-4 text-[11px] font-black uppercase tracking-[0.15em] transition-all relative whitespace-nowrap
+                                ${activeTab === tab.id 
+                                    ? 'text-maroon' 
+                                    : 'text-slate-400 hover:text-slate-600'}`}
+                        >
+                            <tab.icon size={14} className={activeTab === tab.id ? 'text-maroon' : 'text-slate-300'} />
+                            {tab.label}
+                            {activeTab === tab.id && (
+                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-maroon rounded-t-full shadow-[0_-2px_10px_rgba(128,0,0,0.2)]"></div>
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="p-0">
+                    {activeTab === 'FINANCIAL' && (
+                        <div className="p-20 text-center flex flex-col items-center gap-4">
+                            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                                <ReceiptText size={32} strokeWidth={1.5} />
+                            </div>
+                            <div>
+                                <h4 className="font-black text-slate-800 uppercase tracking-widest text-sm mb-1">{t('Total Room Revenue')}: $ 0.00</h4>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{t('Financial reporting for this room is being compiled')}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="overflow-x-auto w-full">
-                        <table className="management-table">
-                            <thead>
-                                <tr>
-                                    <th>{t('Type')}</th>
-                                    <th>{t('Guest Name')}</th>
-                                    <th>{t('Check-In')}</th>
-                                    <th>{t('Check-Out')}</th>
-                                    <th>{t('Duration')}</th>
-                                    <th>{t('Status')}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {allRecords.length === 0 ? (
+                    )}
+
+                    {activeTab === 'LEDGER' && (
+                        <div className="overflow-x-auto w-full">
+                            <table className="management-table">
+                                <thead>
                                     <tr>
-                                        <td colSpan="6" className="text-center py-20 text-slate-300">
-                                            <Info size={40} strokeWidth={1} className="mx-auto mb-2 opacity-50" />
-                                            <p className="text-xs uppercase font-black tracking-widest">{t('No history records found for this room')}</p>
-                                        </td>
+                                        <th>{t('Type')}</th>
+                                        <th>{t('Guest Name')}</th>
+                                        <th>{t('Check-In')}</th>
+                                        <th>{t('Check-Out')}</th>
+                                        <th>{t('Duration')}</th>
+                                        <th>{t('Status')}</th>
                                     </tr>
-                                ) : (
-                                    allRecords
-                                        .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-                                        .map((rec, idx) => (
-                                        <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                                            <td>
-                                                <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm
-                                                    ${rec._type === 'RESERVATION' ? 'bg-purple-600 text-white' : 
-                                                      (rec.status === 'CHECKED_OUT' ? 'bg-red-600 text-white' : 'bg-green-600 text-white')
-                                                    }`}>
-                                                    {rec._type === 'STAY' ? t('Stay') : t('Booked')}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-[11px] font-black text-slate-400">
-                                                        {rec.guestName ? rec.guestName[0] : 'G'}
-                                                    </div>
-                                                    <span className="font-bold text-slate-800">{rec.guestName || t('Walk-in Guest')}</span>
-                                                </div>
-                                            </td>
-                                            <td className="text-[12px] font-bold text-slate-600">
-                                                {fmt(rec.dateIn)}
-                                            </td>
-                                            <td className="text-[12px] font-bold text-slate-600">
-                                                {fmt(rec.actualDateOut || rec.dateOut)}
-                                            </td>
-                                            <td>
-                                                <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
-                                                    {calculateNights(rec.dateIn, rec.dateOut)} {t('Nights')}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${statusColor(rec.status)}`}>
-                                                    {rec.status?.replace('_', ' ')}
-                                                </span>
+                                </thead>
+                                <tbody>
+                                    {allRecords.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="text-center py-20 text-slate-300">
+                                                <Info size={40} strokeWidth={1} className="mx-auto mb-2 opacity-50" />
+                                                <p className="text-xs uppercase font-black tracking-widest">{t('No history records found')}</p>
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                    {allRecords.length > PAGE_SIZE && (
-                        <div className="p-4 border-t border-slate-100 bg-slate-50/30">
-                            <Pagination 
-                                currentPage={currentPage}
-                                totalPages={Math.ceil(allRecords.length / PAGE_SIZE)}
-                                onPageChange={setCurrentPage}
-                                totalItems={allRecords.length}
-                                pageSize={PAGE_SIZE}
-                            />
+                                    ) : (
+                                        allRecords
+                                            .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+                                            .map((rec, idx) => (
+                                            <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                                                <td>
+                                                    <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm
+                                                        ${rec._type === 'RESERVATION' ? 'bg-purple-600 text-white' : 
+                                                          (rec.status === 'CHECKED_OUT' ? 'bg-red-600 text-white' : 'bg-green-600 text-white')
+                                                        }`}>
+                                                        {rec._type === 'STAY' ? t('Stay') : t('Booked')}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-[11px] font-black text-slate-400">
+                                                            {rec.guestName ? rec.guestName[0] : 'G'}
+                                                        </div>
+                                                        <span className="font-bold text-slate-800">{rec.guestName || t('Walk-in Guest')}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="text-[12px] font-bold text-slate-600">
+                                                    {fmt(rec.dateIn)}
+                                                </td>
+                                                <td className="text-[12px] font-bold text-slate-600">
+                                                    {fmt(rec.actualDateOut || rec.dateOut)}
+                                                </td>
+                                                <td>
+                                                    <span className="text-[10px] font-black text-slate-500 bg-slate-100 px-2 py-1 rounded-md">
+                                                        {calculateNights(rec.dateIn, rec.dateOut)} {t('Nights')}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${statusColor(rec.status)}`}>
+                                                        {rec.status?.replace('_', ' ')}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {activeTab === 'OPERATIONAL' && (
+                        <div className="p-20 text-center flex flex-col items-center gap-4">
+                            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                                <Info size={32} strokeWidth={1.5} />
+                            </div>
+                            <div>
+                                <h4 className="font-black text-slate-800 uppercase tracking-widest text-sm mb-1">{t('Maintenance & Housekeeping Logs')}</h4>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{t('No active maintenance tickets for this room')}</p>
+                            </div>
                         </div>
                     )}
                 </div>
+
+                {activeTab === 'LEDGER' && allRecords.length > PAGE_SIZE && (
+                    <div className="p-4 border-t border-slate-100 bg-slate-50/30">
+                        <Pagination 
+                            currentPage={currentPage}
+                            totalPages={Math.ceil(allRecords.length / PAGE_SIZE)}
+                            onPageChange={setCurrentPage}
+                            totalItems={allRecords.length}
+                            pageSize={PAGE_SIZE}
+                        />
+                    </div>
+                )}
             </div>
 
             <FolioModal 
