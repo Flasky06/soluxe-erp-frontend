@@ -5,8 +5,11 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import api from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import { Calendar, Info, ArrowLeft, User, Clock, FileText, ReceiptText, LogOut } from 'lucide-react';
+import { Calendar, Info, ArrowLeft, User, Clock, FileText, ReceiptText, LogOut, CalendarPlus } from 'lucide-react';
 import FolioModal from '../../components/Folio/FolioModal';
+import Modal from '../../components/Modal/Modal';
+import useAuthStore from '../../store/authStore';
+
 
 const fmt = (dt) => {
     if (!dt) return '—';
@@ -35,6 +38,10 @@ const RoomDetails = () => {
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showFolio, setShowFolio] = useState(false);
+    const [showExtensionModal, setShowExtensionModal] = useState(false);
+    const [extensionDate, setExtensionDate] = useState('');
+    const [extensionLoading, setExtensionLoading] = useState(false);
+    const { user } = useAuthStore();
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -119,6 +126,26 @@ const RoomDetails = () => {
         }
     };
 
+    const handleExtendStay = async (e) => {
+        e.preventDefault();
+        setExtensionLoading(true);
+        try {
+            await api.post(`/stays/${id}/extend`, null, {
+                params: {
+                    newDateOut: extensionDate,
+                    userId: user?.id || 1
+                }
+            });
+            setShowExtensionModal(false);
+            fetchData();
+        } catch (err) {
+            console.error('Failed to extend stay:', err);
+            alert(err.response?.data?.message || 'Extension failed.');
+        } finally {
+            setExtensionLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchData();
     }, [fetchData]);
@@ -172,6 +199,19 @@ const RoomDetails = () => {
                             >
                                 <ReceiptText size={14} />
                                 {t('Folio')}
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    const activeStay = stays.find(s => s.status === 'CHECKED_IN' || s.status === 'ACTIVE');
+                                    if (activeStay) {
+                                        setExtensionDate(activeStay.dateOut.split('T')[0]);
+                                    }
+                                    setShowExtensionModal(true);
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-600 rounded-lg text-[11px] font-black uppercase tracking-widest hover:bg-purple-100 transition-colors"
+                            >
+                                <CalendarPlus size={14} />
+                                {t('Extend')}
                             </button>
                             <button 
                                 onClick={handleCheckout}
@@ -363,6 +403,56 @@ const RoomDetails = () => {
                 onClose={() => setShowFolio(false)}
                 roomId={id}
             />
+
+            {/* Extension Modal */}
+            <Modal
+                isOpen={showExtensionModal}
+                onClose={() => setShowExtensionModal(false)}
+                size="none"
+                customClasses="!max-w-[500px]"
+            >
+                <div className="modal-header px-6 py-4 border-b border-slate-100">
+                    <h2 className="flex items-center gap-2 text-lg font-black text-slate-800 m-0 uppercase tracking-tight">
+                        <CalendarPlus className="text-maroon" size={20} />
+                        {t('Extend Guest Stay')}
+                    </h2>
+                </div>
+                <form onSubmit={handleExtendStay} className="p-8 space-y-6">
+                    <div className="form-group">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">
+                            {t('New Departure Date')}
+                        </label>
+                        <input 
+                            type="date" 
+                            required
+                            className="w-full !p-4 !rounded-xl !border-slate-200 font-bold text-slate-700"
+                            value={extensionDate}
+                            onChange={e => setExtensionDate(e.target.value)}
+                            min={new Date().toISOString().split('T')[0]}
+                        />
+                        <p className="mt-2 text-[10px] text-slate-400 font-medium">
+                            {t('Modifying the departure date will update occupancy schedules for this room.')}
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <button 
+                            type="button" 
+                            onClick={() => setShowExtensionModal(false)}
+                            className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-500 font-black py-4 rounded-xl transition-all uppercase tracking-widest text-[11px]"
+                        >
+                            {t('Cancel')}
+                        </button>
+                        <button 
+                            type="submit" 
+                            disabled={extensionLoading}
+                            className="flex-[2] bg-maroon hover:bg-[#6b0f11] text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-widest text-[11px] disabled:opacity-50"
+                        >
+                            {extensionLoading ? t('Processing...') : t('Update Stay')}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };
