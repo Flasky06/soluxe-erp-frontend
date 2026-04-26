@@ -27,6 +27,7 @@ const GeneralReports = () => {
     const [reservations, setReservations] = useState([]);
     const [guests, setGuests]  = useState([]);
     const [rooms, setRooms]    = useState([]);
+    const [staffPerformance, setStaffPerformance] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const today = new Date().toISOString().split('T')[0];
@@ -56,14 +57,16 @@ const GeneralReports = () => {
         const fetchAll = async () => {
             setLoading(true);
             try {
-                const [resRes, guestRes, roomRes] = await Promise.allSettled([
+                const [resRes, guestRes, roomRes, staffRes] = await Promise.allSettled([
                     api.get('/reservations'),
                     api.get('/guests'),
                     api.get('/rooms'),
+                    api.get('/reports/user-performance')
                 ]);
                 if (resRes.status   === 'fulfilled') setReservations(resRes.value.data   || []);
                 if (guestRes.status === 'fulfilled') setGuests(guestRes.value.data       || []);
                 if (roomRes.status  === 'fulfilled') setRooms(roomRes.value.data         || []);
+                if (staffRes.status === 'fulfilled') setStaffPerformance(staffRes.value.data || []);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -205,6 +208,42 @@ const GeneralReports = () => {
                                         <td><span className={`status-badge ${r.status?.toLowerCase()}`}>{t(r.status)}</span></td>
                                     </tr>
                                 ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Staff Performance Table */}
+                <div className="premium-card mt-8">
+                    <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+                        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">{t('Staff Performance')}</h3>
+                    </div>
+                    <div className="overflow-x-auto w-full">
+                        <table className="management-table">
+                            <thead>
+                                <tr>
+                                    <th>{t('System User')}</th>
+                                    <th>{t('Check-ins')}</th>
+                                    <th>{t('Check-outs')}</th>
+                                    <th>{t('Total Collected')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {loading ? <LoadingRow /> : staffPerformance.map(sp => (
+                                    <tr key={sp.userId}>
+                                        <td className="font-semibold text-slate-700">
+                                            {sp.fullName} <span className="text-sm font-normal text-slate-400">({sp.username})</span>
+                                        </td>
+                                        <td className="font-bold text-green-600">{sp.checkIns}</td>
+                                        <td className="font-bold text-slate-500">{sp.checkOuts}</td>
+                                        <td className="font-bold text-primary">
+                                            ${(sp.totalCollected || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </td>
+                                    </tr>
+                                ))}
+                                {!loading && staffPerformance.length === 0 && (
+                                    <tr><td colSpan="4" className="text-center text-slate-400 py-6">{t('No staff data available.')}</td></tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
