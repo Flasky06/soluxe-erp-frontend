@@ -9,10 +9,13 @@ import Login from './pages/Auth/Login';
 import Guests from './pages/Guests/Guests';
 import RoomTypes from './pages/RoomTypes/RoomTypes';
 import Users from './pages/Users/Users';
+import UserDetails from './pages/Users/UserDetails';
 import Settings from './pages/Settings/Settings';
 import ChargeTypes from './pages/ChargeTypes/ChargeTypes';
 import PaymentMethods from './pages/PaymentMethods/PaymentMethods';
-import Reports from './pages/Reports/Reports';
+import Expenses from './pages/Expenses/Expenses';
+import GeneralReports from './pages/Reports/GeneralReports';
+import FinancialReports from './pages/Reports/FinancialReports';
 import CheckIn from './pages/CheckIn/CheckIn';
 import CheckOut from './pages/CheckOut/CheckOut';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
@@ -58,15 +61,18 @@ function App() {
                   <Route path="/folio" element={<Folio />} />
                   <Route path="/charge-types" element={<ChargeTypes />} />
                   <Route path="/payment-methods" element={<PaymentMethods />} />
+                  <Route path="/expenses" element={<Expenses />} />
               </Route>
               <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT']} />}>
-                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/reports/general" element={<GeneralReports />} />
+                  <Route path="/reports/financial" element={<FinancialReports />} />
               </Route>
               {/* System */}
               <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN']} />}>
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/room-types" element={<RoomTypes />} /> 
                   <Route path="/users" element={<Users />} />
+                  <Route path="/users/:id" element={<UserDetails />} />
               </Route>
 
           </Route>

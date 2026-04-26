@@ -43,34 +43,46 @@ const RoomDetails = () => {
     const { user } = useAuthStore();
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState('LEDGER'); // New tab state
+    const [roomRevenue, setRoomRevenue] = useState(0);
+    const [roomFolios, setRoomFolios] = useState([]);
+    const [maintenanceLogs, setMaintenanceLogs] = useState([]);
     const PAGE_SIZE = 20;
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const [roomRes, staysRes, reservationsRes] = await Promise.all([
+            const [roomRes, staysRes, reservationsRes, foliosRes, maintenanceRes] = await Promise.all([
                 api.get(`/rooms/${id}`),
                 api.get('/stays').catch(() => ({ data: [] })),
-                api.get('/reservations').catch(() => ({ data: [] }))
+                api.get('/reservations').catch(() => ({ data: [] })),
+                api.get('/folios').catch(() => ({ data: [] })),
+                api.get(`/maintenance/room/${id}`).catch(() => ({ data: [] }))
             ]);
 
             setRoom(roomRes.data);
 
-            const allStays = Array.isArray(staysRes.data)
-                ? staysRes.data
-                : (staysRes.data?.content || []);
-            const allReservations = Array.isArray(reservationsRes.data)
-                ? reservationsRes.data
-                : (reservationsRes.data?.content || []);
+            const allStays = Array.isArray(staysRes.data) ? staysRes.data : (staysRes.data?.content || []);
+            const allReservations = Array.isArray(reservationsRes.data) ? reservationsRes.data : (reservationsRes.data?.content || []);
+            const allFolios = Array.isArray(foliosRes.data) ? foliosRes.data : (foliosRes.data?.content || []);
+            
+            setMaintenanceLogs(Array.isArray(maintenanceRes.data) ? maintenanceRes.data : (maintenanceRes.data?.content || []));
 
-            const roomStays = allStays.filter(s => String(s.roomId) === String(id));
-            const roomReservations = allReservations.filter(r => String(r.roomId) === String(id));
+            const matchStays = allStays.filter(s => String(s.roomId) === String(id));
+            const matchReservations = allReservations.filter(r => String(r.roomId) === String(id));
+            
+            const relevantFolios = allFolios.filter(f => f.roomNumber === roomRes.data.roomNumber);
+            setRoomFolios(relevantFolios);
+            
+            const totalRev = relevantFolios
+                .reduce((sum, f) => sum + (parseFloat(f.totalAmount) || 0), 0);
+            
+            setRoomRevenue(totalRev);
 
-            setStays(roomStays);
-            setReservations(roomReservations);
+            setStays(matchStays);
+            setReservations(matchReservations);
 
             const events = [];
-            roomStays.forEach(s => {
+            matchStays.forEach(s => {
                 if (s.dateIn) {
                     const end = s.dateOut
                         ? new Date(new Date(s.dateOut).getTime() + 86400000).toISOString().split('T')[0]
@@ -92,7 +104,7 @@ const RoomDetails = () => {
                 }
             });
 
-            roomReservations.forEach(r => {
+            matchReservations.forEach(r => {
                 if (r.dateIn) {
                     const end = r.dateOut
                         ? new Date(new Date(r.dateOut).getTime() + 86400000).toISOString().split('T')[0]
@@ -120,7 +132,9 @@ const RoomDetails = () => {
     const handleCheckout = async () => {
         if (!confirm(t('Are you sure you want to checkout this room?'))) return;
         try {
-            await api.post(`/stays/${id}/checkout`);
+            await api.post(`/stays/${id}/check-out?userId=${user?.id || 1}`, null, {
+                params: { approveAdjustment: true }
+            });
             fetchData();
         } catch (err) {
             console.error('Checkout failed:', err);
@@ -350,13 +364,60 @@ const RoomDetails = () => {
 
                 <div className="p-0">
                     {activeTab === 'FINANCIAL' && (
-                        <div className="p-20 text-center flex flex-col items-center gap-4">
-                            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                                <ReceiptText size={32} strokeWidth={1.5} />
+                        <div className="flex flex-col gap-6 p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="premium-card p-6 flex flex-col gap-2 border-l-4 border-l-green-500">
+                                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t('Total Room Revenue')}</div>
+                                    <div className="text-3xl font-extrabold text-green-600">$ {roomRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                                    <div className="text-[12px] text-slate-400 font-medium">{t('Accumulated from all closed and active folios.')}</div>
+                                </div>
+                                <div className="premium-card p-6 flex flex-col gap-2 border-l-4 border-l-blue-500">
+                                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t('Total Folios')}</div>
+                                    <div className="text-3xl font-extrabold text-blue-600">{roomFolios.length}</div>
+                                    <div className="text-[12px] text-slate-400 font-medium">{t('Recorded billing sessions specific to this room.')}</div>
+                                </div>
                             </div>
-                            <div>
-                                <h4 className="font-black text-slate-800 uppercase tracking-widest text-sm mb-1">{t('Total Room Revenue')}: $ 0.00</h4>
-                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{t('Financial reporting for this room is being compiled')}</p>
+                            
+                            <div className="premium-card mt-2">
+                                <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                                    <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2"><ReceiptText size={16}/> {t('Associated Folios')}</h3>
+                                </div>
+                                <div className="overflow-x-auto w-full">
+                                    <table className="management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>{t('Folio ID')}</th>
+                                                <th>{t('Guest')}</th>
+                                                <th>{t('Status')}</th>
+                                                <th>{t('DateOpened')}</th>
+                                                <th className="text-right">{t('Amount')}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {roomFolios.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="5" className="text-center py-10 text-slate-400 italic text-sm">{t('No folios available for this room.')}</td>
+                                                </tr>
+                                            ) : (
+                                                roomFolios.sort((a,b) => new Date(b.openedAt) - new Date(a.openedAt)).map(f => (
+                                                    <tr key={f.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate('/folio?search=' + f.roomNumber)}>
+                                                        <td className="font-bold text-slate-500">#{f.id}</td>
+                                                        <td className="font-semibold text-slate-800">{f.guestName || '—'}</td>
+                                                        <td>
+                                                            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                                                                f.status === 'CLOSED' ? 'bg-slate-200 text-slate-500' : 'bg-emerald-100 text-emerald-700'
+                                                            }`}>
+                                                                {t(f.status)}
+                                                            </span>
+                                                        </td>
+                                                        <td className="text-slate-500 text-[12px]">{fmt(f.openedAt)}</td>
+                                                        <td className="text-right font-black text-slate-800">$ {parseFloat(f.totalAmount || 0).toLocaleString()}</td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -428,13 +489,62 @@ const RoomDetails = () => {
                     )}
 
                     {activeTab === 'OPERATIONAL' && (
-                        <div className="p-20 text-center flex flex-col items-center gap-4">
-                            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
-                                <Info size={32} strokeWidth={1.5} />
+                        <div className="flex flex-col gap-6 p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="premium-card p-5">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('Housekeeping Status')}</p>
+                                    <p className={`text-xl font-black ${room?.status === 'DIRTY' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                        {t(room?.status === 'DIRTY' ? 'DIRTY' : 'CLEAN')}
+                                    </p>
+                                </div>
+                                <div className="premium-card p-5">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('Max Occupancy')}</p>
+                                    <p className="text-xl font-black text-slate-800">{room?.roomType?.maxOccupancy || 0} {t('Persons')}</p>
+                                </div>
+                                <div className="premium-card p-5">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{t('Total Historical Stays')}</p>
+                                    <p className="text-xl font-black text-slate-800">{stays.length}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h4 className="font-black text-slate-800 uppercase tracking-widest text-sm mb-1">{t('Maintenance & Housekeeping Logs')}</h4>
-                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{t('No active maintenance tickets for this room')}</p>
+
+                            <div className="premium-card mt-2">
+                                <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                                    <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2"><Info size={16}/> {t('Maintenance History')}</h3>
+                                </div>
+                                <div className="overflow-x-auto w-full">
+                                    <table className="management-table">
+                                        <thead>
+                                            <tr>
+                                                <th>{t('Ticket ID')}</th>
+                                                <th>{t('Reported')}</th>
+                                                <th>{t('Title')}</th>
+                                                <th>{t('Status')}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {maintenanceLogs.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="4" className="text-center py-10 text-slate-400 italic text-sm">{t('No active or previous maintenance tickets for this room.')}</td>
+                                                </tr>
+                                            ) : (
+                                                maintenanceLogs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).map(log => (
+                                                    <tr key={log.id} className="hover:bg-slate-50">
+                                                        <td className="font-bold text-slate-500">#{log.id}</td>
+                                                        <td className="text-slate-500 text-[12px]">{fmt(log.createdAt)}</td>
+                                                        <td className="font-semibold text-slate-800">{log.title}</td>
+                                                        <td>
+                                                            <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                                                                log.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                                                            }`}>
+                                                                {log.status?.replace('_', ' ')}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Modal from '../../components/Modal/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import Pagination from '../../components/Pagination/Pagination';
@@ -174,7 +175,9 @@ const Users = () => {
                                 <tr key={u.id}>
                                     <td>
                                         <div className="flex flex-col gap-0.5">
-                                            <span className="font-bold text-text-dark text-base">{u.username}</span>
+                                            <Link to={`/users/${u.id}`} className="font-bold text-indigo-700 text-base hover:text-indigo-500 hover:underline transition-colors uppercase cursor-pointer" title={t('View Audit Report')}>
+                                                {u.username}
+                                            </Link>
                                             <span className="text-[12px] text-text-slate font-medium">{u.fullName}</span>
                                         </div>
                                     </td>

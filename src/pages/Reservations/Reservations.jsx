@@ -194,7 +194,7 @@ const Reservations = () => {
                 amount: parseFloat(paymentData.amount),
                 paymentMethodId: parseInt(paymentData.paymentMethodId)
             };
-            await api.post(`/folios/${activeFolio.id}/payments?userId=${1}`, payload);
+            await api.post(`/folios/${activeFolio.id}/payments?userId=${user?.id || 1}`, payload);
             setShowPaymentModal(false);
             alert('Payment recorded successfully!');
             fetchAllData();
@@ -260,7 +260,7 @@ const Reservations = () => {
     const handleMarkNoShow = async (id) => {
         if (window.confirm('Mark this guest as No-Show? The room will be released.')) {
             try {
-                await api.post(`/stays/reservations/${id}/no-show?userId=${1}`);
+                await api.post(`/stays/reservations/${id}/no-show?userId=${user?.id || 1}`);
                 fetchAllData();
             } catch (err) {
                 console.error('Failed to mark no-show:', err);
