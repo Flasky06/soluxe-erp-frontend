@@ -26,6 +26,7 @@ import RoomDetails from './pages/Rooms/RoomDetails';
 import VenueBookings from './pages/VenueBookings/VenueBookings';
 import ShiftHandover from './pages/Shift/ShiftHandover';
 import Employees from './pages/Employees/Employees';
+import Currencies from './pages/Currencies/Currencies';
 
 
 function App() {
@@ -65,6 +66,7 @@ function App() {
                   <Route path="/folio" element={<Folio />} />
                   <Route path="/charge-types" element={<ChargeTypes />} />
                   <Route path="/payment-methods" element={<PaymentMethods />} />
+                  <Route path="/currencies" element={<Currencies />} />
                   <Route path="/expenses" element={<Expenses />} />
               </Route>
               <Route element={<ProtectedRoute allowedRoles={['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_ACCOUNTANT']} />}>

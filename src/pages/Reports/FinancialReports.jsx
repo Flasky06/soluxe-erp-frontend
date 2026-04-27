@@ -74,6 +74,7 @@ const FinancialReports = () => {
     // Data
     const [revenue,       setRevenue]       = useState(null);
     const [revenueByType, setRevenueByType] = useState({});
+    const [fetchedCurrencies, setFetchedCurrencies] = useState([]);
     const [loading,       setLoading]       = useState(true);
 
     const today = new Date().toISOString().split('T')[0];
@@ -86,12 +87,16 @@ const FinancialReports = () => {
         const fetchAll = async () => {
             setLoading(true);
             try {
-                const [revRes] = await Promise.allSettled([
+                const [revRes, currRes] = await Promise.allSettled([
                     api.get(`/reports/revenue-report?startDate=${startDate}&endDate=${endDate}`),
+                    api.get('/currencies/active')
                 ]);
                 if (revRes.status === 'fulfilled') {
                     setRevenue(revRes.value.data);
                     setRevenueByType(revRes.value.data?.revenueByChargeType || {});
+                }
+                if (currRes.status === 'fulfilled') {
+                    setFetchedCurrencies(currRes.value.data || []);
                 }
             } catch (err) {
                 console.error(err);
@@ -141,9 +146,10 @@ const FinancialReports = () => {
         { id: 'summary', label: t('Financial Summary') },
         { id: 'ledger',  label: t('General Ledger') },
     ];
-
-    const currencies   = ['ALL', 'USD', 'CNY', 'EUR', 'VOUCHER', 'POS'];
-    const payMethods   = ['ALL', 'CASH', 'CARD', 'TRANSFER', 'VOUCHER'];
+    
+    // Dynamic currencies + common non-currency methods like VOUCHER/POS if they exist
+    const reportCurrencies = ['ALL', 'USD', ...fetchedCurrencies.filter(c => c.code !== 'USD').map(c => c.code)];
+    const payMethods       = ['ALL', 'CASH', 'CARD', 'TRANSFER', 'VOUCHER'];
 
     return (
         <>
@@ -202,7 +208,7 @@ const FinancialReports = () => {
                     <div className="flex items-center gap-2">
                         <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('Currency')}:</span>
                         <div className="flex flex-wrap gap-1">
-                            {currencies.map(c => (
+                            {reportCurrencies.map(c => (
                                 <button key={c}
                                     onClick={() => setCurrencyFilter(c)}
                                     className={`px-3 py-1 rounded-full text-[11px] font-bold border transition-all duration-150

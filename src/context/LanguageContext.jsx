@@ -575,9 +575,15 @@ const translations = {
         'Employee Directory': 'Employee Directory',
         '✗ Unpaid': '✗ Unpaid',
 
-    },
+        'Receptionist Performance Report': 'Receptionist Performance Report',
+        'Financial collections and client volume by user': 'Financial collections and client volume by user',
+        'Clients Served': 'Clients Served',
+        'Period Revenue': 'Period Revenue',
+        'Refresh Reports': 'Refresh Reports',
+        'Calculating...': 'Calculating...',
+        'Performance and operational snapshot': 'Performance and operational snapshot',
 
-    
+
         // ── Admin, HR & Inventory Extended ────
         'Loading user accounts...': 'Loading user accounts...',
         'No Email': 'No Email',
@@ -682,6 +688,7 @@ const translations = {
         'Add New Category': 'Add New Category',
         'e.g. Toiletries, Perishables': 'e.g. Toiletries, Perishables',
         'Save Category': 'Save Category',
+    },
     zh: {
         // ── Sidebar groups ──────────────────────
         'Overview': '概览',
@@ -1252,15 +1259,6 @@ const translations = {
         'No maintenance tickets found.': '未找到维护工单。',
         'Total Tickets': '总工单数',
         'Employee Directory': '员工目录',
-        '✗ Unpaid': '✗ 未付款',
-
-        // ── Additional Features ─────────────────
-        'Door Keycards Management': '门卡管理',
-        'Real-time synchronization with active check-ins': '与活跃入住实时同步',
-        'Refresh Data': '刷新数据',
-        'Create New Keycard': '创建新门卡',
-        'In-House Guests': '在住房客',
-        'Cleaning/Issue': '清洁/问题',
         'Issue Card': '制卡',
         'Encode Guest Keycard': '宾客卡片编码',
         'Card Written Successfully!': '写入成功！',

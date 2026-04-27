@@ -27,6 +27,7 @@ const Folio = () => {
     // Search and Filter State
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
+    const [currencies, setCurrencies] = useState([]);
 
     const [newMethod, setNewMethod] = useState({ name: '', description: '' });
     const [chargeTypes, setChargeTypes] = useState([]);
@@ -41,6 +42,8 @@ const Folio = () => {
     const [newPayment, setNewPayment] = useState({
         paymentMethodId: '',
         amount: 0,
+        currencyCode: 'USD',
+        exchangeRate: 1,
         referenceNumber: ''
     });
 
@@ -168,14 +171,16 @@ const Folio = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [foliosRes, methodsRes, chargeTypesRes] = await Promise.all([
+                const [foliosRes, methodsRes, chargeTypesRes, currenciesRes] = await Promise.all([
                     api.get('/folios'),
                     api.get('/folios/payment-methods'),
-                    api.get('/charge-types')
+                    api.get('/charge-types'),
+                    api.get('/currencies/active')
                 ]);
                 setFolios(foliosRes.data);
                 setPaymentMethods(methodsRes.data);
                 setChargeTypes(chargeTypesRes.data);
+                setCurrencies(currenciesRes.data);
                 if (chargeTypesRes.data.length > 0) {
                     setNewCharge(prev => ({ ...prev, chargeTypeId: chargeTypesRes.data[0].id }));
                 }
@@ -428,7 +433,32 @@ const Folio = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>{t('Amount')}</label>
-                                    <input type="number" step="0.01" required value={newPayment.amount} onChange={(e) => setNewPayment({...newPayment, amount: parseFloat(e.target.value) || 0})} />
+                                    <div className="flex gap-2">
+                                        <input type="number" step="0.01" required className="flex-1" value={newPayment.amount} onChange={(e) => setNewPayment({...newPayment, amount: parseFloat(e.target.value) || 0})} />
+                                        <select 
+                                            className="w-[100px]" 
+                                            value={newPayment.currencyCode} 
+                                            onChange={(e) => {
+                                                const code = e.target.value;
+                                                const curr = currencies.find(c => c.code === code);
+                                                setNewPayment({
+                                                    ...newPayment, 
+                                                    currencyCode: code,
+                                                    exchangeRate: curr ? curr.exchangeRate : 1
+                                                });
+                                            }}
+                                        >
+                                            <option value="USD">USD</option>
+                                            {currencies.filter(c => c.code !== 'USD').map(c => (
+                                                <option key={c.id} value={c.code}>{c.code}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {newPayment.currencyCode !== 'USD' && (
+                                        <p className="text-[10px] text-slate-500 mt-1 italic">
+                                            {t('Covers approx.')} ${(newPayment.amount / (newPayment.exchangeRate || 1)).toFixed(2)} USD ({t('Rate')}: {newPayment.exchangeRate})
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label>{t('Reference')}</label>
