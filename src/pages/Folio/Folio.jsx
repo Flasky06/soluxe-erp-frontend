@@ -71,7 +71,8 @@ const Folio = () => {
             setNewCharge({ chargeTypeId: chargeTypes[0]?.id || '', description: '', quantity: 1, unitPrice: 0, taxPct: 0, discountPct: 0 });
         } catch (err) {
             console.error('Failed to post charge', err);
-            alert('Failed to post charge.');
+            const msg = err.response?.data?.message || 'Failed to post charge.';
+            alert(msg);
         }
     };
 
@@ -102,7 +103,8 @@ const Folio = () => {
             setNewPayment({ paymentMethodId: '', amount: 0, referenceNumber: '' });
         } catch (err) {
             console.error('Failed to record payment', err);
-            alert('Failed to record payment.');
+            const msg = err.response?.data?.message || 'Failed to record payment.';
+            alert(msg);
         }
     };
 
@@ -377,7 +379,7 @@ const Folio = () => {
                                 </div>
                                 <div className="form-group full-width">
                                     <label>{t('Description')}</label>
-                                    <input type="text" required value={newCharge.description} onChange={(e) => setNewCharge({...newCharge, description: e.target.value})} placeholder="e.g. Dinner" />
+                                    <input type="text" value={newCharge.description} onChange={(e) => setNewCharge({...newCharge, description: e.target.value})} placeholder="e.g. Dinner" />
                                 </div>
                                 <div className="form-group">
                                     <label>{t('Quantity')}</label>

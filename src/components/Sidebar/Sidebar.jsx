@@ -36,7 +36,8 @@ import {
     Scale,
     ShieldCheck,
     Globe,
-    ReceiptText
+    ReceiptText,
+    ArrowRightLeft
 } from 'lucide-react';
 
 const dashboardItem = { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard };
@@ -54,6 +55,7 @@ const menuGroups = [
             { label: 'Housekeeping', path: '/housekeeping', icon: Sparkles, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_HOUSEKEEPING', 'ROLE_RECEPTIONIST'] },
             { label: 'Venues', path: '/venues', icon: Building2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
             { label: 'Venue Bookings', path: '/venue-bookings', icon: CalendarDays, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
+            { label: 'Shift Handover', path: '/shift-handover', icon: ArrowRightLeft, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER', 'ROLE_RECEPTIONIST'] },
         ]
     },
     {
@@ -79,6 +81,7 @@ const menuGroups = [
         icon: Settings,
         items: [
             { label: 'User Management', path: '/users', icon: UsersRound, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
+            { label: 'Employees', path: '/employees', icon: Users2, allowedRoles: ['ROLE_HOTEL_ADMIN', 'ROLE_MANAGER'] },
             { label: 'Room Types', path: '/room-types', icon: Layers, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
             { label: 'Settings', path: '/settings', icon: Settings2, allowedRoles: ['ROLE_HOTEL_ADMIN'] },
         ]
